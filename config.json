@@ -1,0 +1,33 @@
+{
+  "name": "Quick Deleter",
+  "description": "Quickly delete projects",
+
+  "namespace": "UIOWA\\QuickDeleter",
+
+  "authors": [
+    {
+      "name": "UIOWA",
+      "email": "joseph-spring@uiowa.edu",
+      "institution": "University of Iowa Institute for Clinical and Translational Science"
+    }
+   ],
+
+  "links": {
+    "control-center": [
+      {
+        "name": "Quick Deleter",
+        "icon": "user_add2",
+        "url": "index.php"
+      }
+    ]
+  },
+
+  "system-settings": [
+    {
+      "key": "from-email-address",
+      "name": "Email address to send user access notification from",
+      "type": "text",
+      "required": true
+    }
+  ]
+}
