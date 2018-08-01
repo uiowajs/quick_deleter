@@ -86,7 +86,7 @@ class QuickDeleter extends AbstractExternalModule {
                     </tr>
                     <tr>
 <!--                        <td><input type="button" value="Refresh" onClick="window.location.reload()"></td>  -->
-                        <td><input type="reset" name="reset" id="reset" ></td>
+                        <td><input type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" ></td>
                     </tr>
                 </table>
 
@@ -125,7 +125,10 @@ class QuickDeleter extends AbstractExternalModule {
 
 
                     
-     
+     function Clear_Row_Styling() 
+     {
+    	 $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
+     }
 
 
 
@@ -141,19 +144,9 @@ class QuickDeleter extends AbstractExternalModule {
 
                 });
 
-
-
-
-
-
-
-
-
-                
-          
-
+       
             //  Highlight row when box checked
-                $( "input[type=checkbox]" ).on('change', function(){   // THIS ALSO WORKS
+                $( "input[type=checkbox]" ).on('change', function(){   
 //                 $("form[name=Form]").on("change", "input[type=checkbox]", function () {
                     if($(this).is(':checked'))
                         // console.log($(this).attr('id'));
@@ -288,13 +281,17 @@ class QuickDeleter extends AbstractExternalModule {
         // Takes PIDs submitted from PID_Box and makes an array.
         $PID_Box = explode(",", $_POST['PID']);
         foreach ($PID_Box as $PID) {
-            $sqlUpdateProject = "UPDATE redcap_projects SET date_deleted = IF(date_deleted IS NULL, '".NOW."', NULL) WHERE project_id = ?";
+            $sqlUpdateProject = "UPDATE redcap_projects SET date_deleted = IF(date_deleted IS NULL, '".NOW."', NULL) WHERE project_id = ? ";
+            
+//             $sqlUpdateProjectReturn = db_query_assoc($sqlUpdateProject);
             
             $stmt = $conn->prepare($sqlUpdateProject);
             $stmt->bind_param('i', $PID);
             $stmt->execute();
             $success = $stmt->affected_rows;
-            // $stmt->get_result();  // Keep for error handling
+            
+            echo $stmt->get_result();  // Keep for error handling
+            
             $stmt->close();
             
             if($success >= 1)
