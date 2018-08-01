@@ -1,6 +1,9 @@
 <?php
 
-require_once APP_PATH_DOCROOT . 'ControlCenter/header.php';
+//require_once APP_PATH_DOCROOT . 'ControlCenter/header.php';
+$page = new HtmlPage();
+//$page->PrintHeaderExt();
+//include APP_PATH_VIEWS . 'HomeTabs.php';
 
 $QuickDeleter = new \UIOWA\QuickDeleter\QuickDeleter();
 

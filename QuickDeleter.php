@@ -22,10 +22,7 @@ use REDCap;
 
 class QuickDeleter extends AbstractExternalModule {
     
-    public function Choose_Project_By_User()
-    {
-        
-    }
+
 
     public function DisplayProjectsTable()  // Creates html form, table, and headers.  Contains tablesorter paths and scripts to put PID in the PID_Box when checkbox checked.
     {
@@ -49,25 +46,43 @@ class QuickDeleter extends AbstractExternalModule {
         </head>
 
         <body>
-         <div id="pager" class="pager"> 
+
+
+
+
+
+
+
             <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" >
-              <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/first.png") ?>" class="first"/>   
-              <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/prev.png") ?>" class="prev"/>
-    <!-- the "pagedisplay" can be any element, including an input -->
-     <span class="pagedisplay" data-pager-output-filtered="{startRow:input} &ndash; {endRow} / {filteredRows} of {totalRows} total rows"></span> 
-              <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/next.png") ?>" class="next"/>
-              <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/last.png") ?>" class="last"/>  
-          <select class="pagesize">
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-          <option value="all">All Rows</option>
-        </select>
+
+                <div id="pager" class="pager" align="center">
+                    <h3 style="text-align: center;" >Quick Deleter</h3>
+
+                    <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/first.png") ?>" class="first"/>
+                    <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/prev.png") ?>" class="prev"/>
+                    <!-- the "pagedisplay" can be any element, including an input -->
+                    <span class="pagedisplay" data-pager-output-filtered="{startRow:input} &ndash; {endRow} / {filteredRows} of {totalRows} total rows"></span>
+                    <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/next.png") ?>" class="next"/>
+                    <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/last.png") ?>" class="last"/>
+                    <select class="pagesize">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="500">500</option>
+                        <option value="all">All Rows</option>
+                    </select>
+                </div>
+
                 <table id='Submit_Table'>
+
+
+                    <table id='Projects_Table' class='tablesorter' >
                     <tr>
+                        <div align="center">
                         <td><input type='submit' id='submit' name='submit'></td>
                         <td><input id='PID_Box' type='text' name='PID' readonly></td>
+                        </div>
                     </tr>
                     <tr>
 <!--                        <td><input type="button" value="Refresh" onClick="window.location.reload()"></td>  -->
@@ -75,30 +90,35 @@ class QuickDeleter extends AbstractExternalModule {
                     </tr>
                 </table>
 
-                <table id='Projects_Table' class='tablesorter' border='1'>
+
+                <div align='center'>
+                <table id='Projects_Table' class='tablesorter' >
                     <thead>
                         <tr>
                             <th style="text-align:center"></th>
-                            <th style="text-align:center"><b>Project Name</b></th>
                             <th style="text-align:center"><b>PID</b></th>
+                            <th style="text-align:center"><b>Project Name</b></th>
                             <th style="text-align:center"><b>Purpose</b></th>
                             <th style="text-align:center"><b>Status</b></th>
                             <th style="text-align:center"><b>Record Count</b></th>
+                            <th style="text-align:center"><b>Users</b></th>
                             <th style="text-align:center"><b>Date Created</b></th>
                             <th style="text-align:center"><b>Last Event Date</b></th>
                             <th style="text-align:center"><b>Days Since Event</b></th>
                             <th style="text-align:center"><b>Delete Flagged</b></th>
                             <th style="text-align:center"><b>Final Delete</b></th>
-                      <!--        <th style="text-align:center"><b>Flagged</b></th>  -->
                         </tr>
                     </thead>
 
                     <tbody>
-                        <?php $this->GetProjectList(); ?>
+                        <?php   $this->GetProjectList(); ?>
+
+
                     </tbody>
+
+
                 </table>
-            </form>
-            </div>
+                </div>
         </body>
 
         <script type="text/javascript">
@@ -165,7 +185,7 @@ class QuickDeleter extends AbstractExternalModule {
     {
         // SQL Query to get project list.
         $sqlGetProjects = db_query(
-            "SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time,
+            "SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
          CAST(CASE a.status
              WHEN 0 THEN 'Development'
              WHEN 1 THEN 'Production'
@@ -186,13 +206,14 @@ class QuickDeleter extends AbstractExternalModule {
         CAST(last_logged_event AS date) AS 'New Last Event', 
         DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
         CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
-        CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged'
+        CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
+                GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
         FROM redcap_projects as a
         JOIN redcap_user_rights AS b
         ON a.project_id=b.project_id
         JOIN redcap_record_counts AS c
         ON a.project_id=c.project_id
-        WHERE username = '".USERID."'
+        GROUP BY a.project_id
         ORDER BY app_title ASC");  // End SQL Query
 
         // Builds HTML rows and displays sql results.
@@ -214,22 +235,47 @@ class QuickDeleter extends AbstractExternalModule {
             }
                 ?>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <input id="<?php echo $row['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row['project_id']; ?>></td>
-                <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['app_title']; ?> </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['project_id']; ?> </td>
+                <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['app_title']; ?> </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['Purpose']; ?> </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['Statuses']; ?> </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['record_count']; ?> </td>
+                <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['Users']; ?> </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['New Creation Time']; ?> </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['New Last Event']; ?> </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['Days Since Last Event']; ?> </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['New Date Deleted']; ?> </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['New Final Delete Date']; ?> </td>
-             <!--    <td  <?php echo $Row_Color ?>> <input id="id_FlaggedRow" name="FlaggedRow" type="text" readonly value="<?php echo $Flagged; ?>"> </td>  -->
+                  </td>
                 <?php ;
             ?>
             </tr>
             <?php
         }  // End while loop
+        ?>
+        <table align="center">
+        <tr>
+                <td>
+                <div id="pager" class="pager" align="center">
+                    <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/first.png") ?>" class="first"/>
+                    <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/prev.png") ?>" class="prev"/>
+                    <!-- the "pagedisplay" can be any element, including an input -->
+                    <span class="pagedisplay" data-pager-output-filtered="{startRow:input} &ndash; {endRow} / {filteredRows} of {totalRows} total rows"></span>
+                    <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/next.png") ?>" class="next"/>
+                    <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/last.png") ?>" class="last"/>
+                    <select class="pagesize">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="500">500</option>
+                        <option value="all">All Rows</option>
+                    </select>
+                </div>
+                </td>
+            </tr>
+        </table>
+<?php
     }  // End GetProjectList()
     
     public function Delete_or_Undelete_Project()  // Executes sql query to set date_deleted to either NOW or NULL.
