@@ -21,8 +21,6 @@ use REDCap;
  */
 
 class QuickDeleter extends AbstractExternalModule {
-    
-
 
     public function DisplayProjectsTable()  // Creates html form, table, and headers.  Contains tablesorter paths and scripts to put PID in the PID_Box when checkbox checked.
     {
@@ -47,16 +45,12 @@ class QuickDeleter extends AbstractExternalModule {
 
         <body>
 
-
-
-
-
-
-
             <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" >
 
                 <div id="pager" class="pager" align="center">
-                    <h3 style="text-align: center;" >Quick Deleter</h3>
+                    <h1 style="text-align: center;" >Quick Deleter</h1>
+
+
 
                     <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/first.png") ?>" class="first"/>
                     <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/prev.png") ?>" class="prev"/>
@@ -75,9 +69,7 @@ class QuickDeleter extends AbstractExternalModule {
                 </div>
 
                 <table id='Submit_Table'>
-
-
-                    <table id='Projects_Table' class='tablesorter' >
+<!--                    <table id='Projects_Table' class='tablesorter' >-->
                     <tr>
                         <div align="center">
                         <td><input type='submit' id='submit' name='submit'></td>
@@ -85,11 +77,9 @@ class QuickDeleter extends AbstractExternalModule {
                         </div>
                     </tr>
                     <tr>
-<!--                        <td><input type="button" value="Refresh" onClick="window.location.reload()"></td>  -->
                         <td><input type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" ></td>
                     </tr>
                 </table>
-
 
                 <div align='center'>
                 <table id='Projects_Table' class='tablesorter' >
@@ -112,64 +102,48 @@ class QuickDeleter extends AbstractExternalModule {
 
                     <tbody>
                         <?php   $this->GetProjectList(); ?>
-
-
                     </tbody>
-
-
                 </table>
                 </div>
         </body>
 
         <script type="text/javascript">
 
-
-                    
-     function Clear_Row_Styling() 
-     {
-    	 $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
-     }
-
-
-
-
-
-
-                // Puts comma separated values of checkboxes in PID_Box.       
-                $("form[name=Form]").on("change", "input[type=checkbox]", function () {
-                    var values = $.map($("input[type=checkbox]:checked"), function (pid) {
-                            return pid.value;
-                    	});	
-                    $("form[name=Form]").find("input[id=PID_Box]").val(values);    
-
-                });
-
+            // Puts comma separated values of checkboxes in PID_Box.
+            $("form[name=Form]").on("change", "input[type=checkbox]", function () {
+                var values = $.map($("input[type=checkbox]:checked"), function (pid) {
+                        return pid.value;
+                    });
+                $("form[name=Form]").find("input[id=PID_Box]").val(values);
+            });
        
             //  Highlight row when box checked
-                $( "input[type=checkbox]" ).on('change', function(){   
+            $( "input[type=checkbox]" ).on('change', function(){
 //                 $("form[name=Form]").on("change", "input[type=checkbox]", function () {
-                    if($(this).is(':checked'))
+                if($(this).is(':checked'))
+                    // console.log($(this).attr('id'));
+                    if($(this).prop('id') === '0')
                         // console.log($(this).attr('id'));
-                        if($(this).prop('id') === '0')
-                            // console.log($(this).attr('id'));
-                            $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked?'bold':'normal'});
-                        else
-                            // console.log($(this).attr('id'));
-                            $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked?'bold':'normal'});
+                        $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked?'bold':'normal'});
                     else
-                            // console.log("Hi");
-                        $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked?'bold':'normal'});
-                });
-       
+                        // console.log($(this).attr('id'));
+                        $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked?'bold':'normal'});
+                else
+                        // console.log("Hi");
+                    $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked?'bold':'normal'});
+            });
 
-
-
-
+            // Removes checked row color on form reset
+            function Clear_Row_Styling()
+            {
+                $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
+            }
 
             // Avoids having to resubmit the form on page refresh
             if ( window.history.replaceState ) {
                 window.history.replaceState( null, null, window.location.href );
             }
+
         </script>
         <?php
     }  // End DisplayProjectsTable()
@@ -200,7 +174,7 @@ class QuickDeleter extends AbstractExternalModule {
         DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
         CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
         CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
-                GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
+        GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
         FROM redcap_projects as a
         JOIN redcap_user_rights AS b
         ON a.project_id=b.project_id
@@ -215,7 +189,6 @@ class QuickDeleter extends AbstractExternalModule {
             ?>
             <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;  
 
-//             if(isset($_POST['Flagged']))
             if($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
             {
                 $Row_Color = "style=\"background-color: rgba(0, 200, 0, 0.1);\"";
@@ -277,31 +250,49 @@ class QuickDeleter extends AbstractExternalModule {
         if (!isset($conn)) {
             db_connect(false);
         }
-        
+
         // Takes PIDs submitted from PID_Box and makes an array.
         $PID_Box = explode(",", $_POST['PID']);
         foreach ($PID_Box as $PID) {
-            $sqlUpdateProject = "UPDATE redcap_projects SET date_deleted = IF(date_deleted IS NULL, '".NOW."', NULL) WHERE project_id = ? ";
-            
-//             $sqlUpdateProjectReturn = db_query_assoc($sqlUpdateProject);
-            
-            $stmt = $conn->prepare($sqlUpdateProject);
-            $stmt->bind_param('i', $PID);
-            $stmt->execute();
-            $success = $stmt->affected_rows;
-            
-            echo $stmt->get_result();  // Keep for error handling
-            
-            $stmt->close();
-            
-            if($success >= 1)
-            {
-                REDCap::logEvent("Project updated via Quick Deleter", NULL, $sqlUpdateProject, NULL, NULL, $PID);
+            $sqlUpdateProject = "
+            UPDATE redcap_projects 
+            SET date_deleted = IF(date_deleted IS NULL, '" . NOW . "', NULL) 
+            WHERE project_id = ? 
+            ";
+
+//            $sqlGetUpdatedProjects = "SELECT project_id, date_deleted
+//            FROM redcap_projects";
+
+            if ($stmt = $conn->prepare($sqlUpdateProject)) {
+                $stmt->bind_param('i', $PID);
+                $stmt->execute();
+//                $success = $stmt->affected_rows;
+                $stmt->bind_result($pid1);
+
+                while ($stmt->fetch()) {
+                    return $pid1;
+                    echo $pid1;
+                }
+                $stmt->close();
+            } else {
+                echo "Prepare failed: (" . $conn->errno . ") " . $conn->error;
             }
-            else
-            {
-                echo "Failure";
-            }
+
+
+
+
+
+
+
+            
+//            if($success >= 1)
+//            {
+//                REDCap::logEvent("Project updated via Quick Deleter", NULL, $sqlUpdateProject, NULL, NULL, $PID);
+//            }
+//            else
+//            {
+//                echo "Failure";
+//            }
         }  // End foreach loop
     }  // End Delete_or_Undelete_Project()
 }  // End QuickDeleter class
