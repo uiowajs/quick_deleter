@@ -14,9 +14,8 @@ use REDCap;
     -  Quick links to ADB, ABD custom query, all the modules in the "Quick Suite" at the top of page
     -  Values in table are links.
     -  Add icons next to certain values
-    -  Column for:  Days until final delete, days since last record, last 5 logging entries
+    -  Column for:  Days until final delete, days since last record
     -  Create/delete history page
-    -  Custom query page
 
  */
 
@@ -26,6 +25,26 @@ class QuickDeleter extends AbstractExternalModule {
     {
         ?>
         <head>
+
+            <style>
+
+                body {
+                    background-color: #3d3d3d;
+                    color: white;
+                    table-layout: fixed;
+                    width: 70%;
+                    /*white-space: nowrap;*/
+                    margin-left:15%;
+                    margin-right:15%;
+                }
+
+                table#Submit_Table {
+                    margin-bottom:2%;
+                }
+
+
+
+            </style>
 
             <script src="http://code.jquery.com/jquery-latest.js"></script>
             <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.min.js") ?>"></script>
@@ -37,27 +56,38 @@ class QuickDeleter extends AbstractExternalModule {
             <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/theme.blue.min.css") ?>" rel="stylesheet">
             <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/jquery.tablesorter.pager.min.css") ?>" rel="stylesheet">
             <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
-            
 
             <script src="<?= $this->getUrl("/QuickDeleter.js") ?>"></script>
+
 
         </head>
 
         <body>
 
-            <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" >
+            <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
 
-                <div id="pager" class="pager" align="center">
+                <div align="center">
+
                     <h1 style="text-align: center;" >Quick Deleter</h1>
 
+                    <table id='Submit_Table'>
+                        <tr>
+                            <div>
+                                <td><input type='submit' id='submit' name='submit'></td>
+                                <td><input id='PID_Box' type='text' name='PID' readonly></td>
+                            </div>
+                        </tr>
+                    </table>
+                </div>
 
-
+                <div id="pager" class="pager" align="center">
                     <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/first.png") ?>" class="first"/>
                     <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/prev.png") ?>" class="prev"/>
                     <!-- the "pagedisplay" can be any element, including an input -->
                     <span class="pagedisplay" data-pager-output-filtered="{startRow:input} &ndash; {endRow} / {filteredRows} of {totalRows} total rows"></span>
                     <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/next.png") ?>" class="next"/>
                     <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/last.png") ?>" class="last"/>
+
                     <select class="pagesize">
                         <option value="10">10</option>
                         <option value="25">25</option>
@@ -66,26 +96,14 @@ class QuickDeleter extends AbstractExternalModule {
                         <option value="500">500</option>
                         <option value="all">All Rows</option>
                     </select>
+
                 </div>
 
-                <table id='Submit_Table'>
-<!--                    <table id='Projects_Table' class='tablesorter' >-->
-                    <tr>
-                        <div align="center">
-                        <td><input type='submit' id='submit' name='submit'></td>
-                        <td><input id='PID_Box' type='text' name='PID' readonly></td>
-                        </div>
-                    </tr>
-                    <tr>
-                        <td><input type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" ></td>
-                    </tr>
-                </table>
-
-                <div align='center'>
+                <div>
                 <table id='Projects_Table' class='tablesorter' >
                     <thead>
                         <tr>
-                            <th style="text-align:center"></th>
+                            <th style="text-align:center"><input type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" ></th>
                             <th style="text-align:center"><b>PID</b></th>
                             <th style="text-align:center"><b>Project Name</b></th>
                             <th style="text-align:center"><b>Purpose</b></th>
@@ -105,6 +123,7 @@ class QuickDeleter extends AbstractExternalModule {
                     </tbody>
                 </table>
                 </div>
+            </form>
         </body>
 
         <script type="text/javascript">
@@ -266,7 +285,7 @@ class QuickDeleter extends AbstractExternalModule {
             if ($stmt = $conn->prepare($sqlUpdateProject)) {
                 $stmt->bind_param('i', $PID);
                 $stmt->execute();
-//                $success = $stmt->affected_rows;
+                $success = $stmt->affected_rows;
                 $stmt->bind_result($pid1);
 
                 while ($stmt->fetch()) {
@@ -285,14 +304,14 @@ class QuickDeleter extends AbstractExternalModule {
 
 
             
-//            if($success >= 1)
-//            {
-//                REDCap::logEvent("Project updated via Quick Deleter", NULL, $sqlUpdateProject, NULL, NULL, $PID);
-//            }
-//            else
-//            {
-//                echo "Failure";
-//            }
+            if($success >= 1)
+            {
+                REDCap::logEvent("Project: ".$PID." updated via Quick Deleter", NULL, $sqlUpdateProject, NULL, NULL, $PID);
+            }
+            else
+            {
+                echo "Failure";
+            }
         }  // End foreach loop
     }  // End Delete_or_Undelete_Project()
 }  // End QuickDeleter class

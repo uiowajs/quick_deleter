@@ -91,8 +91,9 @@ $(function() {
     // class added to arrows when at the extremes (i.e. prev/first arrows are "disabled" when on the first page)
     cssDisabled: 'disabled', // Note there is no period "." in front of this class name
     cssErrorRow: 'tablesorter-errorRow' // ajax error information row
-    	
- 
+
+
+
   }
 
  
@@ -103,7 +104,10 @@ $(function() {
     // ***********************
     .tablesorter({
       theme: 'blue',
-      widthFixed: true,
+        widthFixed: true,
+        usNumberFormat: false,
+        sortReset: false,
+        sortRestart: true,
       widgets: ['uitheme', 'filter', 'resizable', 'stickyHeaders', 'pager'],
     })
     
@@ -206,8 +210,8 @@ $(function() {
 	      // $('table').trigger('pageAndSize')
 	      $('table').trigger('pageAndSize', [1, 25]);
 	    });
-    
- 
+
+
     
     
 
