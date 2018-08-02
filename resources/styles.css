@@ -1,0 +1,34 @@
+body {
+    background-color: #3d3d3d;
+
+    /*table-layout: fixed;/*/
+    width:100%;
+    /*white-space: nowrap;*/
+    /*margin-left:10%;*/
+    /*margin-right:10%;*/
+}
+
+table#Submit_Table {
+    margin-bottom:2%;
+
+}
+
+#pagecontainer
+{
+    max-width: 80%;
+    background-color: #3d3d3d;
+}
+
+
+div#outer
+{
+    width: 50%;
+}
+
+#pager {
+    color:white;
+}
+
+.pagesize {
+     color:black;
+ }

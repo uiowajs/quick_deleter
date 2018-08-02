@@ -25,26 +25,26 @@ class QuickDeleter extends AbstractExternalModule {
     {
         ?>
         <head>
-
-            <style>
-
-                body {
-                    background-color: #3d3d3d;
-                    color: white;
-                    table-layout: fixed;
-                    width: 70%;
-                    /*white-space: nowrap;*/
-                    margin-left:15%;
-                    margin-right:15%;
-                }
-
-                table#Submit_Table {
-                    margin-bottom:2%;
-                }
-
-
-
-            </style>
+<!---->
+<!--            <style>-->
+<!---->
+<!--                body {-->
+<!--                    background-color: #3d3d3d;-->
+<!--                    color: white;-->
+<!--                    /*table-layout: fixed;/*/-->
+<!--                    width: 80%;-->
+<!--                    /*white-space: nowrap;*/-->
+<!--                    margin-left:10%;-->
+<!--                    margin-right:10%;-->
+<!--                }-->
+<!---->
+<!--                table#Submit_Table {-->
+<!--                    margin-bottom:2%;-->
+<!--                }-->
+<!---->
+<!---->
+<!---->
+<!--            </style>-->
 
             <script src="http://code.jquery.com/jquery-latest.js"></script>
             <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.min.js") ?>"></script>
@@ -68,12 +68,12 @@ class QuickDeleter extends AbstractExternalModule {
 
                 <div align="center">
 
-                    <h1 style="text-align: center;" >Quick Deleter</h1>
+                    <h1 style="text-align: center; padding-top:50px; color:white;"  >Quick Deleter</h1>
 
                     <table id='Submit_Table'>
                         <tr>
                             <div>
-                                <td><input type='submit' id='submit' name='submit'></td>
+                                <td ><input type='submit' id='submit' name='submit'></td>
                                 <td><input id='PID_Box' type='text' name='PID' readonly></td>
                             </div>
                         </tr>
