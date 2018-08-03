@@ -2,7 +2,7 @@ body {
     background-color: #3d3d3d;
 
     /*table-layout: fixed;/*/
-    width:100%;
+    /*width:100%;*/
     /*white-space: nowrap;*/
     /*margin-left:10%;*/
     /*margin-right:10%;*/
@@ -17,6 +17,7 @@ table#Submit_Table {
 {
     max-width: 80%;
     background-color: #3d3d3d;
+
 }
 
 

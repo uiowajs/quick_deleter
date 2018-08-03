@@ -25,26 +25,7 @@ class QuickDeleter extends AbstractExternalModule {
     {
         ?>
         <head>
-<!---->
-<!--            <style>-->
-<!---->
-<!--                body {-->
-<!--                    background-color: #3d3d3d;-->
-<!--                    color: white;-->
-<!--                    /*table-layout: fixed;/*/-->
-<!--                    width: 80%;-->
-<!--                    /*white-space: nowrap;*/-->
-<!--                    margin-left:10%;-->
-<!--                    margin-right:10%;-->
-<!--                }-->
-<!---->
-<!--                table#Submit_Table {-->
-<!--                    margin-bottom:2%;-->
-<!--                }-->
-<!---->
-<!---->
-<!---->
-<!--            </style>-->
+
 
             <script src="http://code.jquery.com/jquery-latest.js"></script>
             <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.min.js") ?>"></script>
@@ -200,7 +181,7 @@ class QuickDeleter extends AbstractExternalModule {
         JOIN redcap_record_counts AS c
         ON a.project_id=c.project_id
         GROUP BY a.project_id
-        ORDER BY app_title ASC");  // End SQL Query
+        ORDER BY a.project_id ASC");  // End SQL Query
 
         // Builds HTML rows and displays sql results.
         while ($row = db_fetch_assoc($sqlGetProjects))
@@ -271,31 +252,129 @@ class QuickDeleter extends AbstractExternalModule {
         }
 
         // Takes PIDs submitted from PID_Box and makes an array.
-        $PID_Box = explode(",", $_POST['PID']);
-        foreach ($PID_Box as $PID) {
+
+$PID_Box = $_POST['PID'];
+//        $PID_Array = explode(",", $_POST['PID']);
+//        $PID_Box = explode(",", $_POST['PID']);
+//        echo json_encode($PID_Box);
+//        foreach ($PID_Box as $PID) {
+//            echo json_encode($PID);
+//            $sqlUpdateProject = "
+//            UPDATE redcap_projects
+//            SET date_deleted = IF(date_deleted IS NULL, '".NOW."', NULL)
+//            WHERE project_id = ".$PID."
+//            SELECT project_id, date_deleted
+//            FROM redcap_projects";
+//
+//
+//        db_query($sqlUpdateProject);
+
+
+//            echo $sqlUpdateProject;
+
+//            echo $PID;
+
+//            SELECT project_id, date_deleted
+//            FROM redcap_projects
+
+
+            // WORKS IN QUICK DELETER
+
+//        foreach($PID_Array as $PID) {
+        $sqlPreValues = "
+        SELECT project_id, date_deleted
+        FROM redcap_projects
+
+        ";
+//        }
+
+        db_query($sqlPreValues);
+
+        $Pre_Values = db_query($sqlPreValues);
+        $Pre_Values2 = json_encode(db_fetch_assoc($Pre_Values));
+
+        echo $Pre_Values2;
+
             $sqlUpdateProject = "
-            UPDATE redcap_projects 
-            SET date_deleted = IF(date_deleted IS NULL, '" . NOW . "', NULL) 
-            WHERE project_id = ? 
+
+            UPDATE redcap_projects
+            SET date_deleted = IF(date_deleted IS NULL, '".NOW."', NULL)
+                WHERE project_id IN (1, 2)
             ";
 
-//            $sqlGetUpdatedProjects = "SELECT project_id, date_deleted
-//            FROM redcap_projects";
 
-            if ($stmt = $conn->prepare($sqlUpdateProject)) {
-                $stmt->bind_param('i', $PID);
-                $stmt->execute();
-                $success = $stmt->affected_rows;
-                $stmt->bind_result($pid1);
+//            $conn->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+            db_query($sqlUpdateProject);
+//            $conn->commit();
 
-                while ($stmt->fetch()) {
-                    return $pid1;
-                    echo $pid1;
-                }
-                $stmt->close();
-            } else {
-                echo "Prepare failed: (" . $conn->errno . ") " . $conn->error;
-            }
+//        foreach($PID_Array as $PID) {
+            $sqlPostValues = "
+            SELECT project_id, date_deleted
+            FROM redcap_projects
+
+            ";
+//        }
+
+//        $conn->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
+//        $conn->query($sqlPostValues);
+//        $conn->commit();
+
+//            while($Post_Values = db_fetch_assoc($sqlPostValues)){
+                $Post_Values = db_query($sqlPostValues);
+                $Post_Values2 = json_encode(db_fetch_assoc($Post_Values));
+//                while(db_fetch_assoc($Post_Values)) {
+//                    echo json_encode(db_fetch_assoc($Post_Values));
+//                }
+
+        echo $Post_Values2;
+
+//            print_r(array_values($Post_Values));
+//            echo $Post_PID;
+//        echo $Post_Values['date_deleted'];
+//            echo $Post_Date_Deleted;
+//    } // end while loop
+
+
+//            if($Post_Date_Deleted == NULL)
+//            {
+//                REDCap::logEvent("Project: ".$PID_Box." updated via Quick Deleter", NULL, $sqlUpdateProject, NULL, NULL, $PID_Box);
+//            }
+//            else
+//            {
+//                echo "Failure";
+//            }
+
+
+            // THIS WORK IN MYPHPADMIN
+//            UPDATE redcap_projects
+//            SET date_deleted = IF(date_deleted IS NULL, now(), NULL);
+//            SELECT project_id, date_deleted
+//            FROM redcap_projects
+//            WHERE project_id = 13
+
+
+
+
+
+// WOKING
+//            $stmt = $conn->prepare($sqlUpdateProject);
+//            if ($stmt = $conn->prepare($sqlUpdateProject)) {
+//                $stmt->bind_param('s', $PID_Box);
+//                $stmt->execute();
+//                $success = $stmt->affected_rows;
+//                $stmt->bind_result($pid1);
+//                $stmt->get_result();
+
+
+//                echo $success;
+
+//                while ($stmt->fetch()) {
+//                    echo $pid1;
+//                }
+//                $stmt->close();
+//            } else {
+//                echo "Prepare failed: (" . $conn->errno . ") " . $conn->error;
+//            }
 
 
 
@@ -304,14 +383,20 @@ class QuickDeleter extends AbstractExternalModule {
 
 
             
-            if($success >= 1)
-            {
-                REDCap::logEvent("Project: ".$PID." updated via Quick Deleter", NULL, $sqlUpdateProject, NULL, NULL, $PID);
-            }
-            else
-            {
-                echo "Failure";
-            }
-        }  // End foreach loop
+//            if($success >= 1)
+//            {
+//                REDCap::logEvent("Project: ".$PID." updated via Quick Deleter", NULL, $sqlUpdateProject, NULL, NULL, $PID);
+//            }
+//            else
+//            {
+//                echo "Failure";
+//            }
+
+
+
+
+
+
+//        }  // End foreach loop
     }  // End Delete_or_Undelete_Project()
 }  // End QuickDeleter class
