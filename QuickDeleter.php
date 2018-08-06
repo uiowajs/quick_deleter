@@ -13,19 +13,26 @@ use REDCap;
 
     -  Quick links to ADB, ABD custom query, all the modules in the "Quick Suite" at the top of page
     -  Values in table are links.
-    -  Add icons next to certain values
     -  Column for:  Days until final delete, days since last record
-    -  Create/delete history page
+    -  Undelete/delete history page
 
  */
 
 class QuickDeleter extends AbstractExternalModule {
 
-    public function DisplayProjectsTable()  // Creates html form, table, and headers.  Contains tablesorter paths and scripts to put PID in the PID_Box when checkbox checked.
+//    public function Display_Home_Page () {
+//        $this->Display_QD_Header();
+//
+//    }
+
+    public function Display_Home_Page() {
+        echo "Delete and/or undelete projects in bulk";
+    }
+
+    public function Display_Projects_Table()  // Creates html form, table, and headers.  Contains tablesorter paths and scripts to put PID in the PID_Box when checkbox checked.
     {
         ?>
         <head>
-
 
             <script src="http://code.jquery.com/jquery-latest.js"></script>
             <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.min.js") ?>"></script>
@@ -40,23 +47,43 @@ class QuickDeleter extends AbstractExternalModule {
 
             <script src="<?= $this->getUrl("/QuickDeleter.js") ?>"></script>
 
-
         </head>
 
         <body>
+            <div align="center">
+                <h1 style="text-align: center; padding-top:50px; color:white;"  >Quick Deleter</h1>
+
+                <table id="Pages_Table">
+                    <tr>
+                        <td>
+                            My Projects
+                        </td>
+                        <td>
+                            My Active Projects
+                        </td>
+                        <td>
+                            My Deleted Projects
+                        </td>
+                        <td>
+                            All Projects
+                        </td>
+                        <td>
+                            All Active Projects
+                        </td>
+                        <td>
+                            All Deleted Projects
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
             <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
 
                 <div align="center">
-
-                    <h1 style="text-align: center; padding-top:50px; color:white;"  >Quick Deleter</h1>
-
                     <table id='Submit_Table'>
                         <tr>
-                            <div>
-                                <td ><input type='submit' id='submit' name='submit'></td>
-                                <td><input id='PID_Box' type='text' name='PID' readonly></td>
-                            </div>
+                            <td ><input type='submit' id='submit' name='submit'></td>
+                            <td><input id='PID_Box' type='text' name='PID' hidden readonly></td>
                         </tr>
                     </table>
                 </div>
@@ -77,32 +104,32 @@ class QuickDeleter extends AbstractExternalModule {
                         <option value="500">500</option>
                         <option value="all">All Rows</option>
                     </select>
-
                 </div>
 
-                <div>
-                <table id='Projects_Table' class='tablesorter' >
-                    <thead>
-                        <tr>
-                            <th style="text-align:center"><input type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" ></th>
-                            <th style="text-align:center"><b>PID</b></th>
-                            <th style="text-align:center"><b>Project Name</b></th>
-                            <th style="text-align:center"><b>Purpose</b></th>
-                            <th style="text-align:center"><b>Status</b></th>
-                            <th style="text-align:center"><b>Record Count</b></th>
-                            <th style="text-align:center"><b>Users</b></th>
-                            <th style="text-align:center"><b>Date Created</b></th>
-                            <th style="text-align:center"><b>Last Event Date</b></th>
-                            <th style="text-align:center"><b>Days Since Event</b></th>
-                            <th style="text-align:center"><b>Delete Flagged</b></th>
-                            <th style="text-align:center"><b>Final Delete</b></th>
-                        </tr>
-                    </thead>
+                <div id="id_projects_table" align="center">
+                    <table id='Projects_Table' class='tablesorter' >
+                        <thead>
+                            <tr>
+                                <th style="text-align:center"><input type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" ></th>
+                                <th style="text-align:center"><b>PID</b></th>
+                                <th style="text-align:center"><b>Project Name</b></th>
+                                <th style="text-align:center"><b>Purpose</b></th>
+                                <th style="text-align:center"><b>Status</b></th>
+                                <th style="text-align:center"><b>Record Count</b></th>
+                                <th style="text-align:center"><b>Users</b></th>
+                                <th style="text-align:center"><b>Date Created</b></th>
+                                <th style="text-align:center"><b>Last Event Date</b></th>
+                                <th style="text-align:center"><b>Days Since Event</b></th>
+                                <th style="text-align:center"><b>Delete Flagged</b></th>
+                                <th style="text-align:center"><b>Final Delete</b></th>
+                                <th style="text-align:center"><b>Days Until Delete</b></th>
+                            </tr>
+                        </thead>
 
-                    <tbody>
-                        <?php   $this->GetProjectList(); ?>
-                    </tbody>
-                </table>
+                        <tbody>
+                            <?php   $this->GetProjectList(); ?>
+                        </tbody>
+                    </table>
                 </div>
             </form>
         </body>
@@ -116,7 +143,7 @@ class QuickDeleter extends AbstractExternalModule {
                     });
                 $("form[name=Form]").find("input[id=PID_Box]").val(values);
             });
-       
+
             //  Highlight row when box checked
             $( "input[type=checkbox]" ).on('change', function(){
 //                 $("form[name=Form]").on("change", "input[type=checkbox]", function () {
@@ -148,12 +175,14 @@ class QuickDeleter extends AbstractExternalModule {
         <?php
     }  // End DisplayProjectsTable()
 
-    public function GetProjectList()
+    public function Get_Page_Query()
     {
-        // SQL Query to get project list.
-        $sqlGetProjects = db_query(
-            "SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
-         CAST(CASE a.status
+    //    SQL Query to get project list.
+
+        $sqlGetAllProjects = db_query(
+            "
+        SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
+        CAST(CASE a.status
              WHEN 0 THEN 'Development'
              WHEN 1 THEN 'Production'
              WHEN 2 THEN 'Inactive'
@@ -168,9 +197,9 @@ class QuickDeleter extends AbstractExternalModule {
             WHEN 1 THEN 'Other'
             ELSE a.purpose
             END AS CHAR(50)) AS 'Purpose',
-        CAST(creation_time AS date) AS 'New Creation Time', 
-        CAST(a.date_deleted AS date) AS 'New Date Deleted', 
-        CAST(last_logged_event AS date) AS 'New Last Event', 
+        CAST(creation_time AS date) AS 'New Creation Time',
+        CAST(a.date_deleted AS date) AS 'New Date Deleted',
+        CAST(last_logged_event AS date) AS 'New Last Event',
         DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
         CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
         CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
@@ -181,13 +210,27 @@ class QuickDeleter extends AbstractExternalModule {
         JOIN redcap_record_counts AS c
         ON a.project_id=c.project_id
         GROUP BY a.project_id
-        ORDER BY a.project_id ASC");  // End SQL Query
+        ORDER BY a.project_id ASC
+        ");  // End SQL Query
+        return $sqlGetAllProjects;
+}
 
+
+    public function GetProjectList()
+    {
         // Builds HTML rows and displays sql results.
-        while ($row = db_fetch_assoc($sqlGetProjects))
+//        $now = new DateTime();
+//        $now_date = strtotime($now);
+        while ($row = db_fetch_assoc($sqlGetAllProjects))
         {
+//            $date = $row['New Final Delete Date'];
+//            $now = date('Y-m-d');
+//            $now_date = strtotime($now, "now");
+//            $Diff = date_diff($date, $now_date);
+
+
             ?>
-            <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;  
+            <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
 
             if($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
             {
@@ -202,7 +245,7 @@ class QuickDeleter extends AbstractExternalModule {
                 ?>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <input id="<?php echo $row['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row['project_id']; ?>></td>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['project_id']; ?> </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['app_title']; ?> </td>
+                <td align='center' class="color" <?php echo $Row_Color ?>> <a href="google.com"> <?php echo $row['app_title']; ?> </a></td>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['Purpose']; ?> </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['Statuses']; ?> </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['record_count']; ?> </td>
@@ -212,7 +255,8 @@ class QuickDeleter extends AbstractExternalModule {
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['Days Since Last Event']; ?> </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['New Date Deleted']; ?> </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>> <?php echo $row['New Final Delete Date']; ?> </td>
-                  </td>
+                <td align='center' class="color" <?php echo $Row_Color ?>> <?php  ?> </td>
+
                 <?php ;
             ?>
             </tr>
@@ -241,162 +285,89 @@ class QuickDeleter extends AbstractExternalModule {
                 </td>
             </tr>
         </table>
-<?php
+        <?php
     }  // End GetProjectList()
-    
-    public function Delete_or_Undelete_Project()  // Executes sql query to set date_deleted to either NOW or NULL.
-    {
-        global $conn;
-        if (!isset($conn)) {
-            db_connect(false);
-        }
 
-        // Takes PIDs submitted from PID_Box and makes an array.
+//    public function Days_Until_Delete() {
+//        $now = DateTime(Y-m-d);
+//        echo $now;
+//    }
 
-$PID_Box = $_POST['PID'];
-//        $PID_Array = explode(",", $_POST['PID']);
-//        $PID_Box = explode(",", $_POST['PID']);
-//        echo json_encode($PID_Box);
-//        foreach ($PID_Box as $PID) {
-//            echo json_encode($PID);
-//            $sqlUpdateProject = "
-//            UPDATE redcap_projects
-//            SET date_deleted = IF(date_deleted IS NULL, '".NOW."', NULL)
-//            WHERE project_id = ".$PID."
-//            SELECT project_id, date_deleted
-//            FROM redcap_projects";
-//
-//
-//        db_query($sqlUpdateProject);
+    // This function is called on form submit.  Gets pre values, executes update query, gets post values, adds project update to REDCap Activity Log.
+    public function Submit() {
+        $Pre_Values = $this->Get_Pre_Values();
+        $this->Update_Project();
+        $Post_Values = $this->Get_Post_Values();
 
+        // Adds logging to REDCap Activity Log in Control Center
+        foreach($Pre_Values AS $Pre_Value) {
+            foreach($Post_Values AS $Post_Value) {
+                if($Post_Value['project_id'] == $Pre_Value['project_id']) {
+                    if($Post_Value != $Pre_Value) {
+                        if ($Post_Value['date_deleted'] == NULL) {
+                            REDCap::logEvent("Project ".$Post_Value['project_id']." undeleted via Quick Deleter by ".USERID."", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
+                        }  // End of if (date_delete == NULL)
+                        else {
+                            REDCap::logEvent("Project ".$Post_Value['project_id']." deleted via Quick Deleter by ".USERID."", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
+                        }  // End of else (date_deleted != NULL)
+                    }  // End of if ($Post_Value == $Pre_Value)
+                    else {
+                        REDCap::logEvent("Quick Deleter encountered an error for projects ".$Post_Value['project_id'], NULL, NULL, NULL, NULL, $Post_Value['project_id']);
+                    } // End of else (project_id != project_id)
+                }  // End of if (project_id == project_id)
+            }  // End of foreach Post Values
+        }  // End of foreach Pre Values
+        echo "<meta http-equiv='refresh' content='0'>";  // Refreshes page after submit
+    }  // End of Submit()
 
-//            echo $sqlUpdateProject;
+    // Gets PIDs for rows that were checked
+    public function Get_PID() {
+        $PID_Box = $_POST['PID'];
+        return $PID_Box;
+    }  // End of Get_PID()
 
-//            echo $PID;
-
-//            SELECT project_id, date_deleted
-//            FROM redcap_projects
-
-
-            // WORKS IN QUICK DELETER
-
-//        foreach($PID_Array as $PID) {
+    // Gets values of date_deleted before update query
+    public function Get_Pre_Values() {
         $sqlPreValues = "
         SELECT project_id, date_deleted
         FROM redcap_projects
-
+        WHERE project_id IN (".$this->Get_PID().")
         ";
-//        }
 
-        db_query($sqlPreValues);
+        $sqlPre = db_query($sqlPreValues);
 
-        $Pre_Values = db_query($sqlPreValues);
-        $Pre_Values2 = json_encode(db_fetch_assoc($Pre_Values));
+        $Pre_Results = array();
+        while ($Pre_Values = db_fetch_assoc($sqlPre)) {
+            $Pre_Results[] = $Pre_Values;
+        }
+        return $Pre_Results;
+    }  // End Get_Pre_Values()
 
-        echo $Pre_Values2;
+    // Query to delete or undelete projects
+    public function Update_Project() {
+        $sqlUpdateProject = "
+        UPDATE redcap_projects
+        SET date_deleted = IF(date_deleted IS NULL, '".NOW."', NULL)
+        WHERE project_id IN (".$this->Get_PID().")
+        ";
 
-            $sqlUpdateProject = "
+        $Execute_Query = db_query($sqlUpdateProject);
+        return $Execute_Query;
+    }  // End Update_Project()
 
-            UPDATE redcap_projects
-            SET date_deleted = IF(date_deleted IS NULL, '".NOW."', NULL)
-                WHERE project_id IN (1, 2)
-            ";
+    // Gets values of date_deleted after update query
+    public function Get_Post_Values() {
+        $sqlPostValues = "
+        SELECT project_id, date_deleted
+        FROM redcap_projects
+        WHERE project_id IN (".$this->Get_PID().")
+        ";
 
-
-//            $conn->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
-            db_query($sqlUpdateProject);
-//            $conn->commit();
-
-//        foreach($PID_Array as $PID) {
-            $sqlPostValues = "
-            SELECT project_id, date_deleted
-            FROM redcap_projects
-
-            ";
-//        }
-
-//        $conn->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
-//        $conn->query($sqlPostValues);
-//        $conn->commit();
-
-//            while($Post_Values = db_fetch_assoc($sqlPostValues)){
-                $Post_Values = db_query($sqlPostValues);
-                $Post_Values2 = json_encode(db_fetch_assoc($Post_Values));
-//                while(db_fetch_assoc($Post_Values)) {
-//                    echo json_encode(db_fetch_assoc($Post_Values));
-//                }
-
-        echo $Post_Values2;
-
-//            print_r(array_values($Post_Values));
-//            echo $Post_PID;
-//        echo $Post_Values['date_deleted'];
-//            echo $Post_Date_Deleted;
-//    } // end while loop
-
-
-//            if($Post_Date_Deleted == NULL)
-//            {
-//                REDCap::logEvent("Project: ".$PID_Box." updated via Quick Deleter", NULL, $sqlUpdateProject, NULL, NULL, $PID_Box);
-//            }
-//            else
-//            {
-//                echo "Failure";
-//            }
-
-
-            // THIS WORK IN MYPHPADMIN
-//            UPDATE redcap_projects
-//            SET date_deleted = IF(date_deleted IS NULL, now(), NULL);
-//            SELECT project_id, date_deleted
-//            FROM redcap_projects
-//            WHERE project_id = 13
-
-
-
-
-
-// WOKING
-//            $stmt = $conn->prepare($sqlUpdateProject);
-//            if ($stmt = $conn->prepare($sqlUpdateProject)) {
-//                $stmt->bind_param('s', $PID_Box);
-//                $stmt->execute();
-//                $success = $stmt->affected_rows;
-//                $stmt->bind_result($pid1);
-//                $stmt->get_result();
-
-
-//                echo $success;
-
-//                while ($stmt->fetch()) {
-//                    echo $pid1;
-//                }
-//                $stmt->close();
-//            } else {
-//                echo "Prepare failed: (" . $conn->errno . ") " . $conn->error;
-//            }
-
-
-
-
-
-
-
-            
-//            if($success >= 1)
-//            {
-//                REDCap::logEvent("Project: ".$PID." updated via Quick Deleter", NULL, $sqlUpdateProject, NULL, NULL, $PID);
-//            }
-//            else
-//            {
-//                echo "Failure";
-//            }
-
-
-
-
-
-
-//        }  // End foreach loop
-    }  // End Delete_or_Undelete_Project()
+        $sqlPost = db_query($sqlPostValues);
+        $Post_Results = array();
+        while ($Post_Values = db_fetch_assoc($sqlPost)) {
+            $Post_Results[] = $Post_Values;
+        }
+        return $Post_Results;
+    }  // End Get_Post_Values()
 }  // End QuickDeleter class

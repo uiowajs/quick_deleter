@@ -10,7 +10,18 @@ body {
 
 table#Submit_Table {
     margin-bottom:2%;
+    padding: 10px;
+    color:black;
+    /*max-width:80%;*/
+   }
 
+table#Pages_Table, tr, td {
+    padding: 10px;
+    color:white;
+}
+
+#submit {
+    color:black;
 }
 
 #pagecontainer
@@ -28,8 +39,48 @@ div#outer
 
 #pager {
     color:white;
+    font-size: 16px;
 }
 
 .pagesize {
      color:black;
  }
+
+#Projects_Table
+{
+    font-size: 14px;
+    color:black;
+}
+
+
+h1 {
+    /*display: block;*/
+    font-size: 3em;
+    /*margin-top: 0.67em;*/
+    /*margin-bottom: 0.67em;*/
+    /*margin-left: 0;*/
+    /*margin-right: 0;*/
+    font-weight: bold;
+}
+
+.tablesorter-blue thead td {
+    /*background-color:#565656;*/
+
+}
+
+
+.tablesorter-filter-row {
+    /*background-color:#565656;*/
+
+}
+.tablesorter-filter-row td {
+    /*background-color:#565656;*/
+
+}
+
+.tablesorter-blue th {
+    color:black;
+    font-weight: bold;
+    font-size: 14px;
+}
+
