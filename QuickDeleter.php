@@ -27,7 +27,24 @@ class QuickDeleter extends AbstractExternalModule {
 
             <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
 
-            <h1 style="text-align: center; padding-top:50px; color:white;"  >Quick Deleter</h1>
+            <table id="Links_Table">
+                <tr>
+                    <td>
+                        ADB
+                    </td>
+                    <td>
+                        Quick Permissions
+                    </td>
+                    <td>
+                        Quick Projects
+                    </td>
+                    <td>
+                        MySQL Simple Admin
+                    </td>
+                </tr>
+            </table>
+
+            <h1 style="text-align: center; padding-top:10px; color:white;"  >Quick Deleter</h1>
 
             <table id="Pages_Table">
                 <tr>
@@ -104,8 +121,12 @@ class QuickDeleter extends AbstractExternalModule {
                 <div align="center">
                     <table id='Submit_Table'>
                         <tr>
-                            <td ><input type='submit' id='submit' name='submit'></td>
-                            <td><input id='PID_Box' type='text' name='PID' hidden readonly></td>
+                            <td>
+                                <input type='submit' id='submit' name='submit'>
+                            </td>
+                            <td>
+                                <input id='PID_Box' type='text' name='PID' hidden readonly>
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -226,16 +247,8 @@ class QuickDeleter extends AbstractExternalModule {
 //    public function GetProjectList()
 //    {
         // Builds HTML rows and displays sql results.
-//        $now = new DateTime();
-//        $now_date = strtotime($now);
         while ($row = db_fetch_assoc($sqlGetAllProjects))
         {
-//            $date = $row['New Final Delete Date'];
-//            $now = date('Y-m-d');
-//            $now_date = strtotime($now, "now");
-//            $Diff = date_diff($date, $now_date);
-
-
             ?>
             <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
 
@@ -305,16 +318,11 @@ class QuickDeleter extends AbstractExternalModule {
         <?php
     }  // End GetProjectList()
 
-//    public function Days_Until_Delete() {
-//        $now = DateTime(Y-m-d);
-//        echo $now;
-//    }
-
     // This function is called on form submit.  Gets pre values, executes update query, gets post values, adds project update to REDCap Activity Log.
     public function Submit() {
-        $Pre_Values = $this->Get_Pre_Values();
+        $Pre_Values = $this->Get_Values();
         $this->Update_Project();
-        $Post_Values = $this->Get_Pre_Values();
+        $Post_Values = $this->Get_Values();
 
         // Adds logging to REDCap Activity Log in Control Center
         foreach($Pre_Values AS $Pre_Value) {
@@ -344,21 +352,21 @@ class QuickDeleter extends AbstractExternalModule {
     }  // End of Get_PID()
 
     // Gets values of date_deleted before update query
-    public function Get_Pre_Values() {
-        $sqlPreValues = "
+    public function Get_Values() {
+        $sql_Get_Values = "
         SELECT project_id, date_deleted
         FROM redcap_projects
         WHERE project_id IN (".$this->Get_PID().")
         ";
 
-        $sqlPre = db_query($sqlPreValues);
+        $sql = db_query($sql_Get_Values);
 
-        $Pre_Results = array();
-        while ($Pre_Values = db_fetch_assoc($sqlPre)) {
-            $Pre_Results[] = $Pre_Values;
+        $Results = array();
+        while ($Values = db_fetch_assoc($sql)) {
+            $Results[] = $Values;
         }
-        return $Pre_Results;
-    }  // End Get_Pre_Values()
+        return $Results;
+    }  // End Get_Values()
 
     // Query to delete or undelete projects
     public function Update_Project() {
@@ -371,20 +379,4 @@ class QuickDeleter extends AbstractExternalModule {
         $Execute_Query = db_query($sqlUpdateProject);
         return $Execute_Query;
     }  // End Update_Project()
-
-    // Gets values of date_deleted after update query
-    public function Get_Post_Values() {
-        $sqlPostValues = "
-        SELECT project_id, date_deleted
-        FROM redcap_projects
-        WHERE project_id IN (".$this->Get_PID().")
-        ";
-
-        $sqlPost = db_query($sqlPostValues);
-        $Post_Results = array();
-        while ($Post_Values = db_fetch_assoc($sqlPost)) {
-            $Post_Results[] = $Post_Values;
-        }
-        return $Post_Results;
-    }  // End Get_Post_Values()
 }  // End QuickDeleter class

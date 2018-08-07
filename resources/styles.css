@@ -20,6 +20,12 @@ table#Pages_Table, tr, td {
     color:white;
 }
 
+table#Links_Table, tr, td {
+    padding: 10px;
+    margin-top:4%;
+    color:white;
+}
+
 #submit {
     color:black;
 }
