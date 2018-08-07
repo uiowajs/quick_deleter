@@ -55,12 +55,16 @@ div#outer
 
 h1 {
     /*display: block;*/
-    font-size: 3em;
+    font-size: 36px;
     /*margin-top: 0.67em;*/
     /*margin-bottom: 0.67em;*/
     /*margin-left: 0;*/
     /*margin-right: 0;*/
     font-weight: bold;
+}
+
+h2 {
+    font-size: 18px;
 }
 
 .tablesorter-blue thead td {
