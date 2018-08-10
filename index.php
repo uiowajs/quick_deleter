@@ -10,8 +10,6 @@ $QuickDeleter = new \UIOWA\QuickDeleter\QuickDeleter();
 if(isset($_POST['submit']))
     {
     $QuickDeleter->Submit();
-
-
 }
 else
     {

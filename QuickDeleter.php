@@ -11,7 +11,7 @@ use REDCap;
 
 /*  TO DO
 
-   -  Parameterize update query
+   -  Index is home, click my project or all project to load projects table
 
  */
 
@@ -44,15 +44,17 @@ class QuickDeleter extends AbstractExternalModule {
             <h1 style="text-align: center; padding-top:30px; padding-bottom:5px; color:white;" class="Main_Header">
                 <a href="<?php echo "http://www." . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index"; ?>" > Quick Deleter </a></h1>
 
-            <table id="Pages_Table">
-                <tr>
-                    <td>
-                        My Projects
-                    </td>
-                    <td>
-                        All Projects
-                    </td>
-                </tr>
+            <table id="Pages_Table" method="POST">
+                <form>
+                    <tr>
+                        <td>
+                            My Projects
+                        </td>
+                        <td>
+                            All Projects
+                        </td>
+                    </tr>
+                </form>
             </table>
         </div>
 
@@ -248,7 +250,7 @@ class QuickDeleter extends AbstractExternalModule {
         while ($row = db_fetch_assoc($sqlGetAllProjects))
         {
             ?>
-            <div id="Table_Rows">
+
             <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
 
             if($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
@@ -303,7 +305,7 @@ class QuickDeleter extends AbstractExternalModule {
                 <?php ;
             ?>
             </tr>
-            </div>
+
             <?php
         }  // End while loop
         ?>
@@ -336,7 +338,7 @@ class QuickDeleter extends AbstractExternalModule {
                         }  // End of else (date_deleted != NULL)
                     }  // End of if ($Post_Value == $Pre_Value)
                     else {
-                        REDCap::logEvent("Quick Deleter encountered an error for projects ".$Post_Value['project_id'], NULL, NULL, NULL, NULL, $Post_Value['project_id']);
+                        REDCap::logEvent("Quick Deleter encountered an error for project ".$Post_Value['project_id'], NULL, NULL, NULL, NULL, $Post_Value['project_id']);
                     } // End of else (project_id != project_id)
                 }  // End of if (project_id == project_id)
             }  // End of foreach Post Values
@@ -376,25 +378,17 @@ class QuickDeleter extends AbstractExternalModule {
             db_connect(false);
         }
 
-        $PIDs = $this->Get_PID();
-        $placeholders = implode(array_fill(0, count($PIDs), '?'));
+        $placeholders = implode(array_fill(0, count($this->Get_PID()), '?'));
 
         $sqlUpdateProject = "
         UPDATE redcap_projects
         SET date_deleted = IF(date_deleted IS NULL, '".NOW."', NULL)
-        WHERE project_id IN ($PIDs)
+        WHERE project_id IN (".$this->Get_PID().")
         ";
-
-//        $Execute_Query = db_query($sqlUpdateProject);
-
 
         $stmt = $conn->prepare($sqlUpdateProject);
         $stmt->bind_param('i', $placeholders);
-
         $stmt->execute();
         $stmt->close();
-
-
-//        return $Execute_Query;
     }  // End Update_Project()
 }  // End QuickDeleter class
