@@ -377,23 +377,24 @@ class QuickDeleter extends AbstractExternalModule {
         }
 
         $PIDs = $this->Get_PID();
+        $placeholders = implode(array_fill(0, count($PIDs), '?'));
 
         $sqlUpdateProject = "
         UPDATE redcap_projects
         SET date_deleted = IF(date_deleted IS NULL, '".NOW."', NULL)
-        WHERE project_id IN (?)
+        WHERE project_id IN ($PIDs)
         ";
 
-        $Execute_Query = db_query($sqlUpdateProject);
+//        $Execute_Query = db_query($sqlUpdateProject);
 
 
         $stmt = $conn->prepare($sqlUpdateProject);
-        $stmt->bind_param('i', $PIDs);
+        $stmt->bind_param('i', $placeholders);
 
         $stmt->execute();
         $stmt->close();
 
 
-        return $Execute_Query;
+//        return $Execute_Query;
     }  // End Update_Project()
 }  // End QuickDeleter class
