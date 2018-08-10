@@ -15,12 +15,13 @@ table#Submit_Table {
     /*max-width:80%;*/
    }
 
-table#Pages_Table, tr, td {
+table#Pages_Table, #Pages_Table tr, #Pages_Table td {
     padding: 10px;
     color:white;
+
 }
 
-table#Links_Table, tr, td {
+table#Links_Table, #Links_Table tr, #Links_Table td {
     padding: 10px;
     margin-top:4%;
     color:white;
@@ -28,6 +29,7 @@ table#Links_Table, tr, td {
 
 #submit {
     color:black;
+    font-weight: bold;
 }
 
 #pagecontainer
@@ -37,6 +39,15 @@ table#Links_Table, tr, td {
 
 }
 
+.tablesorter a:link, .tablesorter a:visited, .tablesorter a:hover, .tablesorter a:active {
+    text-decoration: none;
+    color:Black;
+    font-family: "Open Sans", Helvetica;
+    font-size: 14px;
+
+}
+
+
 
 div#outer
 {
@@ -45,7 +56,7 @@ div#outer
 
 #pager {
     color:white;
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .pagesize {
@@ -59,7 +70,7 @@ div#outer
 }
 
 
-h1 {
+.Main_Header a:link, .Main_Header a:visited, .Main_Header a:hover, .Main_Header a:active  {
     /*display: block;*/
     font-size: 36px;
     /*margin-top: 0.67em;*/
@@ -67,6 +78,8 @@ h1 {
     /*margin-left: 0;*/
     /*margin-right: 0;*/
     font-weight: bold;
+    color:White;
+    text-decoration: none;
 }
 
 h2 {
@@ -92,5 +105,10 @@ h2 {
     color:black;
     font-weight: bold;
     font-size: 14px;
+}
+
+.tablesorter-blue tbody td, .tablesorter-blue tfoot td, .tablesorter-blue tfoot th {
+    color:black;
+
 }
 

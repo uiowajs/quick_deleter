@@ -11,10 +11,7 @@ use REDCap;
 
 /*  TO DO
 
-    -  Quick links to ADB, ABD custom query, all the modules in the "Quick Suite" at the top of page
-    -  Values in table are links.
-    -  Column for:  Days until final delete, days since last record
-    -  Undelete/delete history page
+   -  Parameterize update query
 
  */
 
@@ -27,24 +24,25 @@ class QuickDeleter extends AbstractExternalModule {
 
             <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
 
-            <table id="Links_Table">
-                <tr>
-                    <td>
-                        ADB
-                    </td>
-                    <td>
-                        Quick Permissions
-                    </td>
-                    <td>
-                        Quick Projects
-                    </td>
-                    <td>
-                        MySQL Simple Admin
-                    </td>
-                </tr>
-            </table>
+<!--            <table id="Links_Table">-->
+<!--                <tr>-->
+<!--                    <td>-->
+<!--                        ADB-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                        Quick Permissions-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                        Quick Projects-->
+<!--                    </td>-->
+<!--                    <td>-->
+<!--                        MySQL Simple Admin-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--            </table>-->
 
-            <h1 style="text-align: center; padding-top:10px; color:white;"  >Quick Deleter</h1>
+            <h1 style="text-align: center; padding-top:30px; padding-bottom:5px; color:white;" class="Main_Header">
+                <a href="<?php echo "http://www." . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index"; ?>" > Quick Deleter </a></h1>
 
             <table id="Pages_Table">
                 <tr>
@@ -150,7 +148,7 @@ class QuickDeleter extends AbstractExternalModule {
                                 <th style="text-align:center"><b>Days Since Event</b></th>
                                 <th style="text-align:center"><b>Delete Flagged</b></th>
                                 <th style="text-align:center"><b>Final Delete</b></th>
-                                <th style="text-align:center"><b>Days Until Delete</b></th>
+<!--                                <th style="text-align:center"><b>Days Until Delete</b></th>-->
                             </tr>
                         </thead>
 
@@ -250,6 +248,7 @@ class QuickDeleter extends AbstractExternalModule {
         while ($row = db_fetch_assoc($sqlGetAllProjects))
         {
             ?>
+            <div id="Table_Rows">
             <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
 
             if($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
@@ -270,7 +269,8 @@ class QuickDeleter extends AbstractExternalModule {
                     <?php echo $row['project_id']; ?>
                 </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php sprintf("https://%s%sProjectSetup/index.php?pid=%d", SERVER_NAME, APP_PATH_WEBROOT, $row['project_id']); ?>" > <?php echo $row['app_title']; ?> </a>
+<!--                    <a href="--><?php //sprintf("https://%s%sProjectSetup/index.php?pid=%d", SERVER_NAME, APP_PATH_WEBROOT, $row['project_id']); ?><!--" > --><?php //echo $row['app_title']; ?><!-- </a>-->
+                    <a href="<?php echo "http://www." . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>" > <?php echo $row['app_title']; ?> </a>
                 </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>>
                     <?php echo $row['Purpose']; ?>
@@ -279,19 +279,19 @@ class QuickDeleter extends AbstractExternalModule {
                     <?php echo $row['Statuses']; ?>
                 </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['record_count']; ?>
+                    <a href="<?php echo "http://www." . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>" > <?php echo $row['record_count']; ?></a>
                 </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['Users']; ?>
+                    <a href="<?php echo "http://www." . SERVER_NAME . APP_PATH_WEBROOT . "UserRights/index.php?pid=" . $row['project_id']; ?>" > <?php echo $row['Users']; ?> </a>
                 </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>>
                     <?php echo $row['New Creation Time']; ?>
                 </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['New Last Event']; ?>
+                    <a href="<?php echo "http://www." . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>" > <?php echo $row['New Last Event']; ?></a>
                 </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['Days Since Last Event']; ?>
+                    <a href="<?php echo "http://www." . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>" > <?php echo $row['Days Since Last Event']; ?></a>
                 </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>>
                     <?php echo $row['New Date Deleted']; ?>
@@ -299,12 +299,11 @@ class QuickDeleter extends AbstractExternalModule {
                 <td align='center' class="color" <?php echo $Row_Color ?>>
                     <?php echo $row['New Final Delete Date']; ?>
                 </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php  ?>
-                </td>
+
                 <?php ;
             ?>
             </tr>
+            </div>
             <?php
         }  // End while loop
         ?>
@@ -370,13 +369,31 @@ class QuickDeleter extends AbstractExternalModule {
 
     // Query to delete or undelete projects
     public function Update_Project() {
+
+        global $conn;
+        if (!isset($conn))
+        {
+            db_connect(false);
+        }
+
+        $PIDs = $this->Get_PID();
+
         $sqlUpdateProject = "
         UPDATE redcap_projects
         SET date_deleted = IF(date_deleted IS NULL, '".NOW."', NULL)
-        WHERE project_id IN (".$this->Get_PID().")
+        WHERE project_id IN (?)
         ";
 
         $Execute_Query = db_query($sqlUpdateProject);
+
+
+        $stmt = $conn->prepare($sqlUpdateProject);
+        $stmt->bind_param('i', $PIDs);
+
+        $stmt->execute();
+        $stmt->close();
+
+
         return $Execute_Query;
     }  // End Update_Project()
 }  // End QuickDeleter class
