@@ -15,9 +15,15 @@ table#Submit_Table {
     /*max-width:80%;*/
    }
 
+.Report_Tabs {
+
+    color:white;
+}
+
 table#Pages_Table, #Pages_Table tr, #Pages_Table td {
     padding: 10px;
     color:white;
+    margin-bottom: 2%;
 
 }
 
