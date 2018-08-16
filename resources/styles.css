@@ -20,10 +20,10 @@ table#Submit_Table {
     color:white;
 }
 
-table#Pages_Table, #Pages_Table tr, #Pages_Table td {
+table#Pages_Table, #Pages_Table tr, #Pages_Table td, #Pages_Table a:link, #Pages_Table a:visited, #Pages_Table a:hover, #Pages_Table a:active  {
     padding: 10px;
     color:white;
-    margin-bottom: 2%;
+    /*margin-bottom: 2%;*/
 
 }
 

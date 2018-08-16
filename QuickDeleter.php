@@ -48,10 +48,10 @@ class QuickDeleter extends AbstractExternalModule {
             <table id="Pages_Table" >
                 <tr>
                     <td>
-                        <a href="#" onclick="">My Projects</a>
+                        <a href="<?= $this->getUrl("index.php?tab=0") ?>" >My Projects</a>
                     </td>
                     <td>
-                        <a href="#" onclick="">All Projects</a>
+                        <a href="<?= $this->getUrl("index.php?tab=1") ?> "> All Projects</a>
                     </td>
                 </tr>
             </table>
@@ -69,7 +69,10 @@ class QuickDeleter extends AbstractExternalModule {
         <div>
             <h2 style="text-align: center; padding-top:50px; color:white;"  >Quickly delete and/or undelete projects in bulk</h2>
         </div>
+        <?php
 
+        $this->Display_Projects_Table();
+?>
 
         <?php
     }
@@ -117,7 +120,7 @@ class QuickDeleter extends AbstractExternalModule {
 
         <body>
 
-            <?php   $this->Display_Header(); ?>
+<!--            --><?php //  $this->Display_Header(); ?>
 
             <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
 
@@ -136,6 +139,8 @@ class QuickDeleter extends AbstractExternalModule {
 
                 <?php $this->Display_Pager() ?>
 
+                        <?php
+                            if(isset($_REQUEST['tab'])) { ?>
 
                 <div id="id_projects_table" align="center">
                     <table id='Projects_Table' class='tablesorter' >
@@ -158,10 +163,13 @@ class QuickDeleter extends AbstractExternalModule {
                         </thead>
 
                         <tbody>
-                            <?php   $this->GetProjectList(); ?>
+                        <?php
+                            $this->GetProjectList($_REQUEST['tab']); ?>
+
                         </tbody>
                     </table>
                 </div>
+                               <?php } ?>
             </form>
         </body>
 
@@ -171,15 +179,17 @@ class QuickDeleter extends AbstractExternalModule {
 
 
 
-    public function GetProjectList() {
+    public function GetProjectList($tab) {
 ?>
 
 
 
   <?php
 
-        $sqlGetAllProjects = db_query(
-            "
+
+
+        $Project_Pages = array(
+                "
         SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
         CAST(CASE a.status
              WHEN 0 THEN 'Development'
@@ -196,9 +206,43 @@ class QuickDeleter extends AbstractExternalModule {
             WHEN 1 THEN 'Other'
             ELSE a.purpose
             END AS CHAR(50)) AS 'Purpose',
-        CAST(creation_time AS date) AS 'New Creation Time',
-        CAST(a.date_deleted AS date) AS 'New Date Deleted',
-        CAST(last_logged_event AS date) AS 'New Last Event',
+        CAST(creation_time AS date) AS 'New Creation Time', 
+        CAST(a.date_deleted AS date) AS 'New Date Deleted', 
+        CAST(last_logged_event AS date) AS 'New Last Event', 
+        DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
+        CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
+        CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
+        GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
+        FROM redcap_projects as a
+        JOIN redcap_user_rights AS b
+        ON a.project_id=b.project_id
+        JOIN redcap_record_counts AS c
+        ON a.project_id=c.project_id
+        WHERE username = '".USERID."'
+        GROUP BY a.project_id
+        ORDER BY a.project_id ASC  
+        "
+            ,
+        "
+        SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
+        CAST(CASE a.status
+             WHEN 0 THEN 'Development'
+             WHEN 1 THEN 'Production'
+             WHEN 2 THEN 'Inactive'
+             WHEN 3 THEN 'Archived'
+             ELSE a.status
+             END AS CHAR(50)) AS 'Statuses',
+        CAST(CASE a.purpose
+            WHEN 0 THEN 'Practice / Just for fun'
+            WHEN 4 THEN 'Operational Support'
+            WHEN 2 THEN 'Research'
+            WHEN 3 THEN 'Quality Improvement'
+            WHEN 1 THEN 'Other'
+            ELSE a.purpose
+            END AS CHAR(50)) AS 'Purpose',
+        CAST(creation_time AS date) AS 'New Creation Time', 
+        CAST(a.date_deleted AS date) AS 'New Date Deleted', 
+        CAST(last_logged_event AS date) AS 'New Last Event', 
         DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
         CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
         CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
@@ -210,15 +254,19 @@ class QuickDeleter extends AbstractExternalModule {
         ON a.project_id=c.project_id
         GROUP BY a.project_id
         ORDER BY a.project_id ASC
-        ");  // End SQL Query
+        "
+
+        );
+
+        $Result = db_query($Project_Pages[$tab]);
+
+
         ?>
-
-
 
         <?php
 
         // Builds HTML rows and displays sql results.
-        while ($row = db_fetch_assoc($sqlGetAllProjects))  // $sqlGetAllProjects
+        while ($row = db_fetch_assoc($Result))  // $sqlGetAllProjects
         {
             ?>
 
@@ -289,19 +337,6 @@ class QuickDeleter extends AbstractExternalModule {
         </table>
         <?php
     }  // End GetProjectList()
-
-    private function formatUrl($tab)
-    {
-        $query = $_GET;
-        $query['tab'] = $tab;
-
-        $url = http_build_query($query);
-        $url = $_SERVER['PHP_SELF'] . '?' . $url;
-
-        return ($url);
-    }
-
-
 
     // This function is called on form submit.  Gets pre values, executes update query, gets post values, adds project update to REDCap Activity Log.
     public function Submit() {
