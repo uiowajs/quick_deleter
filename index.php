@@ -5,7 +5,13 @@ $page = new HtmlPage();
 $page->PrintHeaderExt();
 include APP_PATH_VIEWS . 'HomeTabs.php';
 
+
+
+
+
 $QuickDeleter = new \UIOWA\QuickDeleter\QuickDeleter();
+
+
 
 if(isset($_POST['submit']))
     {
@@ -13,7 +19,7 @@ if(isset($_POST['submit']))
 }
 else
     {
-    $QuickDeleter->Display_Home_Page();  // Display_Projects_Table
+    $QuickDeleter->Display_Page();  // Display_Projects_Table
 }
 ?>
 
@@ -57,6 +63,18 @@ else
     {
         $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
     }
+
+    // $(document).ready(function() {
+    //     $("#Custom_Page").click(function() {
+    //
+    //         $.ajax({
+    //             type: "POST",
+    //             url: "QuickDeleter.php",
+    //             data: { Custom_Box: $("#Custom_Box").val() }
+    //
+    //         })
+    //     }
+    // }
 
     // Avoids having to resubmit the form on page refresh
     if ( window.history.replaceState ) {

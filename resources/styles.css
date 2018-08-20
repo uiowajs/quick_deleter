@@ -27,6 +27,10 @@ table#Pages_Table, #Pages_Table tr, #Pages_Table td, #Pages_Table a:link, #Pages
 
 }
 
+#Custom_box {
+    color:black;
+}
+
 table#Links_Table, #Links_Table tr, #Links_Table td {
     padding: 10px;
     margin-top:4%;
