@@ -17,21 +17,26 @@ use REDCap;
 
 session_start();
 
+
 class QuickDeleter extends AbstractExternalModule {
 
     public function Parse_Posted_Json() {
-//        $Posted_json = $_POST['Custom_Box_json'];
+        $Custom_Box_json = $_POST['Custom_Box_json'];
 //        $Posted_json = '[{"PID":"13","Project Title":"Data Entry Trigger","Status":"Development","Record Count":"5","Purpose":"Research","Users":"site_admin","Creation Date":"2017-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"39","Project Title":"delete test 4","Status":"Development","Record Count":"0","Purpose":"Other","Users":"site_admin","Creation Date":"2018-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"14","Project Title":"test","Status":"Development","Record Count":"0","Purpose":"Operational Support","Users":"site_admin, test","Creation Date":"2017-07-28","Last Logged Event Date":"2018-08-01","Days Since Last Event":"48","Total Users":"2"}]';
 
+//        $_SESSION['Custom_String'] = $Custom_Box_json;
 
-        if(!isset($_SESSION['Custom_String'])) {
+        if(isset($Custom_Box_json)) {
+            $Posted_json = $Custom_Box_json;
+            echo "json box is set";
+        }
+        elseif(isset($_SESSION['Custom_String'])) {  //$_SESSION['Custom_String']
             $Posted_json = $_SESSION['Custom_String'];
+            echo "session not set";
         }
-        elseif(isset($_POST['Custom_Box_json'])) {
-            $Posted_json = $_POST['Custom_Box_json'];
+        else {
+            echo "neither set";
         }
-
-
 
         $Decoded_json = json_decode($Posted_json);
 
@@ -41,37 +46,14 @@ class QuickDeleter extends AbstractExternalModule {
         }
 
         $Parsed_json = implode(",", $Custom_PID);
-
-
-
+//        echo $Parsed_json;
         return $Parsed_json;
     }
 
-    public function Post_json() {
-
-
-//        $json = '[{"PID":"13","Project Title":"Data Entry Trigger","Status":"Development","Record Count":"5","Purpose":"Research","Users":"site_admin","Creation Date":"2017-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"39","Project Title":"delete test 4","Status":"Development","Record Count":"0","Purpose":"Other","Users":"site_admin","Creation Date":"2018-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"14","Project Title":"test","Status":"Development","Record Count":"0","Purpose":"Operational Support","Users":"site_admin, test","Creation Date":"2017-07-28","Last Logged Event Date":"2018-08-01","Days Since Last Event":"48","Total Users":"2"}]';
-
-
-
-//        if(isset($_SESSION['Custom_Box_json'])) {
-////            $_SESSION['Posted_json'] = $json;
-//                    $json = $_SESSION['Custom_Box_json'];
-//        }
-//        else {
-//            $_SESSION['Custom_Box_json'] = "";
-//        }
-
-
-//        if(isset($_SESSION['Custom_String'])) {
-////            $json = $_SESSION['Custom_String'];
-//        }
-//        elseif(isset($_POST['Custom_Box_json'])) {
-//            $json = $_POST['Custom_Box_json'];
-//        }
-
-
-    }
+//    public function Posted_json() {
+//        $Posted_json = $_POST['Custom_Box_json'];
+//        return $Posted_json;
+//    }
 
 
 
@@ -297,10 +279,26 @@ class QuickDeleter extends AbstractExternalModule {
         }
         elseif (isset($_POST['Custom_Box_json']) && $tab == 2) {
             $Parsed_json = $this->Parse_Posted_Json();
+            echo "json box set";
+//            echo "test";
         }
-        elseif(isset($_SESSION['Custom_String']) && $tab == 2) {
-            $Parsed_json = $_SESSION['Custom_String'];
+        elseif (isset($_SESSION['Custom_String']) && $tab == 2) {  //&& $tab == 2
+            $Parsed_json = $this->Parse_Posted_Json();
+            echo "session set";
         }
+//        elseif(isset($_SESSION['Custom_String']) && $tab == 2) {
+//            $Parsed_json = $_SESSION['Custom_String'];
+//            echo "session set";
+//        }
+//        else {
+////            $Parsed_json = $this->Parse_Posted_Json();
+//            $Parsed_json = $_SESSION['Custom_String'];
+//            echo "nothing set";
+
+//        }
+
+
+//        echo $Parsed_json;
 
 
 
@@ -336,17 +334,9 @@ class QuickDeleter extends AbstractExternalModule {
 //        echo $_SESSION['Custom_String'];
 //        echo "<br>";
 
-//        if($actual_link == $_SERVER['HTTP_REFERER']) {
-////            if($json != $_SESSION['Custom_String']) {
-//                session_unset();
-////            }
-//        }
 
-//        $server_url = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
-//        echo $server_url;
-//        if($_SERVER['HTTP_REFERER'] != $server_url) {
-//            session_unset();
-//        }
+
+
 
 
 
