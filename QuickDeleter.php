@@ -184,6 +184,9 @@ class QuickDeleter extends AbstractExternalModule {
             <table id='Submit_Table'>
                 <tr>
                     <td>
+                        <input type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" >
+                    </td>
+                    <td>
                         <input type='submit' id='submit' name='submit'>
                     </td>
                     <td>
@@ -217,7 +220,16 @@ class QuickDeleter extends AbstractExternalModule {
         ?>
         <thead>
             <tr>
-                <th style="text-align:center"><input type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" ></th>
+<!--                --><?php
+//                if($this->getUrl("index.php?tab=0") || $this->getUrl("index.php?tab=0") == true) {
+//                    ?><!-- <th></th> --><?php
+//                }
+//                else {
+//                    ?>
+                    <th><input name="check_all" id="check_all" type="checkbox"></th> <?php
+//                }
+                    ?>
+<!--                <th style="text-align:center"><input type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" ></th>-->
                 <th style="text-align:center"><b>PID</b></th>
                 <th style="text-align:center"><b>Project Name</b></th>
                 <th style="text-align:center"><b>Purpose</b></th>
@@ -465,13 +477,20 @@ class QuickDeleter extends AbstractExternalModule {
 
         <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
 
-        <?= $this->Display_Submit_Button(); ?>
+        <?php
+        if($Result != "") {
+            $this->Display_Submit_Button(); ?>
 
-        <div id="id_projects_table" align="center">
+            <div id="id_projects_table" align="center">
             <table id='Projects_Table' class='tablesorter' >
             <?php
-                $this->Display_Pager();
-                $this->Table_Header();
+            $this->Display_Pager();
+            $this->Table_Header();
+        }
+        else {
+            echo "Error, no results";
+        }
+
 
         // Builds HTML rows and displays sql results.
         while ($row = db_fetch_assoc($Result))  // $sqlGetAllProjects
@@ -540,7 +559,10 @@ class QuickDeleter extends AbstractExternalModule {
         <table align="center">
             <tr>
                 <td>
-                    <?php $this->Display_Pager() ?>
+                    <?php
+                    if($Result != "") {
+                        $this->Display_Pager();
+                    } ?>
                 </td>
             </tr>
         </table>
