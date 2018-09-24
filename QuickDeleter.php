@@ -15,52 +15,125 @@ use REDCap;
 
  */
 
+session_start();
+
 class QuickDeleter extends AbstractExternalModule {
 
+    public function Post_json() {
+
+//        $tab = $_REQUEST['tab'];
+//
+//        if(!isset($_REQUEST['tab'])) {
+//            die;
+//        }
+//        elseif (isset($_POST['Custom_Box_json']) && $tab == 2) {
+//            $json = $_POST['Custom_Box_json'];
+////            $json = $_SESSION['Custom_Box_json'];
+//        }
+//        $json = '[{"PID":"13","Project Title":"Data Entry Trigger","Status":"Development","Record Count":"5","Purpose":"Research","Users":"site_admin","Creation Date":"2017-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"39","Project Title":"delete test 4","Status":"Development","Record Count":"0","Purpose":"Other","Users":"site_admin","Creation Date":"2018-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"14","Project Title":"test","Status":"Development","Record Count":"0","Purpose":"Operational Support","Users":"site_admin, test","Creation Date":"2017-07-28","Last Logged Event Date":"2018-08-01","Days Since Last Event":"48","Total Users":"2"}]';
+
+        $json = $_POST['Custom_Box_json'];
+
+//        if(isset($_SESSION['Custom_Box_json'])) {
+////            $_SESSION['Posted_json'] = $json;
+//                    $json = $_SESSION['Custom_Box_json'];
+//        }
+//        else {
+//            $_SESSION['Custom_Box_json'] = "";
+//        }
+
+
+//        if(isset($_SESSION['Custom_String'])) {
+////            $json = $_SESSION['Custom_String'];
+//        }
+//        elseif(isset($_POST['Custom_Box_json'])) {
+//            $json = $_POST['Custom_Box_json'];
+//        }
+
+        return $json;
+    }
+
+    public function Parse_json() {
+
+        $Decoded_json = json_decode($this->Post_json());
+//
+        $Custom_PID = array();
+        foreach($Decoded_json AS $values) {
+            $Custom_PID[] = $values->PID;
+        }
+////
+        $Parsed_json = implode(",", $Custom_PID);
+
+        return $Parsed_json;
+    }
+
     public function Display_Header() {
+
+//        $this->Post_json();
+
+//        $_SESSION['Posted_json'] = $this->Post_json();
         ?>
+
+
 
         <div align="center" id="div_Header">
 
             <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
 
-<!--            <table id="Links_Table">-->
-<!--                <tr>-->
-<!--                    <td>-->
-<!--                        ADB-->
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                        Quick Permissions-->
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                        Quick Projects-->
-<!--                    </td>-->
-<!--                    <td>-->
-<!--                        MySQL Simple Admin-->
-<!--                    </td>-->
-<!--                </tr>-->
-<!--            </table>-->
-
             <h1 style="text-align: center; padding-top:30px; padding-bottom:5px; color:white;" class="Main_Header">
                 <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index"; ?>" > Quick Deleter </a>
             </h1>
 
-            <table id="Pages_Table" >
-                <tr>
-                    <td>
-                        <a href="<?= $this->getUrl("index.php?tab=0") ?>" >My Projects</a>
-                    </td>
-                    <td>
-                        <a href="<?= $this->getUrl("index.php?tab=1") ?> ">All Projects</a>
-                    </td>
-                    <td>
-                        <a href="<?= $this->getUrl("index.php?tab=2") ?> " id="Custom_Page">Custom</a>
-                    </td>
-                    <td>
-                        <input id="Custom_Box" type='text' name='Custom_Box' >
-                    </td>
-                </tr>
-            </table>
+
+                <table id="Pages_Table" >
+                    <tr>
+                        <td>
+                            <a href="<?= $this->getUrl("index.php?tab=0") ?>" >My Projects</a>
+                        </td>
+                        <td>
+                            <a href="<?= $this->getUrl("index.php?tab=1") ?> ">All Projects</a>
+                        </td>
+                        <form name="Custom_Form_json" id="Custom_Form_json" method="POST" action="<?= $this->getUrl("index.php?tab=2") ?>" >
+                            <td>
+                                <button class="Button_Link" type="submit" id="Custom_Page_json" name="Custom_Page_json" >json</button>
+                            </td>
+                            <?php
+//                                    if(!isset($_POST['Custom_Box_json'])) {
+                                        ?>
+                                        <td>
+                                            <input id="Custom_Box_json" type='text' name='Custom_Box_json' value=""  >
+                                        </td>
+<!--                            --><?php
+//                                    }
+//                                    else {
+////                                        ?>
+<!--                                        <td>-->
+<!--                                <input id="Custom_Box_json" type='text' name='Custom_Box_json' value="--><?//=$this->Post_json(); ?><!--"  >-->
+<!--                            </td>-->
+
+<!--                            --><?php
+//                            }
+                            ?>
+
+                        </form>
+<!--                        <form name="Custom_Form_csv" id="Custom_Form_csv" method="POST" action="--><?//= $this->getUrl("index.php?tab=3") ?><!--" >-->
+<!--                            <td>-->
+<!--                                <button class="Button_Link" type="submit" id="Custom_Page_List" name="Custom_Page_List" >csv</button>-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                                <input id="Custom_Box_csv" type='text' name='Custom_Box_csv' value=""  >-->
+<!--                            </td>-->
+<!--                        </form>-->
+<!--                        <form name="Custom_Form_ssv" id="Custom_Form_ssv" method="POST" action="--><?//= $this->getUrl("index.php?tab=4") ?><!--" >-->
+<!--                            <td>-->
+<!--                                <button class="Button_Link" type="submit" id="Custom_Page_ssv" name="Custom_Page_ssv" >ssv</button>-->
+<!--                            </td>-->
+<!--                            <td>-->
+<!--                                <input id="Custom_Box_ssv" type='text' name='Custom_Box_ssv' value=""  >-->
+<!--                            </td>-->
+<!--                        </form>-->
+                    </tr>
+                </table>
         </div>
 
         <?php
@@ -69,23 +142,66 @@ class QuickDeleter extends AbstractExternalModule {
     public function Display_Page()
     {
         $this->Display_Header();
-        $this->Get_Page();
-    }
+        $this->Display_Home_Page();
+        $this->Display_Table();
 
-    public function Display_Home_Page() {
         ?>
-        <div>
-            <h2 style="text-align: center; padding-top:50px; color:white;">Quickly delete and undelete projects</h2>
-        </div>
+
+        <script type="text/javascript">
+
+            // Puts comma separated values of checkboxes in PID_Box.
+            $("form[name=Form]").on("change", "input[type=checkbox]", function () {
+                var values = $.map($("input[type=checkbox]:checked"), function (pid) {
+                    return pid.value;
+                });
+                $("form[name=Form]").find("input[id=PID_Box]").val(values);
+            });
+
+            //  Highlight row when box checked
+            $( "input[type=checkbox]" ).on('change', function(){
+//                 $("form[name=Form]").on("change", "input[type=checkbox]", function () {
+                if($(this).is(':checked'))
+                // console.log($(this).attr('id'));
+                    if($(this).prop('id') === '0')
+                    // console.log($(this).attr('id'));
+                        $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked?'bold':'normal'});
+                    else
+                    // console.log($(this).attr('id'));
+                        $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked?'bold':'normal'});
+                else
+                // console.log("Hi");
+                    $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked?'bold':'normal'});
+            });
+
+            // Removes checked row color on form reset
+            function Clear_Row_Styling()
+            {
+                $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
+            }
+
+            // Avoids having to resubmit the form on page refresh
+            if ( window.history.replaceState ) {
+                window.history.replaceState( null, null, window.location.href );
+            }
+
+        </script>
+
+
         <?php
+
+
     }
 
-    public function Get_Page() {
-        if(isset($_REQUEST['tab'])) {
-            $this->Display_Table($_REQUEST['tab']);
+    public function Display_Home_Page()
+    {
+        if ($_SERVER['REQUEST_URI'] == $this->getUrl("index.php")) {
+            ?>
+            <div>
+                <h2 style="text-align: center; padding-top:50px; color:white;">Quickly delete and undelete projects</h2>
+            </div>
+            <?php
         }
     }
-
 
 
     public function Display_Pager() {
@@ -166,33 +282,118 @@ class QuickDeleter extends AbstractExternalModule {
     }
 
 
+    public function Display_Table() {
 
-
-
-//    public function Get_SQL($tab) {
-//
-//    }
-
-    public function Display_Table($tab) {
-
-        $json = '[{ "PID":"3"},{"PID":"4" }]';
-//        echo $json;
-        $Custom_json = json_decode($json);
-//        print_r($Custom_json);
-
-        $Custom_PID = array();
-        foreach($Custom_json AS $values) {
-            $Custom_PID[] = $values->PID;
-//            print_r($values->PID);
+        global $conn;
+        if (!isset($conn))
+        {
+            db_connect(false);
         }
 
-//        print_r($Custom_PID);
-        $Custom_String = implode(",", $Custom_PID);
-//        echo $Custom_String;
+//        $Posted_json = $this->Post_json();
+
+        $tab = $_REQUEST['tab'];
+
+
+//
+        if(!isset($_REQUEST['tab'])) {
+            die;
+        }
+        elseif (isset($_POST['Custom_Box_json']) && $tab == 2) {
+//            $Posted_json = $_POST['Custom_Box_json'];
+                        $Posted_json = $this->Post_json();
+////                        echo $json;
+////        $json = '[{"PID":"13","Project Title":"Data Entry Trigger","Status":"Development","Record Count":"5","Purpose":"Research","Users":"site_admin","Creation Date":"2017-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"39","Project Title":"delete test 4","Status":"Development","Record Count":"0","Purpose":"Other","Users":"site_admin","Creation Date":"2018-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"14","Project Title":"test","Status":"Development","Record Count":"0","Purpose":"Operational Support","Users":"site_admin, test","Creation Date":"2017-07-28","Last Logged Event Date":"2018-08-01","Days Since Last Event":"48","Total Users":"2"}]';
+        }
+//        elseif (isset($_POST['Custom_Box_csv']) && $tab == 3) {
+//            $csv = $_POST['Custom_Box_csv'];
+////            $csv = "1,2,3,4";
+//        }
+//        elseif (isset($_POST['Custom_Box_ssv']) && $tab == 4) {
+//            $ssv = $_POST['Custom_Box_ssv'];
+////            $ssv = "1 2 3";
+//        }
+
+        $Parsed_json = $this->Parse_json();
+
+
+//        $Decoded_json = json_decode($Posted_json);
+////
+//        $Custom_PID = array();
+//        foreach($Decoded_json AS $values) {
+//            $Custom_PID[] = $values->PID;
+//        }
+//////
+//        $Parsed_json = implode(",", $Custom_PID);
+////            echo $Custom_String_json;
+
+//$this->Post_json();
+//        $this->Parse_json();
+
+
+        if(isset($_SESSION['Custom_String'])) {
+//            $Parsed_json = $_SESSION['Custom_String'];
+//            echo $Parsed_json;
+
+        }
+        elseif(isset($_POST['Custom_Box_json'])) {
+//        elseif (isset($_POST['submit'])) {
+
+//echo $json;
+//            $Custom_json = json_decode($json);
+//
+//            $Custom_PID = array();
+//            foreach($Custom_json AS $values) {
+//                $Custom_PID[] = $values->PID;
+//            }
+//
+//            $Parsed_json = implode(",", $Custom_PID);
+////            error_log($Parsed_json);
+//
+////            $_SESSION['Custom_String'] = $Parsed_json;
+//
+//            $Parsed_json = $this->Parse_json();
+//                echo $Parsed_json;
+            }
+
+
+        $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+        echo "<br>";
+        echo $actual_link;
+        echo "<br>";
+        echo $_SERVER['HTTP_REFERER'];
+        echo "<br>";
+        echo $_SESSION['Custom_String'];
+        echo "<br>";
+
+//        if($actual_link == $_SERVER['HTTP_REFERER']) {
+////            if($json != $_SESSION['Custom_String']) {
+//                session_unset();
+////            }
+//        }
+
+//        $server_url = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
+//        echo $server_url;
+//        if($_SERVER['HTTP_REFERER'] != $server_url) {
+//            session_unset();
+//        }
 
 
 
 
+//        $Custom_String_ssv = str_replace(" ", ",", $ssv);
+        //echo $Custom_String_ssv;
+
+
+
+        // Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
+//        $qMarks = str_repeat('?,', count($Custom_PID) - 1) . '?';
+//        echo $qMarks;
+
+        // Forms int placeholder string for bind_param().  e.g. 'iii'
+//        $Get_Integers = explode(",", $Parsed_json);
+//        $Integers = join(array_pad(array(), count($Get_Integers), "i"));
+//        echo $Integers;
 
         $Project_Pages = array("
         SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
@@ -289,7 +490,73 @@ class QuickDeleter extends AbstractExternalModule {
         ON a.project_id=b.project_id
         JOIN redcap_record_counts AS c
         ON a.project_id=c.project_id
-        WHERE a.project_id IN (".$Custom_String.")
+        WHERE a.project_id IN (".$Parsed_json.")  
+        GROUP BY a.project_id
+        ORDER BY a.project_id ASC  
+            ",
+            "
+        SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
+        CAST(CASE a.status
+             WHEN 0 THEN 'Development'
+             WHEN 1 THEN 'Production'
+             WHEN 2 THEN 'Inactive'
+             WHEN 3 THEN 'Archived'
+             ELSE a.status
+             END AS CHAR(50)) AS 'Statuses',
+        CAST(CASE a.purpose
+            WHEN 0 THEN 'Practice / Just for fun'
+            WHEN 4 THEN 'Operational Support'
+            WHEN 2 THEN 'Research'
+            WHEN 3 THEN 'Quality Improvement'
+            WHEN 1 THEN 'Other'
+            ELSE a.purpose
+            END AS CHAR(50)) AS 'Purpose',
+        CAST(creation_time AS date) AS 'New Creation Time', 
+        CAST(a.date_deleted AS date) AS 'New Date Deleted', 
+        CAST(last_logged_event AS date) AS 'New Last Event', 
+        DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
+        CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
+        CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
+        GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
+        FROM redcap_projects as a
+        JOIN redcap_user_rights AS b
+        ON a.project_id=b.project_id
+        JOIN redcap_record_counts AS c
+        ON a.project_id=c.project_id
+        WHERE a.project_id IN (".$csv.")  
+        GROUP BY a.project_id
+        ORDER BY a.project_id ASC  
+            ",
+            "
+        SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
+        CAST(CASE a.status
+             WHEN 0 THEN 'Development'
+             WHEN 1 THEN 'Production'
+             WHEN 2 THEN 'Inactive'
+             WHEN 3 THEN 'Archived'
+             ELSE a.status
+             END AS CHAR(50)) AS 'Statuses',
+        CAST(CASE a.purpose
+            WHEN 0 THEN 'Practice / Just for fun'
+            WHEN 4 THEN 'Operational Support'
+            WHEN 2 THEN 'Research'
+            WHEN 3 THEN 'Quality Improvement'
+            WHEN 1 THEN 'Other'
+            ELSE a.purpose
+            END AS CHAR(50)) AS 'Purpose',
+        CAST(creation_time AS date) AS 'New Creation Time', 
+        CAST(a.date_deleted AS date) AS 'New Date Deleted', 
+        CAST(last_logged_event AS date) AS 'New Last Event', 
+        DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
+        CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
+        CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
+        GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
+        FROM redcap_projects as a
+        JOIN redcap_user_rights AS b
+        ON a.project_id=b.project_id
+        JOIN redcap_record_counts AS c
+        ON a.project_id=c.project_id
+        WHERE a.project_id IN (".$Custom_String_ssv.")  
         GROUP BY a.project_id
         ORDER BY a.project_id ASC  
             "
@@ -297,15 +564,23 @@ class QuickDeleter extends AbstractExternalModule {
 
 
 
+        // https://stackoverflow.com/questions/3703180/a-prepared-statement-where-in-query-and-sorting-with-mysql/45905752#45905752.
+//        $stmt = $conn->prepare($Project_Pages[2]);
+//        $stmt->bindValue(1, $Custom_String);
+//        $stmt->bind_param($Integers, ...$Custom_PID);
+//        $stmt->execute();
+//
+//        $stmt->bind_result($Custom_String);
+//
+//        while ($stmt->fetch()) {
+//            printf("%s\n", ...$Custom_PID);
+//        }
 
-
-
-
-
-
-
-
-
+//        while($stmt->fetch()) {
+//            echo $Custom_String;
+//        }
+//
+//        $stmt->close();
 
 
 
@@ -384,18 +659,9 @@ class QuickDeleter extends AbstractExternalModule {
             </tr>
 
 
-
-
-
-
-<!--            </tbody>-->
-<!--            </table>-->
-<!--            </div>-->
-<!--            </form>-->
-
-
-
             <?php
+
+
         }  // End while loop
         ?>
         <table align="center">
@@ -406,6 +672,7 @@ class QuickDeleter extends AbstractExternalModule {
             </tr>
         </table>
         <?php
+
     }  // End GetProjectList()
 
     // This function is called on form submit.  Gets pre values, executes update query, gets post values, adds project update to REDCap Activity Log.
@@ -414,7 +681,7 @@ class QuickDeleter extends AbstractExternalModule {
         $this->Update_Project();
         $Post_Values = $this->Get_Values();
 
-        // Adds logging  APPARENTLY BROKEN
+        // Adds logging
         foreach($Pre_Values AS $Pre_Value) {
             foreach($Post_Values AS $Post_Value) {
                 if($Post_Value['project_id'] == $Pre_Value['project_id']) {
@@ -433,7 +700,11 @@ class QuickDeleter extends AbstractExternalModule {
             }  // End of foreach Post Values
         }  // End of foreach Pre Values
 
-        header("Location: {$_SERVER['HTTP_REFERER']}");  // After submit, takes user to same page they submitted from.
+
+//            echo "Referred from custom json page";
+            header("Location: {$_SERVER['HTTP_REFERER']}");
+
+
 
     }  // End of Submit()
 
@@ -506,4 +777,7 @@ class QuickDeleter extends AbstractExternalModule {
 
         return $sqlUpdateProject;
     }  // End Update_Project()
+
+
 }  // End QuickDeleter class
+
