@@ -8,34 +8,21 @@ use DateTimeRC;
 use Project;
 use REDCap;
 
-
-/*  TO DO
-
-   - Custom report from admin dashboard
-
- */
-
+//  Session for returning submitted json after deleting/undeleting project.
 session_start();
-
 
 class QuickDeleter extends AbstractExternalModule {
 
+    //  Takes user submitted json and parses it into PIDs.  Stores in session variable to retain after deleting/undeleting projects.
     public function Parse_Posted_Json() {
         $Custom_Box_json = $_POST['Custom_Box_json'];
-//        $Posted_json = '[{"PID":"13","Project Title":"Data Entry Trigger","Status":"Development","Record Count":"5","Purpose":"Research","Users":"site_admin","Creation Date":"2017-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"39","Project Title":"delete test 4","Status":"Development","Record Count":"0","Purpose":"Other","Users":"site_admin","Creation Date":"2018-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"14","Project Title":"test","Status":"Development","Record Count":"0","Purpose":"Operational Support","Users":"site_admin, test","Creation Date":"2017-07-28","Last Logged Event Date":"2018-08-01","Days Since Last Event":"48","Total Users":"2"}]';
-
-//        $_SESSION['Custom_String'] = $Custom_Box_json;
 
         if(isset($Custom_Box_json)) {
             $Posted_json = $Custom_Box_json;
-            echo "json box is set";
+            $_SESSION['Custom_String'] = $Custom_Box_json;
         }
         elseif(isset($_SESSION['Custom_String'])) {  //$_SESSION['Custom_String']
             $Posted_json = $_SESSION['Custom_String'];
-            echo "session not set";
-        }
-        else {
-            echo "neither set";
         }
 
         $Decoded_json = json_decode($Posted_json);
@@ -46,17 +33,10 @@ class QuickDeleter extends AbstractExternalModule {
         }
 
         $Parsed_json = implode(",", $Custom_PID);
-//        echo $Parsed_json;
         return $Parsed_json;
     }
 
-//    public function Posted_json() {
-//        $Posted_json = $_POST['Custom_Box_json'];
-//        return $Posted_json;
-//    }
-
-
-
+    //  Displays title and page links
     public function Display_Header() {
         ?>
         <div align="center" id="div_Header">
@@ -79,48 +59,23 @@ class QuickDeleter extends AbstractExternalModule {
                             <td>
                                 <button class="Button_Link" type="submit" id="Custom_Page_json" name="Custom_Page_json" >json</button>
                             </td>
-                            <?php
-//                                    if(!isset($_POST['Custom_Box_json'])) {
-                                        ?>
-                                        <td>
-                                            <input id="Custom_Box_json" type='text' name='Custom_Box_json' value=""  >
-                                        </td>
-<!--                            --><?php
-//                                    }
-//                                    else {
-////                                        ?>
-<!--                                        <td>-->
-<!--                                <input id="Custom_Box_json" type='text' name='Custom_Box_json' value="--><?//=$this->Post_json(); ?><!--"  >-->
-<!--                            </td>-->
-
-<!--                            --><?php
-//                            }
-                            ?>
-
+                            <td>
+                                <input id="Custom_Box_json" class="Button_Box" type='text' name='Custom_Box_json' value=""  >
+                            </td>
+                            <td>
+                                <button class="Button_Link" type="submit" id="Custom_Page_csv" name="Custom_Page_csv" >csv</button>
+                            </td>
+                            <td>
+                                <input id="Custom_Box_csv" class="Button_Box" type='text' name='Custom_Box_csv' value=""  >
+                            </td>
                         </form>
-<!--                        <form name="Custom_Form_csv" id="Custom_Form_csv" method="POST" action="--><?//= $this->getUrl("index.php?tab=3") ?><!--" >-->
-<!--                            <td>-->
-<!--                                <button class="Button_Link" type="submit" id="Custom_Page_List" name="Custom_Page_List" >csv</button>-->
-<!--                            </td>-->
-<!--                            <td>-->
-<!--                                <input id="Custom_Box_csv" type='text' name='Custom_Box_csv' value=""  >-->
-<!--                            </td>-->
-<!--                        </form>-->
-<!--                        <form name="Custom_Form_ssv" id="Custom_Form_ssv" method="POST" action="--><?//= $this->getUrl("index.php?tab=4") ?><!--" >-->
-<!--                            <td>-->
-<!--                                <button class="Button_Link" type="submit" id="Custom_Page_ssv" name="Custom_Page_ssv" >ssv</button>-->
-<!--                            </td>-->
-<!--                            <td>-->
-<!--                                <input id="Custom_Box_ssv" type='text' name='Custom_Box_ssv' value=""  >-->
-<!--                            </td>-->
-<!--                        </form>-->
                     </tr>
                 </table>
         </div>
-
         <?php
     }
 
+    //  Displays header, home page, and table.  Contains javascript
     public function Display_Page()
     {
         $this->Display_Header();
@@ -165,15 +120,12 @@ class QuickDeleter extends AbstractExternalModule {
             if ( window.history.replaceState ) {
                 window.history.replaceState( null, null, window.location.href );
             }
-
         </script>
 
-
         <?php
-
-
     }
 
+    //  Displays home page
     public function Display_Home_Page()
     {
         if ($_SERVER['REQUEST_URI'] == $this->getUrl("index.php")) {
@@ -185,7 +137,7 @@ class QuickDeleter extends AbstractExternalModule {
         }
     }
 
-
+    //  Displays page limit dropdown
     public function Display_Pager() {
         ?>
         <div id="pager" class="pager" align="center">
@@ -208,6 +160,7 @@ class QuickDeleter extends AbstractExternalModule {
         <?php
     }
 
+    //  Displays submit button for deleting/undeleting projects
     public function Display_Submit_Button() {
         ?>
         <div align="center">
@@ -225,6 +178,7 @@ class QuickDeleter extends AbstractExternalModule {
         <?php
     }
 
+    //  Contains source files for table sorter
     public function Tablesorter_Includes () {
         ?>
         <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.min.js") ?>"></script>
@@ -241,6 +195,7 @@ class QuickDeleter extends AbstractExternalModule {
         <?php
     }
 
+    //  Displays table headers
     public function Table_Header() {
         ?>
         <thead>
@@ -263,7 +218,7 @@ class QuickDeleter extends AbstractExternalModule {
         <?php
     }
 
-
+    //  Runs SQL query for displaying table.  Takes parsed json if necessary.
     public function Display_Table() {
 
         global $conn;
@@ -272,78 +227,15 @@ class QuickDeleter extends AbstractExternalModule {
             db_connect(false);
         }
 
-        $tab = $_REQUEST['tab'];
+        $tab = $_REQUEST['tab'];  //  Tabs for SQL array
 
+        //  Calls parsed json if tab=2
         if(!isset($_REQUEST['tab'])) {
             die;
         }
-        elseif (isset($_POST['Custom_Box_json']) && $tab == 2) {
+        else {
             $Parsed_json = $this->Parse_Posted_Json();
-            echo "json box set";
-//            echo "test";
         }
-        elseif (isset($_SESSION['Custom_String']) && $tab == 2) {  //&& $tab == 2
-            $Parsed_json = $this->Parse_Posted_Json();
-            echo "session set";
-        }
-//        elseif(isset($_SESSION['Custom_String']) && $tab == 2) {
-//            $Parsed_json = $_SESSION['Custom_String'];
-//            echo "session set";
-//        }
-//        else {
-////            $Parsed_json = $this->Parse_Posted_Json();
-//            $Parsed_json = $_SESSION['Custom_String'];
-//            echo "nothing set";
-
-//        }
-
-
-//        echo $Parsed_json;
-
-
-
-
-//        elseif (isset($_POST['Custom_Box_csv']) && $tab == 3) {
-//            $csv = $_POST['Custom_Box_csv'];
-////            $csv = "1,2,3,4";
-//        }
-//        elseif (isset($_POST['Custom_Box_ssv']) && $tab == 4) {
-//            $ssv = $_POST['Custom_Box_ssv'];
-////            $ssv = "1 2 3";
-//        }
-
-//        $Parsed_json = $this->Parse_Posted_Json();
-
-//        if(isset($_SESSION['Custom_String'])) {
-////            $Parsed_json = $_SESSION['Custom_String'];
-////            echo $Parsed_json;
-//
-//        }
-//        elseif(isset($_POST['Custom_Box_json'])) {
-////        elseif (isset($_POST['submit'])) {
-//
-//            }
-
-
-//        $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-//        echo "<br>";
-//        echo $actual_link;
-//        echo "<br>";
-//        echo $_SERVER['HTTP_REFERER'];
-//        echo "<br>";
-//        echo $_SESSION['Custom_String'];
-//        echo "<br>";
-
-
-
-
-
-
-
-
-
-
-
 
 
 //        $Custom_String_ssv = str_replace(" ", ",", $ssv);
@@ -623,9 +515,7 @@ class QuickDeleter extends AbstractExternalModule {
                 ?>
             </tr>
 
-
             <?php
-
 
         }  // End while loop
         ?>
@@ -637,7 +527,6 @@ class QuickDeleter extends AbstractExternalModule {
             </tr>
         </table>
         <?php
-
     }  // End GetProjectList()
 
     // This function is called on form submit.  Gets pre values, executes update query, gets post values, adds project update to REDCap Activity Log.
@@ -646,7 +535,7 @@ class QuickDeleter extends AbstractExternalModule {
         $this->Update_Project();
         $Post_Values = $this->Get_Values();
 
-        // Adds logging
+        // Adds logging to REDCap
         foreach($Pre_Values AS $Pre_Value) {
             foreach($Post_Values AS $Post_Value) {
                 if($Post_Value['project_id'] == $Pre_Value['project_id']) {
@@ -665,12 +554,8 @@ class QuickDeleter extends AbstractExternalModule {
             }  // End of foreach Post Values
         }  // End of foreach Pre Values
 
-
 //            echo "Referred from custom json page";
             header("Location: {$_SERVER['HTTP_REFERER']}");
-
-
-
     }  // End of Submit()
 
     // Gets PIDs for rows that were checked
@@ -742,7 +627,6 @@ class QuickDeleter extends AbstractExternalModule {
 
         return $sqlUpdateProject;
     }  // End Update_Project()
-
 
 }  // End QuickDeleter class
 
