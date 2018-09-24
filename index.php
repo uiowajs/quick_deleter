@@ -8,9 +8,8 @@ include APP_PATH_VIEWS . 'HomeTabs.php';
 $QuickDeleter = new \UIOWA\QuickDeleter\QuickDeleter();
 
 if(isset($_POST['submit']))
-    {
+{
     $QuickDeleter->Submit();
-
 }
 else
 {

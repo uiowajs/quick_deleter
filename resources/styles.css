@@ -73,8 +73,7 @@ div#outer
      color:black;
  }
 
-#Projects_Table
-{
+#Projects_Table {
     font-size: 14px;
     color:black;
 }
@@ -139,6 +138,10 @@ h2 {
 }
 
 .Button_Box {
-    color:black
+    color:black;
+}
+
+.color a:link:hover{
+    text-decoration: underline;
 }
 

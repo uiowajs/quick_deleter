@@ -19,10 +19,10 @@ class QuickDeleter extends AbstractExternalModule {
 
         if(isset($Custom_Box_json)) {
             $Posted_json = $Custom_Box_json;
-            $_SESSION['Custom_String'] = $Custom_Box_json;
+            $_SESSION['Custom_json'] = $Custom_Box_json;
         }
-        elseif(isset($_SESSION['Custom_String'])) {  //$_SESSION['Custom_String']
-            $Posted_json = $_SESSION['Custom_String'];
+        elseif(isset($_SESSION['Custom_json'])) {
+            $Posted_json = $_SESSION['Custom_json'];
         }
 
         $Decoded_json = json_decode($Posted_json);
@@ -34,6 +34,20 @@ class QuickDeleter extends AbstractExternalModule {
 
         $Parsed_json = implode(",", $Custom_PID);
         return $Parsed_json;
+    }
+
+    public function Parse_Posted_Csv() {
+        $Custom_Box_csv = $_POST['Custom_Box_csv'];
+
+        if(isset($Custom_Box_csv)) {
+            $Posted_csv = $Custom_Box_csv;
+            $_SESSION['Custom_csv'] = $Custom_Box_csv;
+        }
+        elseif(isset($_SESSION['Custom_csv'])) {
+            $Posted_csv = $_SESSION['Custom_csv'];
+        }
+
+        return $Posted_csv;
     }
 
     //  Displays title and page links
@@ -62,6 +76,9 @@ class QuickDeleter extends AbstractExternalModule {
                             <td>
                                 <input id="Custom_Box_json" class="Button_Box" type='text' name='Custom_Box_json' value=""  >
                             </td>
+                        </form>
+
+                        <form name="Custom_Form_csv" id="Custom_Form_csv" method="POST" action="<?= $this->getUrl("index.php?tab=3") ?>" >
                             <td>
                                 <button class="Button_Link" type="submit" id="Custom_Page_csv" name="Custom_Page_csv" >csv</button>
                             </td>
@@ -235,6 +252,7 @@ class QuickDeleter extends AbstractExternalModule {
         }
         else {
             $Parsed_json = $this->Parse_Posted_Json();
+            $Parsed_csv = $this->Parse_Posted_Csv();
         }
 
 
@@ -380,7 +398,7 @@ class QuickDeleter extends AbstractExternalModule {
         ON a.project_id=b.project_id
         JOIN redcap_record_counts AS c
         ON a.project_id=c.project_id
-        WHERE a.project_id IN (".$csv.")  
+        WHERE a.project_id IN (".$Parsed_csv.")  
         GROUP BY a.project_id
         ORDER BY a.project_id ASC  
             ",
