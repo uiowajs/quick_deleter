@@ -19,20 +19,40 @@ session_start();
 
 class QuickDeleter extends AbstractExternalModule {
 
+    public function Parse_Posted_Json() {
+//        $Posted_json = $_POST['Custom_Box_json'];
+//        $Posted_json = '[{"PID":"13","Project Title":"Data Entry Trigger","Status":"Development","Record Count":"5","Purpose":"Research","Users":"site_admin","Creation Date":"2017-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"39","Project Title":"delete test 4","Status":"Development","Record Count":"0","Purpose":"Other","Users":"site_admin","Creation Date":"2018-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"14","Project Title":"test","Status":"Development","Record Count":"0","Purpose":"Operational Support","Users":"site_admin, test","Creation Date":"2017-07-28","Last Logged Event Date":"2018-08-01","Days Since Last Event":"48","Total Users":"2"}]';
+
+
+        if(!isset($_SESSION['Custom_String'])) {
+            $Posted_json = $_SESSION['Custom_String'];
+        }
+        elseif(isset($_POST['Custom_Box_json'])) {
+            $Posted_json = $_POST['Custom_Box_json'];
+        }
+
+
+
+        $Decoded_json = json_decode($Posted_json);
+
+        $Custom_PID = array();
+        foreach($Decoded_json AS $values) {
+            $Custom_PID[] = $values->PID;
+        }
+
+        $Parsed_json = implode(",", $Custom_PID);
+
+
+
+        return $Parsed_json;
+    }
+
     public function Post_json() {
 
-//        $tab = $_REQUEST['tab'];
-//
-//        if(!isset($_REQUEST['tab'])) {
-//            die;
-//        }
-//        elseif (isset($_POST['Custom_Box_json']) && $tab == 2) {
-//            $json = $_POST['Custom_Box_json'];
-////            $json = $_SESSION['Custom_Box_json'];
-//        }
+
 //        $json = '[{"PID":"13","Project Title":"Data Entry Trigger","Status":"Development","Record Count":"5","Purpose":"Research","Users":"site_admin","Creation Date":"2017-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"39","Project Title":"delete test 4","Status":"Development","Record Count":"0","Purpose":"Other","Users":"site_admin","Creation Date":"2018-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"14","Project Title":"test","Status":"Development","Record Count":"0","Purpose":"Operational Support","Users":"site_admin, test","Creation Date":"2017-07-28","Last Logged Event Date":"2018-08-01","Days Since Last Event":"48","Total Users":"2"}]';
 
-        $json = $_POST['Custom_Box_json'];
+
 
 //        if(isset($_SESSION['Custom_Box_json'])) {
 ////            $_SESSION['Posted_json'] = $json;
@@ -50,32 +70,13 @@ class QuickDeleter extends AbstractExternalModule {
 //            $json = $_POST['Custom_Box_json'];
 //        }
 
-        return $json;
+
     }
 
-    public function Parse_json() {
 
-        $Decoded_json = json_decode($this->Post_json());
-//
-        $Custom_PID = array();
-        foreach($Decoded_json AS $values) {
-            $Custom_PID[] = $values->PID;
-        }
-////
-        $Parsed_json = implode(",", $Custom_PID);
-
-        return $Parsed_json;
-    }
 
     public function Display_Header() {
-
-//        $this->Post_json();
-
-//        $_SESSION['Posted_json'] = $this->Post_json();
         ?>
-
-
-
         <div align="center" id="div_Header">
 
             <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
@@ -83,7 +84,6 @@ class QuickDeleter extends AbstractExternalModule {
             <h1 style="text-align: center; padding-top:30px; padding-bottom:5px; color:white;" class="Main_Header">
                 <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index"; ?>" > Quick Deleter </a>
             </h1>
-
 
                 <table id="Pages_Table" >
                     <tr>
@@ -290,21 +290,21 @@ class QuickDeleter extends AbstractExternalModule {
             db_connect(false);
         }
 
-//        $Posted_json = $this->Post_json();
-
         $tab = $_REQUEST['tab'];
 
-
-//
         if(!isset($_REQUEST['tab'])) {
             die;
         }
         elseif (isset($_POST['Custom_Box_json']) && $tab == 2) {
-//            $Posted_json = $_POST['Custom_Box_json'];
-                        $Posted_json = $this->Post_json();
-////                        echo $json;
-////        $json = '[{"PID":"13","Project Title":"Data Entry Trigger","Status":"Development","Record Count":"5","Purpose":"Research","Users":"site_admin","Creation Date":"2017-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"39","Project Title":"delete test 4","Status":"Development","Record Count":"0","Purpose":"Other","Users":"site_admin","Creation Date":"2018-07-27","Last Logged Event Date":"2018-07-30","Days Since Last Event":"50","Total Users":"1"},{"PID":"14","Project Title":"test","Status":"Development","Record Count":"0","Purpose":"Operational Support","Users":"site_admin, test","Creation Date":"2017-07-28","Last Logged Event Date":"2018-08-01","Days Since Last Event":"48","Total Users":"2"}]';
+            $Parsed_json = $this->Parse_Posted_Json();
         }
+        elseif(isset($_SESSION['Custom_String']) && $tab == 2) {
+            $Parsed_json = $_SESSION['Custom_String'];
+        }
+
+
+
+
 //        elseif (isset($_POST['Custom_Box_csv']) && $tab == 3) {
 //            $csv = $_POST['Custom_Box_csv'];
 ////            $csv = "1,2,3,4";
@@ -314,57 +314,27 @@ class QuickDeleter extends AbstractExternalModule {
 ////            $ssv = "1 2 3";
 //        }
 
-        $Parsed_json = $this->Parse_json();
+//        $Parsed_json = $this->Parse_Posted_Json();
 
-
-//        $Decoded_json = json_decode($Posted_json);
-////
-//        $Custom_PID = array();
-//        foreach($Decoded_json AS $values) {
-//            $Custom_PID[] = $values->PID;
+//        if(isset($_SESSION['Custom_String'])) {
+////            $Parsed_json = $_SESSION['Custom_String'];
+////            echo $Parsed_json;
+//
 //        }
-//////
-//        $Parsed_json = implode(",", $Custom_PID);
-////            echo $Custom_String_json;
-
-//$this->Post_json();
-//        $this->Parse_json();
-
-
-        if(isset($_SESSION['Custom_String'])) {
-//            $Parsed_json = $_SESSION['Custom_String'];
-//            echo $Parsed_json;
-
-        }
-        elseif(isset($_POST['Custom_Box_json'])) {
-//        elseif (isset($_POST['submit'])) {
-
-//echo $json;
-//            $Custom_json = json_decode($json);
+//        elseif(isset($_POST['Custom_Box_json'])) {
+////        elseif (isset($_POST['submit'])) {
 //
-//            $Custom_PID = array();
-//            foreach($Custom_json AS $values) {
-//                $Custom_PID[] = $values->PID;
 //            }
-//
-//            $Parsed_json = implode(",", $Custom_PID);
-////            error_log($Parsed_json);
-//
-////            $_SESSION['Custom_String'] = $Parsed_json;
-//
-//            $Parsed_json = $this->Parse_json();
-//                echo $Parsed_json;
-            }
 
 
-        $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-        echo "<br>";
-        echo $actual_link;
-        echo "<br>";
-        echo $_SERVER['HTTP_REFERER'];
-        echo "<br>";
-        echo $_SESSION['Custom_String'];
-        echo "<br>";
+//        $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+//        echo "<br>";
+//        echo $actual_link;
+//        echo "<br>";
+//        echo $_SERVER['HTTP_REFERER'];
+//        echo "<br>";
+//        echo $_SESSION['Custom_String'];
+//        echo "<br>";
 
 //        if($actual_link == $_SERVER['HTTP_REFERER']) {
 ////            if($json != $_SESSION['Custom_String']) {
@@ -377,6 +347,11 @@ class QuickDeleter extends AbstractExternalModule {
 //        if($_SERVER['HTTP_REFERER'] != $server_url) {
 //            session_unset();
 //        }
+
+
+
+
+
 
 
 
