@@ -151,33 +151,6 @@ class QuickDeleter extends AbstractExternalModule {
                 });
             })});
 
-
-
-                // console.log($("#check_all"));
-                // $("#check_all").on('change', function () {
-                //     var PID_Checkboxes = $(".PID_Checkbox");
-                //     console.log($(this));
-                    // PID_Checkboxes.each(function() {
-
-                    // $(this).toggle($(this).checked);
-                    // console.log($(this).checked);
-                    //     if ($(this).is(':checked'))
-                    //
-                    //     // console.log($(this).attr('id'));
-                    //     if ($(this).prop('id') === '0')
-                    //     // console.log($(this).attr('id'));
-                    //         $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                    //     else
-                    //     // console.log($(this).attr('id'));
-                    //         $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                    // else
-                    //     // console.log("Hi");
-                    //     $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                    // });
-
-            //     });
-            // }
-
             // Removes checked row color on form reset
             function Clear_Row_Styling()
             {
@@ -208,7 +181,9 @@ class QuickDeleter extends AbstractExternalModule {
     //  Displays page limit dropdown
     public function Display_Pager() {
         ?>
+
         <div id="pager" class="pager" align="center">
+
             <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/first.png") ?>" class="first"/>
             <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/prev.png") ?>" class="prev"/>
             <!-- the "pagedisplay" can be any element, including an input -->
@@ -224,21 +199,43 @@ class QuickDeleter extends AbstractExternalModule {
                 <option value="500">500</option>
                 <option value="all">All Rows</option>
             </select>
+
         </div>
+
+        <?php
+
+    }
+
+    public function Display_Reset_Button() {
+        ?>
+
+        <div align="left">
+            <table id="Reset_Table">
+                <tr>
+                    <td>
+                        <input class="reset_button" type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" >
+                    </td>
+                </tr>
+            </table>
+        </div>
+
         <?php
     }
 
     //  Displays submit button for deleting/undeleting projects
     public function Display_Submit_Button() {
+
+//        $this->Display_Reset_Button();
+
         ?>
         <div align="center">
             <table id='Submit_Table'>
                 <tr>
                     <td>
-                        <input type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" >
+                        <input class="reset_button" type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" >
                     </td>
-                    <td>
-                        <input type='submit' id='submit' name='submit'>
+                    <td >
+                        <input class="submit_button" type='submit' id='submit' name='submit'>
                     </td>
                     <td>
                         <input id='PID_Box' type='text' name='PID' hidden readonly>
@@ -268,7 +265,13 @@ class QuickDeleter extends AbstractExternalModule {
 
     //  Displays table headers
     public function Table_Header() {
+
+
+
         ?>
+
+
+
         <thead>
             <tr>
 <!--                --><?php
@@ -277,7 +280,7 @@ class QuickDeleter extends AbstractExternalModule {
 //                }
 //                else {
 //                    ?>
-                    <th data-filter="false"><input name="check_all" id="check_all" type="checkbox"></th> <?php
+                    <th style="text-align:center" data-filter="false"><input name="check_all" id="check_all" type="checkbox"></th> <?php
 //                }
                     ?>
 <!--                <th style="text-align:center"><input type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" ></th>-->
@@ -536,6 +539,7 @@ class QuickDeleter extends AbstractExternalModule {
             <table id='Projects_Table' class='tablesorter' >
             <?php
             $this->Display_Pager();
+//            $this->Display_Reset_Button();
             $this->Table_Header();
         }
         else {

@@ -15,6 +15,21 @@ table#Submit_Table {
     /*max-width:80%;*/
    }
 
+input[type=checkbox]
+{
+    /* Double-sized Checkboxes */
+    -ms-transform: scale(1.5); /* IE */
+    -moz-transform: scale(1.5); /* FF */
+    -webkit-transform: scale(1.5); /* Safari and Chrome */
+    -o-transform: scale(1.5); /* Opera */
+    padding: 10px;
+}
+
+#check_all {
+    margin: 10px;
+
+}
+
 .Report_Tabs {
 
     color:white;
@@ -57,7 +72,9 @@ table#Links_Table, #Links_Table tr, #Links_Table td {
 
 }
 
-
+.reset_button {
+    margin-right: 5px;
+}
 
 div#outer
 {
@@ -76,6 +93,7 @@ div#outer
 #Projects_Table {
     font-size: 14px;
     color:black;
+    width: 100%;
 }
 
 
