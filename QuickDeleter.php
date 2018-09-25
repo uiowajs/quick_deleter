@@ -310,10 +310,10 @@ class QuickDeleter extends AbstractExternalModule {
 //        $Custom_String_ssv = str_replace(" ", ",", $ssv);
         //echo $Custom_String_ssv;
 
-
+        $Parsed_json_array = explode(",", $Parsed_json);
 
 //         Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
-        $qMarks = str_repeat('?,', count($Custom_PID) - 1) . '?';
+        $qMarks = str_repeat('?,', count($Parsed_json_array) - 1) . '?';
         echo $qMarks;
 
 //         Forms int placeholder string for bind_param().  e.g. 'iii'
@@ -449,7 +449,7 @@ class QuickDeleter extends AbstractExternalModule {
         ON a.project_id=b.project_id
         JOIN redcap_record_counts AS c
         ON a.project_id=c.project_id
-        WHERE a.project_id IN (".$Parsed_csv.")  
+        WHERE a.project_id IN (".$qMarks.")  
         GROUP BY a.project_id
         ORDER BY a.project_id ASC  
             ",
@@ -491,22 +491,29 @@ class QuickDeleter extends AbstractExternalModule {
 
 
         // https://stackoverflow.com/questions/3703180/a-prepared-statement-where-in-query-and-sorting-with-mysql/45905752#45905752.
-//        $stmt = $conn->prepare($Project_Pages[2]);
+        $Current_URL = $_SERVER['SERVER_NAME']  . $_SERVER['REQUEST_URI'];
+        $json_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
+        if ($Current_URL == $json_Page) {
+            $stmt = $conn->prepare($Project_Pages[2]);
 //        $stmt->bindValue(1, $Custom_String);
-//        $stmt->bind_param($Integers, ...$Custom_PID);
-//        $stmt->execute();
+            $stmt->bind_param($Integers, ...$Parsed_json_array);
+
+            $stmt->execute();
+
+            $stmt->bind_result($Parsed_json_array);
 //
-//        $stmt->bind_result($Custom_String);
+            while ($stmt->fetch()) {
+////                printf("%s\n", ...$Parsed_json_array);
+            }
+        }
 //
-//        while ($stmt->fetch()) {
-//            printf("%s\n", ...$Custom_PID);
-//        }
+
 
 //        while($stmt->fetch()) {
 //            echo $Custom_String;
 //        }
 //
-//        $stmt->close();
+        $stmt->close();
 
 
 
