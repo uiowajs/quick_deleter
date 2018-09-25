@@ -213,8 +213,6 @@ class QuickDeleter extends AbstractExternalModule {
     //  Displays submit button for deleting/undeleting projects
     public function Display_Submit_Button() {
 
-//        $this->Display_Reset_Button();
-
         ?>
         <div align="center">
             <table id='Submit_Table'>
@@ -253,12 +251,7 @@ class QuickDeleter extends AbstractExternalModule {
 
     //  Displays table headers
     public function Table_Header() {
-
-
-
         ?>
-
-
 
         <thead>
             <tr>
@@ -319,14 +312,14 @@ class QuickDeleter extends AbstractExternalModule {
 
 
 
-        // Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
-//        $qMarks = str_repeat('?,', count($Custom_PID) - 1) . '?';
-//        echo $qMarks;
+//         Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
+        $qMarks = str_repeat('?,', count($Custom_PID) - 1) . '?';
+        echo $qMarks;
 
-        // Forms int placeholder string for bind_param().  e.g. 'iii'
-//        $Get_Integers = explode(",", $Parsed_json);
-//        $Integers = join(array_pad(array(), count($Get_Integers), "i"));
-//        echo $Integers;
+//         Forms int placeholder string for bind_param().  e.g. 'iii'
+        $Get_Integers = explode(",", $Parsed_json);
+        $Integers = join(array_pad(array(), count($Get_Integers), "i"));
+        echo $Integers;
 
         $Project_Pages = array("
         SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
