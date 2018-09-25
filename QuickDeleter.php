@@ -95,6 +95,7 @@ class QuickDeleter extends AbstractExternalModule {
     //  Displays header, home page, and table.  Contains javascript
     public function Display_Page()
     {
+
         $this->Display_Header();
         $this->Display_Home_Page();
         $this->Display_Table();
@@ -169,7 +170,10 @@ class QuickDeleter extends AbstractExternalModule {
     //  Displays home page
     public function Display_Home_Page()
     {
-        if ($_SERVER['REQUEST_URI'] == $this->getUrl("index.php")) {
+
+        $Current_URL = $_SERVER['SERVER_NAME']  . $_SERVER['REQUEST_URI'];
+        $Home_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index";
+        if ($Current_URL == $Home_Page) {
             ?>
             <div>
                 <h2 style="text-align: center; padding-top:50px; color:white;">Quickly delete and undelete projects</h2>
@@ -204,22 +208,6 @@ class QuickDeleter extends AbstractExternalModule {
 
         <?php
 
-    }
-
-    public function Display_Reset_Button() {
-        ?>
-
-        <div align="left">
-            <table id="Reset_Table">
-                <tr>
-                    <td>
-                        <input class="reset_button" type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" >
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <?php
     }
 
     //  Displays submit button for deleting/undeleting projects
@@ -274,17 +262,21 @@ class QuickDeleter extends AbstractExternalModule {
 
         <thead>
             <tr>
-<!--                --><?php
-//                if($this->getUrl("index.php?tab=0") || $this->getUrl("index.php?tab=0") == true) {
-//                    ?><!-- <th></th> --><?php
-//                }
-//                else {
-//                    ?>
-                    <th style="text-align:center" data-filter="false"><input name="check_all" id="check_all" type="checkbox"></th> <?php
-//                }
+                <?php
+
+                $Current_URL = $_SERVER['SERVER_NAME']  . $_SERVER['REQUEST_URI'];
+                $Tab0 = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
+                $Tab1 = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
+
+                if($Current_URL == $Tab0 || $Current_URL == $Tab1) {
+                    ?> <th></th> <?php
+                }
+                else {
                     ?>
-<!--                <th style="text-align:center"><input type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" ></th>-->
-                <th  style="text-align:center"><b>PID</b></th>
+                    <th style="text-align:center" data-filter="false"><input name="check_all" id="check_all" type="checkbox"></th> <?php
+                }
+                    ?>
+                <th style="text-align:center"><b>PID</b></th>
                 <th style="text-align:center"><b>Project Name</b></th>
                 <th style="text-align:center"><b>Purpose</b></th>
                 <th style="text-align:center"><b>Status</b></th>
@@ -693,6 +685,7 @@ class QuickDeleter extends AbstractExternalModule {
         echo "</br>";
         echo "</br>";
 //        echo $this->Get_PID();
+
 
         // Converts submitted PID_Box string to array for bind_param()
         $PID_Array = explode(",", $this->Get_PID());
