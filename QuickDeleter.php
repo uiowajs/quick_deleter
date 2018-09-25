@@ -314,12 +314,27 @@ class QuickDeleter extends AbstractExternalModule {
 
 //         Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
         $qMarks = str_repeat('?,', count($Parsed_json_array) - 1) . '?';
-        echo $qMarks;
+//        echo $qMarks;
 
 //         Forms int placeholder string for bind_param().  e.g. 'iii'
         $Get_Integers = explode(",", $Parsed_json);
         $Integers = join(array_pad(array(), count($Get_Integers), "i"));
-        echo $Integers;
+//        echo $Integers;
+
+
+//        $Parsed_csv_array = explode(",", $Parsed_csv);
+//        //         Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
+//        $qMarksCsv = str_repeat('?,', count($Parsed_csv_array) - 1) . '?';
+//        echo $qMarksCsv;
+//
+////         Forms int placeholder string for bind_param().  e.g. 'iii'
+//        $Get_IntegersCsv = explode(",", $Parsed_csv);
+//        $IntegersCsv = join(array_pad(array(), count($Get_IntegersCsv), "i"));
+//        echo $IntegersCsv;
+
+
+
+
 
         $Project_Pages = array("
         SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
@@ -416,7 +431,7 @@ class QuickDeleter extends AbstractExternalModule {
         ON a.project_id=b.project_id
         JOIN redcap_record_counts AS c
         ON a.project_id=c.project_id
-        WHERE a.project_id IN (".$Parsed_json.")  
+        WHERE a.project_id IN (".$qMarks.")  
         GROUP BY a.project_id
         ORDER BY a.project_id ASC  
             ",
@@ -449,7 +464,7 @@ class QuickDeleter extends AbstractExternalModule {
         ON a.project_id=b.project_id
         JOIN redcap_record_counts AS c
         ON a.project_id=c.project_id
-        WHERE a.project_id IN (".$qMarks.")  
+        WHERE a.project_id IN (".$Parsed_csv.")  
         GROUP BY a.project_id
         ORDER BY a.project_id ASC  
             ",
@@ -493,27 +508,23 @@ class QuickDeleter extends AbstractExternalModule {
         // https://stackoverflow.com/questions/3703180/a-prepared-statement-where-in-query-and-sorting-with-mysql/45905752#45905752.
         $Current_URL = $_SERVER['SERVER_NAME']  . $_SERVER['REQUEST_URI'];
         $json_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
+//        $csv_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
         if ($Current_URL == $json_Page) {
+
             $stmt = $conn->prepare($Project_Pages[2]);
-//        $stmt->bindValue(1, $Custom_String);
             $stmt->bind_param($Integers, ...$Parsed_json_array);
-
             $stmt->execute();
+            $Get_Result = $stmt->get_result();
+//            echo $Get_Result;
 
-            $stmt->bind_result($Parsed_json_array);
-//
-            while ($stmt->fetch()) {
-////                printf("%s\n", ...$Parsed_json_array);
+
+            $PID_Array = array();
+            while ($row1 = $Get_Result->fetch_assoc()) {
+//                print_r($row1['project_id']);
+                array_push($PID_Array, $row1['project_id']);
             }
+            print_r($PID_Array);
         }
-//
-
-
-//        while($stmt->fetch()) {
-//            echo $Custom_String;
-//        }
-//
-        $stmt->close();
 
 
 
@@ -531,7 +542,6 @@ class QuickDeleter extends AbstractExternalModule {
             <table id='Projects_Table' class='tablesorter' >
             <?php
             $this->Display_Pager();
-//            $this->Display_Reset_Button();
             $this->Table_Header();
         }
         else {
