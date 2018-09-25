@@ -96,9 +96,13 @@ $(function() {
 
   }
 
+
+        $("table thead th:eq(0)").data("sorter", false);
+
+
  
 
-  $("table")
+  $("#Projects_Table")
 
     // Initialize tablesorter
     // ***********************
@@ -110,9 +114,8 @@ $(function() {
         sortRestart: true,
       widgets: ['uitheme', 'filter', 'resizable', 'stickyHeaders', 'pager'],
     })
-    
 
-   
+
 
 	    // bind to pager events
 	    // *********************
@@ -126,7 +129,7 @@ $(function() {
 	
 	    // initialize the pager plugin
 	    // ****************************
-	    .tablesorterPager(pagerOptions);
+	    // .tablesorterPager(pagerOptions);
 	
 	    // Add two new rows using the "addRows" method
 	    // the "update" method doesn't work here because not all rows are
@@ -212,10 +215,18 @@ $(function() {
 	    });
 
 
-    
-    
+    console.log("Hi");
+
+
 
 });
+
+
+// (function($, window, document) {
+    // sort table when document is loaded
+    $(document).ready(function () {
+// console.log("Hi");
+	});
 
 
 

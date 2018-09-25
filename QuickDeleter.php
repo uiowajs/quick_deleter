@@ -112,7 +112,7 @@ class QuickDeleter extends AbstractExternalModule {
             });
 
             //  Highlight row when box checked
-            $( "input[type=checkbox]" ).on('change', function(){
+            $( ".PID_Checkbox" ).on('change', function(){
 //                 $("form[name=Form]").on("change", "input[type=checkbox]", function () {
                 if($(this).is(':checked'))
                 // console.log($(this).attr('id'));
@@ -126,6 +126,57 @@ class QuickDeleter extends AbstractExternalModule {
                 // console.log("Hi");
                     $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked?'bold':'normal'});
             });
+
+            $( document ).ready(function() {
+                console.log( "ready!" );
+                $("#check_all").on('change', function () {
+                    var PID_Checkboxes = $(".PID_Checkbox");
+                    console.log($(this));
+                PID_Checkboxes.each(function() {
+
+                // $(this).toggle($(this).checked);
+                console.log($(this).checked);
+                    if ($(this).is(':checked'))
+
+                    // console.log($(this).attr('id'));
+                    if ($(this).prop('id') === '0')
+                    // console.log($(this).attr('id'));
+                        $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                    else
+                    // console.log($(this).attr('id'));
+                        $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                else
+                    // console.log("Hi");
+                    $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                });
+            })});
+
+
+
+                // console.log($("#check_all"));
+                // $("#check_all").on('change', function () {
+                //     var PID_Checkboxes = $(".PID_Checkbox");
+                //     console.log($(this));
+                    // PID_Checkboxes.each(function() {
+
+                    // $(this).toggle($(this).checked);
+                    // console.log($(this).checked);
+                    //     if ($(this).is(':checked'))
+                    //
+                    //     // console.log($(this).attr('id'));
+                    //     if ($(this).prop('id') === '0')
+                    //     // console.log($(this).attr('id'));
+                    //         $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                    //     else
+                    //     // console.log($(this).attr('id'));
+                    //         $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                    // else
+                    //     // console.log("Hi");
+                    //     $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                    // });
+
+            //     });
+            // }
 
             // Removes checked row color on form reset
             function Clear_Row_Styling()
@@ -226,11 +277,11 @@ class QuickDeleter extends AbstractExternalModule {
 //                }
 //                else {
 //                    ?>
-                    <th><input name="check_all" id="check_all" type="checkbox"></th> <?php
+                    <th data-filter="false"><input name="check_all" id="check_all" type="checkbox"></th> <?php
 //                }
                     ?>
 <!--                <th style="text-align:center"><input type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()" ></th>-->
-                <th style="text-align:center"><b>PID</b></th>
+                <th  style="text-align:center"><b>PID</b></th>
                 <th style="text-align:center"><b>Project Name</b></th>
                 <th style="text-align:center"><b>Purpose</b></th>
                 <th style="text-align:center"><b>Status</b></th>
@@ -511,7 +562,7 @@ class QuickDeleter extends AbstractExternalModule {
                 }
                 ?>
                 <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <input id="<?php echo $row['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row['project_id']; ?>>
+                    <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row['project_id']; ?>>
                 </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>>
                     <?php echo $row['project_id']; ?>
