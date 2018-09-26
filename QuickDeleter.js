@@ -6,8 +6,15 @@
 
 
 
+// (function($, window, document) {
+// sort table when document is loaded
+// $(document).ready(function () {
+// // console.log("Hi");
+// });
 
-$(function() {
+
+
+$(document).ready(function () {
 
   // **********************************
   //  Description of ALL pager options
@@ -222,11 +229,7 @@ $(function() {
 });
 
 
-// (function($, window, document) {
-    // sort table when document is loaded
-    $(document).ready(function () {
-// console.log("Hi");
-	});
+
 
 
 

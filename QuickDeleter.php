@@ -515,20 +515,102 @@ class QuickDeleter extends AbstractExternalModule {
             $stmt->bind_param($Integers, ...$Parsed_json_array);
             $stmt->execute();
             $Get_Result = $stmt->get_result();
-//            echo $Get_Result;
 
 
-            $PID_Array = array();
-            while ($row1 = $Get_Result->fetch_assoc()) {
-//                print_r($row1['project_id']);
-                array_push($PID_Array, $row1['project_id']);
+            $this->Tablesorter_Includes();
+
+
+//            $PID_Array = array();
+            while ($row_json = $Get_Result->fetch_assoc()) {
+//                echo($row_json['project_id']);
+//                print_r($row_json['project_id']);
+//                print_r($row_json);
+//                array_push($PID_Array, $row_json);
             }
-            print_r($PID_Array);
-        }
+
+
+                ?>
+
+                <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
+                <tr id="<?php echo $row_json['New Date Deleted']; ?>"> <?php ;
+
+                    if($row_json['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row_json['New Date Deleted'] == ""
+                    {
+                        $Row_Color = "style=\"background-color: rgba(0, 200, 0, 0.1);\"";
+//                 $Flagged = 0;
+                    }
+                    else
+                    {
+                        $Row_Color = "style=\"background-color: rgba(200, 0, 0, 0.1);\"";
+//                 $Flagged = 1;
+                    }
+                    ?>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <input class="PID_Checkbox" id="<?php echo $row_json['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row_json['project_id']; ?>>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row_json['project_id']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <!--                    <a href="--><?php //sprintf("https://%s%sProjectSetup/index.php?pid=%d", SERVER_NAME, APP_PATH_WEBROOT, $row_json['project_id']); ?><!--" > --><?php //echo $row_json['app_title']; ?><!-- </a>-->
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row_json['project_id']; ?>" > <?php echo $row_json['app_title']; ?> </a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row_json['Purpose']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row_json['Statuses']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row_json['project_id'] . "&report_id=ALL"; ?>" > <?php echo $row_json['record_count']; ?></a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "UserRights/index.php?pid=" . $row_json['project_id']; ?>" > <?php echo $row_json['Users']; ?> </a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row_json['New Creation Time']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row_json['project_id']; ?>" > <?php echo $row_json['New Last Event']; ?></a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row_json['project_id']; ?>" > <?php echo $row_json['Days Since Last Event']; ?></a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row_json['New Date Deleted']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row_json['New Final Delete Date']; ?>
+                    </td>
+
+                    <?php ;
+                    ?>
+                </tr>
+
+                <?php
+
+
+
+            }  // End while loop
+//print_r($PID_Array);
+//        }
+
+//        $PID_String = implode(",", $PID_Array['project_id']);
+//        print_r($PID_Array);
+
+
+
+
+
 
 
 
         $Result = db_query($Project_Pages[$tab]);
+//        print_r($Result);
+
+
+//print_r($Result);
+
 
         $this->Tablesorter_Includes() ?>
 
@@ -547,6 +629,8 @@ class QuickDeleter extends AbstractExternalModule {
         else {
             echo "Error, no results";
         }
+
+
 
 
         // Builds HTML rows and displays sql results.
