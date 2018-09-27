@@ -503,6 +503,24 @@ class QuickDeleter extends AbstractExternalModule {
             "
         );
 
+        $this->Tablesorter_Includes() ?>
+
+    <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
+
+        <?php
+//        if($Result != "") {
+        $this->Display_Submit_Button(); ?>
+
+        <div id="id_projects_table" align="center">
+        <table id='Projects_Table' class='tablesorter' >
+        <?php
+        $this->Display_Pager();
+        $this->Table_Header();
+//        }
+//        else {
+//            echo "Error, no results";
+//        }
+
 
 
         // https://stackoverflow.com/questions/3703180/a-prepared-statement-where-in-query-and-sorting-with-mysql/45905752#45905752.
@@ -526,12 +544,13 @@ class QuickDeleter extends AbstractExternalModule {
 //                print_r($row_json['project_id']);
 //                print_r($row_json);
 //                array_push($PID_Array, $row_json);
-            }
+
 
 
                 ?>
 
-                <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
+                <form name="Form_json" id="Form_json" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
+<!--                <table id='Projects_Table_json' class='tablesorter'>-->
                 <tr id="<?php echo $row_json['New Date Deleted']; ?>"> <?php ;
 
                     if($row_json['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row_json['New Date Deleted'] == ""
@@ -586,14 +605,15 @@ class QuickDeleter extends AbstractExternalModule {
                     <?php ;
                     ?>
                 </tr>
-
+<!--                </table>-->
+                </form>
                 <?php
 
 
 
             }  // End while loop
 //print_r($PID_Array);
-//        }
+        }
 
 //        $PID_String = implode(",", $PID_Array['project_id']);
 //        print_r($PID_Array);
@@ -612,23 +632,7 @@ class QuickDeleter extends AbstractExternalModule {
 //print_r($Result);
 
 
-        $this->Tablesorter_Includes() ?>
 
-        <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
-
-        <?php
-        if($Result != "") {
-            $this->Display_Submit_Button(); ?>
-
-            <div id="id_projects_table" align="center">
-            <table id='Projects_Table' class='tablesorter' >
-            <?php
-            $this->Display_Pager();
-            $this->Table_Header();
-        }
-        else {
-            echo "Error, no results";
-        }
 
 
 
