@@ -15,6 +15,7 @@
 
 
 $(document).ready(function () {
+// (function () {
 
   // **********************************
   //  Description of ALL pager options
@@ -220,10 +221,6 @@ $(document).ready(function () {
 	      // $('table').trigger('pageAndSize')
 	      $('table').trigger('pageAndSize', [1, 25]);
 	    });
-
-
-    console.log("Hi");
-
 
 
 });

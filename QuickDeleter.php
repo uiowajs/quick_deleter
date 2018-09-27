@@ -239,6 +239,8 @@ if(SUPER_USER == 1) {
         //  Displays table headers
         public function Table_Header()
         {
+
+
             ?>
 
             <thead>
@@ -323,6 +325,8 @@ if(SUPER_USER == 1) {
 
             $tab = $_REQUEST['tab'];  //  Tabs for SQL array
 
+            $this->Tablesorter_Includes();
+
             //  Calls parsed json if tab=2
             if (!isset($_REQUEST['tab'])) {
                 die;
@@ -330,6 +334,7 @@ if(SUPER_USER == 1) {
                 $Parsed_json = $this->Parse_Posted_Json();
                 $Parsed_csv = $this->Parse_Posted_Csv();
             }
+
 
 
 //        $Custom_String_ssv = str_replace(" ", ",", $ssv);
@@ -524,13 +529,32 @@ if(SUPER_USER == 1) {
             "
             );
 
-            $this->Tablesorter_Includes() ?>
+            $Current_URL = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+            $My_Projects_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
+            $All_Projects_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
+            $json_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
+            $csv_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
+
+
+
+             ?>
+
+
 
         <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST"
               onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
 
             <?php
-        if ($Parsed_json != "" || $Parsed_csv != "") {
+            if($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
+            $this->Display_Submit_Button(); ?>
+
+            <div id="id_projects_table" align="center">
+            <table id='Projects_Table' class='tablesorter'>
+            <?php
+            $this->Display_Pager();
+            $this->Table_Header();
+            }
+        elseif ($Parsed_json != "" || $Parsed_csv != "" ) {
             $this->Display_Submit_Button(); ?>
 
             <div id="id_projects_table" align="center">
@@ -545,9 +569,7 @@ if(SUPER_USER == 1) {
 
 
             // https://stackoverflow.com/questions/3703180/a-prepared-statement-where-in-query-and-sorting-with-mysql/45905752#45905752.
-            $Current_URL = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-            $json_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
-            $csv_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
+
 
             if ($Current_URL == $json_Page) {
 
@@ -628,7 +650,7 @@ if(SUPER_USER == 1) {
 
                 while ($row_csv = $Get_Result->fetch_assoc()) {
                     ?>
-                    
+
                     <tr id="<?php echo $row_csv['New Date Deleted']; ?>"> <?php ;
 
                         if ($row_csv['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row_csv['New Date Deleted'] == ""
@@ -689,6 +711,15 @@ if(SUPER_USER == 1) {
             }  //  End elseif($Current_URL == $csv_Page)
 
             $Result = db_query($Project_Pages[$tab]);
+
+            if($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
+                if ($Result != "") {
+
+                    $this->Tablesorter_Includes();
+                } else {
+                    echo "Error, no results";
+                }
+            }
 
             // Builds HTML rows and displays sql results for My Projects and All Projects.
             while ($row = db_fetch_assoc($Result))  // $sqlGetAllProjects
