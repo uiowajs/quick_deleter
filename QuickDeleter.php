@@ -340,10 +340,12 @@ if(SUPER_USER == 1) {
 //        $Custom_String_ssv = str_replace(" ", ",", $ssv);
             //echo $Custom_String_ssv;
 
+
+
             $Parsed_json_array = explode(",", $Parsed_json);
 
 //         Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
-            $qMarks = str_repeat('?,', count($Parsed_json_array) - 1) . '?';
+            $qMarks_json = str_repeat('?,', count($Parsed_json_array) - 1) . '?';
 //        echo $qMarks;
 
 //         Forms int placeholder string for bind_param().  e.g. 'iii'
@@ -353,7 +355,7 @@ if(SUPER_USER == 1) {
 
         $Parsed_csv_array = explode(",", $Parsed_csv);
         //         Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
-        $qMarksCsv = str_repeat('?,', count($Parsed_csv_array) - 1) . '?';
+        $qMarks_Csv = str_repeat('?,', count($Parsed_csv_array) - 1) . '?';
 //        echo $qMarksCsv;
 
 //         Forms int placeholder string for bind_param().  e.g. 'iii'
@@ -457,7 +459,7 @@ if(SUPER_USER == 1) {
         ON a.project_id=b.project_id
         JOIN redcap_record_counts AS c
         ON a.project_id=c.project_id
-        WHERE a.project_id IN (" . $qMarks . ")  
+        WHERE a.project_id IN (" . $qMarks_json . ")  
         GROUP BY a.project_id
         ORDER BY a.project_id ASC  
             ",
@@ -490,7 +492,7 @@ if(SUPER_USER == 1) {
         ON a.project_id=b.project_id
         JOIN redcap_record_counts AS c
         ON a.project_id=c.project_id
-        WHERE a.project_id IN (" . $qMarksCsv . ")  
+        WHERE a.project_id IN (" . $qMarks_Csv . ")  
         GROUP BY a.project_id
         ORDER BY a.project_id ASC  
             ",
@@ -557,7 +559,7 @@ if(SUPER_USER == 1) {
             $this->Table_Header();
         }
 
-        //  If the page is json and a value was submitted, load tablesorter and display submit for, otherwise show error no results.
+        //  If the page is json or csv and a value was submitted, display submit form, otherwise show error no results.
         if($Current_URL == $json_Page) {
             if ($Parsed_json != "") {
 
@@ -573,9 +575,7 @@ if(SUPER_USER == 1) {
                 echo "Error, no results.  Please enter a value";
             }
         }
-
-        //  If the page is csv and a value was submitted, load tablesorter and display submit for, otherwise show error no results.
-        if($Current_URL == $csv_Page) {
+        elseif($Current_URL == $csv_Page) {
             if ($Parsed_csv != "" ) {
 
                 $this->Display_Submit_Button(); ?>
@@ -668,9 +668,7 @@ if(SUPER_USER == 1) {
         }  // End while loop
 
         // Results for My or All Projects SQL query.
-        if($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
-            $Result = db_query($Project_Pages[$tab]);
-        }
+        $Result = db_query($Project_Pages[$tab]);
 
         // Builds HTML rows and displays sql results for My Projects and All Projects.
         while ($row = db_fetch_assoc($Result))  // $sqlGetAllProjects
