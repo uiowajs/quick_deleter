@@ -545,16 +545,38 @@ if(SUPER_USER == 1) {
               onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
 
             <?php
-            if($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
-            $this->Display_Submit_Button(); ?>
 
-            <div id="id_projects_table" align="center">
-            <table id='Projects_Table' class='tablesorter'>
-            <?php
-            $this->Display_Pager();
-            $this->Table_Header();
+            // Loads tablesorter and displays submit form if the page is My or All projects.
+            if($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
+
+                $this->Display_Submit_Button(); ?>
+                <div id="id_projects_table" align="center">
+                <table id='Projects_Table' class='tablesorter'>
+                <?php
+                $this->Display_Pager();
+                $this->Table_Header();
             }
-        elseif ($Parsed_json != "" || $Parsed_csv != "" ) {
+
+            //  If the page is json or csv and a value was submitted, load tablesorter and display submit for, otherwise show error no results.
+            if($Current_URL == $json_Page) {
+                if ($Parsed_json != "") {
+
+                    $this->Display_Submit_Button(); ?>
+
+                    <div id="id_projects_table" align="center">
+                    <table id='Projects_Table' class='tablesorter'>
+                    <?php
+                    $this->Display_Pager();
+                    $this->Table_Header();
+                }
+                else {
+                    echo "Error, no results.  Please enter a value";
+                }
+            }
+
+        if($Current_URL == $csv_Page) {
+        if ($Parsed_csv != "" ) {
+
             $this->Display_Submit_Button(); ?>
 
             <div id="id_projects_table" align="center">
@@ -564,13 +586,11 @@ if(SUPER_USER == 1) {
             $this->Table_Header();
         }
         else {
-            echo "Error, no results";
+            echo "Error, no results.  Please enter a value";
+        }
         }
 
-
-            // https://stackoverflow.com/questions/3703180/a-prepared-statement-where-in-query-and-sorting-with-mysql/45905752#45905752.
-
-
+            //  If page is json, prepare sql statement.  Elseif csv then prepare statement.
             if ($Current_URL == $json_Page) {
 
                 $stmt = $conn->prepare($Project_Pages[2]);
@@ -637,7 +657,6 @@ if(SUPER_USER == 1) {
                         <?php ;
                         ?>
                     </tr>
-                    <!--                </form>-->
                     <?php
                 }  // End while loop
             }  //  End if ($Current_URL == $json_Page)
@@ -710,16 +729,18 @@ if(SUPER_USER == 1) {
                 }  // End while loop
             }  //  End elseif($Current_URL == $csv_Page)
 
+            // Results for My or All Projects SQL query.
             $Result = db_query($Project_Pages[$tab]);
 
-            if($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
-                if ($Result != "") {
-
-                    $this->Tablesorter_Includes();
-                } else {
-                    echo "Error, no results";
-                }
-            }
+            //  Seeming don't need.  Maybe delete later
+//            if($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
+//                if ($Result != "") {
+//
+//                    $this->Tablesorter_Includes();
+//                } else {
+//                    echo "Error, no results";
+//                }
+//            }
 
             // Builds HTML rows and displays sql results for My Projects and All Projects.
             while ($row = db_fetch_assoc($Result))  // $sqlGetAllProjects
@@ -782,22 +803,22 @@ if(SUPER_USER == 1) {
                     <?php ;
                     ?>
                 </tr>
-
                 <?php
-
             }  // End while loop
-            ?>
-            <table align="center">
-                <tr>
-                    <td>
-                        <?php
-                        if ($Result != "") {
-                            $this->Display_Pager();
-                        } ?>
-                    </td>
-                </tr>
-            </table>
-            <?php
+
+            //  Displays pager below table
+//            ?>
+<!--            <table align="center">-->
+<!--                <tr>-->
+<!--                    <td>-->
+<!--                        --><?php
+//                        if ($Result != "") {
+//                            $this->Display_Pager();
+//                        } ?>
+<!--                    </td>-->
+<!--                </tr>-->
+<!--            </table>-->
+<!--            --><?php
         }  // End GetProjectList()
 
         // This function is called on form submit.  Gets pre values, executes update query, gets post values, adds project update to REDCap Activity Log.
