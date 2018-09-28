@@ -335,33 +335,52 @@ if(SUPER_USER == 1) {
                 $Parsed_csv = $this->Parse_Posted_Csv();
             }
 
+            $Current_URL = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+            $My_Projects_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
+            $All_Projects_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
+            $json_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
+            $csv_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
+
+//            $Parsed_json_array = explode(",", $Parsed_json);
+//            $Parsed_csv_array = explode(",", $Parsed_csv);
 
 
-//        $Custom_String_ssv = str_replace(" ", ",", $ssv);
-            //echo $Custom_String_ssv;
+
+            if($Current_URL == $json_Page) {
+                $Parsed_Array = explode(",", $Parsed_json);
+                $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
+                $Get_Integers = explode(",", $Parsed_json);
+                $Integers = join(array_pad(array(), count($Get_Integers), "i"));
+            }
+            elseif($Current_URL == $csv_Page) {
+                $Parsed_Array = explode(",", $Parsed_csv);
+                $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
+                $Get_Integers = explode(",", $Parsed_csv);
+                $Integers = join(array_pad(array(), count($Get_Integers), "i"));
+            }
 
 
 
-            $Parsed_json_array = explode(",", $Parsed_json);
 
-//         Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
-            $qMarks_json = str_repeat('?,', count($Parsed_json_array) - 1) . '?';
-//        echo $qMarks;
 
-//         Forms int placeholder string for bind_param().  e.g. 'iii'
-            $Get_Integers = explode(",", $Parsed_json);
-            $Integers = join(array_pad(array(), count($Get_Integers), "i"));
-//        echo $Integers;
-
-        $Parsed_csv_array = explode(",", $Parsed_csv);
-        //         Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
-        $qMarks_Csv = str_repeat('?,', count($Parsed_csv_array) - 1) . '?';
-//        echo $qMarksCsv;
-
-//         Forms int placeholder string for bind_param().  e.g. 'iii'
-        $Get_IntegersCsv = explode(",", $Parsed_csv);
-        $IntegersCsv = join(array_pad(array(), count($Get_IntegersCsv), "i"));
-//        echo $IntegersCsv;
+////         Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
+//            $qMarks_json = str_repeat('?,', count($Parsed_json_array) - 1) . '?';
+////        echo $qMarks;
+//
+////         Forms int placeholder string for bind_param().  e.g. 'iii'
+//            $Get_Integers = explode(",", $Parsed_json);
+//            $Integers = join(array_pad(array(), count($Get_Integers), "i"));
+////        echo $Integers;
+//
+//        $Parsed_csv_array = explode(",", $Parsed_csv);
+//        //         Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
+//        $qMarks_Csv = str_repeat('?,', count($Parsed_csv_array) - 1) . '?';
+////        echo $qMarksCsv;
+//
+////         Forms int placeholder string for bind_param().  e.g. 'iii'
+//        $Get_IntegersCsv = explode(",", $Parsed_csv);
+//        $IntegersCsv = join(array_pad(array(), count($Get_IntegersCsv), "i"));
+////        echo $IntegersCsv;
 
 
             $Project_Pages = array("
@@ -459,7 +478,7 @@ if(SUPER_USER == 1) {
         ON a.project_id=b.project_id
         JOIN redcap_record_counts AS c
         ON a.project_id=c.project_id
-        WHERE a.project_id IN (" . $qMarks_json . ")  
+        WHERE a.project_id IN (" . $qMarks . ")  
         GROUP BY a.project_id
         ORDER BY a.project_id ASC  
             ",
@@ -492,59 +511,15 @@ if(SUPER_USER == 1) {
         ON a.project_id=b.project_id
         JOIN redcap_record_counts AS c
         ON a.project_id=c.project_id
-        WHERE a.project_id IN (" . $qMarks_Csv . ")  
-        GROUP BY a.project_id
-        ORDER BY a.project_id ASC  
-            ",
-                "
-        SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
-        CAST(CASE a.status
-             WHEN 0 THEN 'Development'
-             WHEN 1 THEN 'Production'
-             WHEN 2 THEN 'Inactive'
-             WHEN 3 THEN 'Archived'
-             ELSE a.status
-             END AS CHAR(50)) AS 'Statuses',
-        CAST(CASE a.purpose
-            WHEN 0 THEN 'Practice / Just for fun'
-            WHEN 4 THEN 'Operational Support'
-            WHEN 2 THEN 'Research'
-            WHEN 3 THEN 'Quality Improvement'
-            WHEN 1 THEN 'Other'
-            ELSE a.purpose
-            END AS CHAR(50)) AS 'Purpose',
-        CAST(creation_time AS date) AS 'New Creation Time', 
-        CAST(a.date_deleted AS date) AS 'New Date Deleted', 
-        CAST(last_logged_event AS date) AS 'New Last Event', 
-        DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
-        CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
-        CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
-        GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
-        FROM redcap_projects as a
-        JOIN redcap_user_rights AS b
-        ON a.project_id=b.project_id
-        JOIN redcap_record_counts AS c
-        ON a.project_id=c.project_id
-        WHERE a.project_id IN (" . $Custom_String_ssv . ")  
+        WHERE a.project_id IN (" . $qMarks . ")  
         GROUP BY a.project_id
         ORDER BY a.project_id ASC  
             "
-            );
+        );
 
-        $Current_URL = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-        $My_Projects_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
-        $All_Projects_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
-        $json_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
-        $csv_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
+          ?>
 
-
-
-         ?>
-
-
-
-    <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST"
-          onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
+        <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
 
         <?php
 
@@ -591,149 +566,142 @@ if(SUPER_USER == 1) {
             }
         }
 
-        if ($Current_URL == $json_Page) {
-            $Final_Integers = $Integers;
-            $Final_Array = $Parsed_json_array;
-            $stmt = $conn->prepare($Project_Pages[2]);
+        if($Current_URL == $json_Page || $Current_URL == $csv_Page) {
+            $stmt = $conn->prepare($Project_Pages[$tab]);
+            $stmt->bind_param($Integers, ...$Parsed_Array);
+            $stmt->execute();
+            $Get_Result = $stmt->get_result();
+
+            while ($row = $Get_Result->fetch_assoc()) {
+                ?>
+
+                <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
+
+                    if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
+                    {
+                        $Row_Color = "style=\"background-color: rgba(0, 200, 0, 0.1);\"";
+    //                 $Flagged = 0;
+                    } else {
+                        $Row_Color = "style=\"background-color: rgba(200, 0, 0, 0.1);\"";
+    //                 $Flagged = 1;
+                    }
+                    ?>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox'
+                               name="Select_Project" value=<?php echo $row['project_id']; ?>>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['project_id']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <!--                    <a href="-->
+                        <?php //sprintf("https://%s%sProjectSetup/index.php?pid=%d", SERVER_NAME, APP_PATH_WEBROOT, $row['project_id']); ?><!--" > -->
+                        <?php //echo $row['app_title']; ?><!-- </a>-->
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['app_title']; ?> </a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['Purpose']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['Statuses']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>"> <?php echo $row['record_count']; ?></a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "UserRights/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Users']; ?> </a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['New Creation Time']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['New Last Event']; ?></a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Days Since Last Event']; ?></a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['New Date Deleted']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['New Final Delete Date']; ?>
+                    </td>
+
+                    <?php ;
+                    ?>
+                </tr>
+                <?php
+            }  // End while loop
         }
         else {
-            $Final_Integers = $IntegersCsv;
-            $Final_Array = $Parsed_csv_array;
-            $stmt = $conn->prepare($Project_Pages[3]);
+            // Results for My or All Projects SQL query.
+            $Result = db_query($Project_Pages[$tab]);
+
+            // Builds HTML rows and displays sql results for My Projects and All Projects.
+            while ($row = db_fetch_assoc($Result))  // $sqlGetAllProjects
+            {
+                ?>
+
+                <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
+
+                    if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
+                    {
+                        $Row_Color = "style=\"background-color: rgba(0, 200, 0, 0.1);\"";
+    //                 $Flagged = 0;
+                    } else {
+                        $Row_Color = "style=\"background-color: rgba(200, 0, 0, 0.1);\"";
+    //                 $Flagged = 1;
+                    }
+                    ?>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox'
+                               name="Select_Project" value=<?php echo $row['project_id']; ?>>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['project_id']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <!--                    <a href="-->
+                        <?php //sprintf("https://%s%sProjectSetup/index.php?pid=%d", SERVER_NAME, APP_PATH_WEBROOT, $row['project_id']);
+                        ?><!--" > --><?php //echo $row['app_title'];
+                        ?><!-- </a>-->
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['app_title']; ?> </a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['Purpose']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['Statuses']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>"> <?php echo $row['record_count']; ?></a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "UserRights/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Users']; ?> </a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['New Creation Time']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['New Last Event']; ?></a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Days Since Last Event']; ?></a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['New Date Deleted']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['New Final Delete Date']; ?>
+                    </td>
+
+                    <?php ;
+                    ?>
+                </tr>
+                <?php
+                }  // End while loop
+            }    // End GetProjectList()
         }
-
-        $stmt->bind_param($Final_Integers, ...$Final_Array);
-        $stmt->execute();
-        $Get_Result = $stmt->get_result();
-
-        while ($row = $Get_Result->fetch_assoc()) {
-            ?>
-
-            <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
-
-                if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
-                {
-                    $Row_Color = "style=\"background-color: rgba(0, 200, 0, 0.1);\"";
-//                 $Flagged = 0;
-                } else {
-                    $Row_Color = "style=\"background-color: rgba(200, 0, 0, 0.1);\"";
-//                 $Flagged = 1;
-                }
-                ?>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox'
-                           name="Select_Project" value=<?php echo $row['project_id']; ?>>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['project_id']; ?>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <!--                    <a href="-->
-                    <?php //sprintf("https://%s%sProjectSetup/index.php?pid=%d", SERVER_NAME, APP_PATH_WEBROOT, $row['project_id']); ?><!--" > -->
-                    <?php //echo $row['app_title']; ?><!-- </a>-->
-                    <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['app_title']; ?> </a>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['Purpose']; ?>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['Statuses']; ?>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>"> <?php echo $row['record_count']; ?></a>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "UserRights/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Users']; ?> </a>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['New Creation Time']; ?>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['New Last Event']; ?></a>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Days Since Last Event']; ?></a>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['New Date Deleted']; ?>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['New Final Delete Date']; ?>
-                </td>
-
-                <?php ;
-                ?>
-            </tr>
-            <?php
-        }  // End while loop
-
-        // Results for My or All Projects SQL query.
-        $Result = db_query($Project_Pages[$tab]);
-
-        // Builds HTML rows and displays sql results for My Projects and All Projects.
-        while ($row = db_fetch_assoc($Result))  // $sqlGetAllProjects
-        {
-            ?>
-
-            <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
-
-                if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
-                {
-                    $Row_Color = "style=\"background-color: rgba(0, 200, 0, 0.1);\"";
-//                 $Flagged = 0;
-                } else {
-                    $Row_Color = "style=\"background-color: rgba(200, 0, 0, 0.1);\"";
-//                 $Flagged = 1;
-                }
-                ?>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox'
-                           name="Select_Project" value=<?php echo $row['project_id']; ?>>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['project_id']; ?>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <!--                    <a href="-->
-                    <?php //sprintf("https://%s%sProjectSetup/index.php?pid=%d", SERVER_NAME, APP_PATH_WEBROOT, $row['project_id']);
-                    ?><!--" > --><?php //echo $row['app_title'];
-                    ?><!-- </a>-->
-                    <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['app_title']; ?> </a>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['Purpose']; ?>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['Statuses']; ?>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>"> <?php echo $row['record_count']; ?></a>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "UserRights/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Users']; ?> </a>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['New Creation Time']; ?>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['New Last Event']; ?></a>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Days Since Last Event']; ?></a>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['New Date Deleted']; ?>
-                </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <?php echo $row['New Final Delete Date']; ?>
-                </td>
-
-                <?php ;
-                ?>
-            </tr>
-            <?php
-            }  // End while loop
-        }    // End GetProjectList()
 
         // This function is called on form submit.  Gets pre values, executes update query, gets post values, adds project update to REDCap Activity Log.
         public function Submit()
@@ -781,10 +749,10 @@ if(SUPER_USER == 1) {
         public function Get_Values()
         {
             $sql_Get_Values = "
-        SELECT project_id, date_deleted
-        FROM redcap_projects
-        WHERE project_id IN (" . $this->Get_PID() . ")
-        ";
+            SELECT project_id, date_deleted
+            FROM redcap_projects
+            WHERE project_id IN (" . $this->Get_PID() . ")
+            ";
 
             $sql = db_query($sql_Get_Values);
 
