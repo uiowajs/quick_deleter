@@ -25,8 +25,7 @@ if(SUPER_USER == 1) {
                 <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
 
                 <h1 style="text-align: center; padding-top:30px; padding-bottom:5px; color:white;" class="Main_Header">
-                    <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index"; ?>">
-                        Quick Deleter </a>
+                    <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index"; ?>">Quick Deleter </a>
                 </h1>
 
                 <table id="Pages_Table">
@@ -37,29 +36,20 @@ if(SUPER_USER == 1) {
                         <td>
                             <a href="<?= $this->getUrl("index.php?tab=1") ?> ">All Projects</a>
                         </td>
-                        <form name="Custom_Form_json" id="Custom_Form_json" method="POST"
-                              action="<?= $this->getUrl("index.php?tab=2") ?>">
+                        <form name="Custom_Form_json" id="Custom_Form_json" method="POST" action="<?= $this->getUrl("index.php?tab=2") ?>">
                             <td>
-                                <button class="Button_Link" type="submit" id="Custom_Page_json" name="Custom_Page_json">
-                                    json
-                                </button>
+                                <button class="Button_Link" type="submit" id="Custom_Page_json" name="Custom_Page_json">json</button>
                             </td>
                             <td>
-                                <input id="Custom_Box_json" class="Button_Box" type='text' name='Custom_Box_json'
-                                       value="">
+                                <input id="Custom_Box_json" class="Button_Box" type='text' name='Custom_Box_json' value="">
                             </td>
                         </form>
-
-                        <form name="Custom_Form_csv" id="Custom_Form_csv" method="POST"
-                              action="<?= $this->getUrl("index.php?tab=3") ?>">
+                        <form name="Custom_Form_csv" id="Custom_Form_csv" method="POST" action="<?= $this->getUrl("index.php?tab=3") ?>">
                             <td>
-                                <button class="Button_Link" type="submit" id="Custom_Page_csv" name="Custom_Page_csv">
-                                    csv
-                                </button>
+                                <button class="Button_Link" type="submit" id="Custom_Page_csv" name="Custom_Page_csv">csv</button>
                             </td>
                             <td>
-                                <input id="Custom_Box_csv" class="Button_Box" type='text' name='Custom_Box_csv'
-                                       value="">
+                                <input id="Custom_Box_csv" class="Button_Box" type='text' name='Custom_Box_csv' value="">
                             </td>
                         </form>
                     </tr>
@@ -104,8 +94,8 @@ if(SUPER_USER == 1) {
                         $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
                 });
 
+                // Highlights all rows when check all box checked
                 $(document).ready(function () {
-                    console.log("ready!");
                     $("#check_all").on('change', function () {
                         var PID_Checkboxes = $(".PID_Checkbox");
                         console.log($(this));
@@ -152,8 +142,7 @@ if(SUPER_USER == 1) {
             if ($Current_URL == $Home_Page) {
                 ?>
                 <div>
-                    <h2 style="text-align: center; padding-top:50px; color:white;">Quickly delete and undelete
-                        projects</h2>
+                    <h2 style="text-align: center; padding-top:50px; color:white;">Quickly delete and undelete projects</h2>
                 </div>
                 <?php
             }
@@ -163,20 +152,14 @@ if(SUPER_USER == 1) {
         public function Display_Pager()
         {
             ?>
-
             <div id="pager" class="pager" align="center">
 
-                <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/first.png") ?>"
-                     class="first"/>
-                <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/prev.png") ?>"
-                     class="prev"/>
+                <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/first.png") ?>" class="first"/>
+                <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/prev.png") ?>" class="prev"/>
                 <!-- the "pagedisplay" can be any element, including an input -->
-                <span class="pagedisplay"
-                      data-pager-output-filtered="{startRow:input} &ndash; {endRow} / {filteredRows} of {totalRows} total rows"></span>
-                <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/next.png") ?>"
-                     class="next"/>
-                <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/last.png") ?>"
-                     class="last"/>
+                <span class="pagedisplay" data-pager-output-filtered="{startRow:input} &ndash; {endRow} / {filteredRows} of {totalRows} total rows"></span>
+                <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/next.png") ?>" class="next"/>
+                <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/last.png") ?>" class="last"/>
 
                 <select class="pagesize">
                     <option value="10">10</option>
@@ -188,22 +171,18 @@ if(SUPER_USER == 1) {
                 </select>
 
             </div>
-
             <?php
-
         }
 
         //  Displays submit button for deleting/undeleting projects
         public function Display_Submit_Button()
         {
-
             ?>
             <div align="center">
                 <table id='Submit_Table'>
                     <tr>
                         <td>
-                            <input class="reset_button" type="reset" name="reset" id="reset"
-                                   onclick="Clear_Row_Styling()">
+                            <input class="reset_button" type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()">
                         </td>
                         <td>
                             <input class="submit_button" type='submit' id='submit' name='submit'>
@@ -215,7 +194,7 @@ if(SUPER_USER == 1) {
                 </table>
             </div>
             <?php
-        }
+        }  // End Display_Submit_Button()
 
         //  Contains source files for table sorter
         public function Tablesorter_Includes()
@@ -228,13 +207,12 @@ if(SUPER_USER == 1) {
             <script src="<?= $this->getUrl("/resources/tablesorter/widgets/widget-output.min.js") ?>"></script>
 
             <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/theme.blue.min.css") ?>" rel="stylesheet">
-            <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/jquery.tablesorter.pager.min.css") ?>"
-                  rel="stylesheet">
+            <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/jquery.tablesorter.pager.min.css") ?>" rel="stylesheet">
             <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
 
             <script src="<?= $this->getUrl("/QuickDeleter.js") ?>"></script>
             <?php
-        }
+        }  // End Tablesorter_Includes()
 
         //  Displays table headers
         public function Table_Header()
@@ -270,7 +248,7 @@ if(SUPER_USER == 1) {
                 </tr>
             </thead>
             <?php
-        }
+        }  // End Table_Header()
 
         //  Takes user submitted json and parses it into PIDs.  Stores in session variable to retain after deleting/undeleting projects.
         public function Parse_Posted_Json()
@@ -293,7 +271,7 @@ if(SUPER_USER == 1) {
 
             $Parsed_json = implode(",", $Custom_PID);
             return $Parsed_json;
-        }
+        }  // End Parse_Posted_Json()
 
         //  Takes user submitted csv and parses it into PIDs.  Stores in session variable to retain after deleting/undeleting projects.
         public function Parse_Posted_Csv()
@@ -308,7 +286,7 @@ if(SUPER_USER == 1) {
             }
 
             return $Posted_csv;
-        }
+        }  // End Parse_Posted_Csv()
 
         //  Runs SQL query and displays results tablesorter table.  Takes parsed json/csv if necessary.
         public function Display_Table()
@@ -323,12 +301,12 @@ if(SUPER_USER == 1) {
             $this->Tablesorter_Includes();  // Enables tablesorter
 
             //  Get results for submitted json or csv
-            if (!isset($_REQUEST['tab'])) {
-                die;
-            } else {
+//            if (!isset($_REQUEST['tab'])) {
+//                die;
+//            } else {
                 $Parsed_json = $this->Parse_Posted_Json();
                 $Parsed_csv = $this->Parse_Posted_Csv();
-            }
+//            }
 
             //  Page urls
             $Current_URL = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
@@ -337,7 +315,7 @@ if(SUPER_USER == 1) {
             $json_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
             $csv_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
 
-            // Set variables depending on page
+            // Set variables depending on json/csv page
             if($Current_URL == $json_Page) {
                 $Parsed_Array = explode(",", $Parsed_json);
                 $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
@@ -353,144 +331,142 @@ if(SUPER_USER == 1) {
 
             // SQL
             $Project_Pages = array("
-        SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
-        CAST(CASE a.status
-             WHEN 0 THEN 'Development'
-             WHEN 1 THEN 'Production'
-             WHEN 2 THEN 'Inactive'
-             WHEN 3 THEN 'Archived'
-             ELSE a.status
-             END AS CHAR(50)) AS 'Statuses',
-        CAST(CASE a.purpose
-            WHEN 0 THEN 'Practice / Just for fun'
-            WHEN 4 THEN 'Operational Support'
-            WHEN 2 THEN 'Research'
-            WHEN 3 THEN 'Quality Improvement'
-            WHEN 1 THEN 'Other'
-            ELSE a.purpose
-            END AS CHAR(50)) AS 'Purpose',
-        CAST(creation_time AS date) AS 'New Creation Time', 
-        CAST(a.date_deleted AS date) AS 'New Date Deleted', 
-        CAST(last_logged_event AS date) AS 'New Last Event', 
-        DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
-        CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
-        CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
-        GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
-        FROM redcap_projects as a
-        JOIN redcap_user_rights AS b
-        ON a.project_id=b.project_id
-        JOIN redcap_record_counts AS c
-        ON a.project_id=c.project_id
-        WHERE username = '" . USERID . "'
-        GROUP BY a.project_id
-        ORDER BY a.project_id ASC  
-        "
-            ,
+                SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
+                CAST(CASE a.status
+                     WHEN 0 THEN 'Development'
+                     WHEN 1 THEN 'Production'
+                     WHEN 2 THEN 'Inactive'
+                     WHEN 3 THEN 'Archived'
+                     ELSE a.status
+                     END AS CHAR(50)) AS 'Statuses',
+                CAST(CASE a.purpose
+                    WHEN 0 THEN 'Practice / Just for fun'
+                    WHEN 4 THEN 'Operational Support'
+                    WHEN 2 THEN 'Research'
+                    WHEN 3 THEN 'Quality Improvement'
+                    WHEN 1 THEN 'Other'
+                    ELSE a.purpose
+                    END AS CHAR(50)) AS 'Purpose',
+                CAST(creation_time AS date) AS 'New Creation Time', 
+                CAST(a.date_deleted AS date) AS 'New Date Deleted', 
+                CAST(last_logged_event AS date) AS 'New Last Event', 
+                DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
+                CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
+                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
+                GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
+                FROM redcap_projects as a
+                JOIN redcap_user_rights AS b
+                ON a.project_id=b.project_id
+                JOIN redcap_record_counts AS c
+                ON a.project_id=c.project_id
+                WHERE username = '" . USERID . "'
+                GROUP BY a.project_id
+                ORDER BY a.project_id ASC  
                 "
-        SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
-        CAST(CASE a.status
-             WHEN 0 THEN 'Development'
-             WHEN 1 THEN 'Production'
-             WHEN 2 THEN 'Inactive'
-             WHEN 3 THEN 'Archived'
-             ELSE a.status
-             END AS CHAR(50)) AS 'Statuses',
-        CAST(CASE a.purpose
-            WHEN 0 THEN 'Practice / Just for fun'
-            WHEN 4 THEN 'Operational Support'
-            WHEN 2 THEN 'Research'
-            WHEN 3 THEN 'Quality Improvement'
-            WHEN 1 THEN 'Other'
-            ELSE a.purpose
-            END AS CHAR(50)) AS 'Purpose',
-        CAST(creation_time AS date) AS 'New Creation Time', 
-        CAST(a.date_deleted AS date) AS 'New Date Deleted', 
-        CAST(last_logged_event AS date) AS 'New Last Event', 
-        DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
-        CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
-        CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
-        GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
-        FROM redcap_projects as a
-        JOIN redcap_user_rights AS b
-        ON a.project_id=b.project_id
-        JOIN redcap_record_counts AS c
-        ON a.project_id=c.project_id
-        GROUP BY a.project_id
-        ORDER BY a.project_id ASC
-        ",
-                "
-        SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
-        CAST(CASE a.status
-             WHEN 0 THEN 'Development'
-             WHEN 1 THEN 'Production'
-             WHEN 2 THEN 'Inactive'
-             WHEN 3 THEN 'Archived'
-             ELSE a.status
-             END AS CHAR(50)) AS 'Statuses',
-        CAST(CASE a.purpose
-            WHEN 0 THEN 'Practice / Just for fun'
-            WHEN 4 THEN 'Operational Support'
-            WHEN 2 THEN 'Research'
-            WHEN 3 THEN 'Quality Improvement'
-            WHEN 1 THEN 'Other'
-            ELSE a.purpose
-            END AS CHAR(50)) AS 'Purpose',
-        CAST(creation_time AS date) AS 'New Creation Time', 
-        CAST(a.date_deleted AS date) AS 'New Date Deleted', 
-        CAST(last_logged_event AS date) AS 'New Last Event', 
-        DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
-        CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
-        CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
-        GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
-        FROM redcap_projects as a
-        JOIN redcap_user_rights AS b
-        ON a.project_id=b.project_id
-        JOIN redcap_record_counts AS c
-        ON a.project_id=c.project_id
-        WHERE a.project_id IN (" . $qMarks . ")  
-        GROUP BY a.project_id
-        ORDER BY a.project_id ASC  
-            ",
-                "
-        SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
-        CAST(CASE a.status
-             WHEN 0 THEN 'Development'
-             WHEN 1 THEN 'Production'
-             WHEN 2 THEN 'Inactive'
-             WHEN 3 THEN 'Archived'
-             ELSE a.status
-             END AS CHAR(50)) AS 'Statuses',
-        CAST(CASE a.purpose
-            WHEN 0 THEN 'Practice / Just for fun'
-            WHEN 4 THEN 'Operational Support'
-            WHEN 2 THEN 'Research'
-            WHEN 3 THEN 'Quality Improvement'
-            WHEN 1 THEN 'Other'
-            ELSE a.purpose
-            END AS CHAR(50)) AS 'Purpose',
-        CAST(creation_time AS date) AS 'New Creation Time', 
-        CAST(a.date_deleted AS date) AS 'New Date Deleted', 
-        CAST(last_logged_event AS date) AS 'New Last Event', 
-        DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
-        CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
-        CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
-        GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
-        FROM redcap_projects as a
-        JOIN redcap_user_rights AS b
-        ON a.project_id=b.project_id
-        JOIN redcap_record_counts AS c
-        ON a.project_id=c.project_id
-        WHERE a.project_id IN (" . $qMarks . ")  
-        GROUP BY a.project_id
-        ORDER BY a.project_id ASC  
-            "
-        );
-
-          ?>
-
+                    ,
+                        "
+                SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
+                CAST(CASE a.status
+                     WHEN 0 THEN 'Development'
+                     WHEN 1 THEN 'Production'
+                     WHEN 2 THEN 'Inactive'
+                     WHEN 3 THEN 'Archived'
+                     ELSE a.status
+                     END AS CHAR(50)) AS 'Statuses',
+                CAST(CASE a.purpose
+                    WHEN 0 THEN 'Practice / Just for fun'
+                    WHEN 4 THEN 'Operational Support'
+                    WHEN 2 THEN 'Research'
+                    WHEN 3 THEN 'Quality Improvement'
+                    WHEN 1 THEN 'Other'
+                    ELSE a.purpose
+                    END AS CHAR(50)) AS 'Purpose',
+                CAST(creation_time AS date) AS 'New Creation Time', 
+                CAST(a.date_deleted AS date) AS 'New Date Deleted', 
+                CAST(last_logged_event AS date) AS 'New Last Event', 
+                DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
+                CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
+                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
+                GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
+                FROM redcap_projects as a
+                JOIN redcap_user_rights AS b
+                ON a.project_id=b.project_id
+                JOIN redcap_record_counts AS c
+                ON a.project_id=c.project_id
+                GROUP BY a.project_id
+                ORDER BY a.project_id ASC
+                ",
+                        "
+                SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
+                CAST(CASE a.status
+                     WHEN 0 THEN 'Development'
+                     WHEN 1 THEN 'Production'
+                     WHEN 2 THEN 'Inactive'
+                     WHEN 3 THEN 'Archived'
+                     ELSE a.status
+                     END AS CHAR(50)) AS 'Statuses',
+                CAST(CASE a.purpose
+                    WHEN 0 THEN 'Practice / Just for fun'
+                    WHEN 4 THEN 'Operational Support'
+                    WHEN 2 THEN 'Research'
+                    WHEN 3 THEN 'Quality Improvement'
+                    WHEN 1 THEN 'Other'
+                    ELSE a.purpose
+                    END AS CHAR(50)) AS 'Purpose',
+                CAST(creation_time AS date) AS 'New Creation Time', 
+                CAST(a.date_deleted AS date) AS 'New Date Deleted', 
+                CAST(last_logged_event AS date) AS 'New Last Event', 
+                DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
+                CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
+                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
+                GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
+                FROM redcap_projects as a
+                JOIN redcap_user_rights AS b
+                ON a.project_id=b.project_id
+                JOIN redcap_record_counts AS c
+                ON a.project_id=c.project_id
+                WHERE a.project_id IN (" . $qMarks . ")  
+                GROUP BY a.project_id
+                ORDER BY a.project_id ASC  
+                    ",
+                        "
+                SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
+                CAST(CASE a.status
+                     WHEN 0 THEN 'Development'
+                     WHEN 1 THEN 'Production'
+                     WHEN 2 THEN 'Inactive'
+                     WHEN 3 THEN 'Archived'
+                     ELSE a.status
+                     END AS CHAR(50)) AS 'Statuses',
+                CAST(CASE a.purpose
+                    WHEN 0 THEN 'Practice / Just for fun'
+                    WHEN 4 THEN 'Operational Support'
+                    WHEN 2 THEN 'Research'
+                    WHEN 3 THEN 'Quality Improvement'
+                    WHEN 1 THEN 'Other'
+                    ELSE a.purpose
+                    END AS CHAR(50)) AS 'Purpose',
+                CAST(creation_time AS date) AS 'New Creation Time', 
+                CAST(a.date_deleted AS date) AS 'New Date Deleted', 
+                CAST(last_logged_event AS date) AS 'New Last Event', 
+                DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
+                CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
+                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
+                GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
+                FROM redcap_projects as a
+                JOIN redcap_user_rights AS b
+                ON a.project_id=b.project_id
+                JOIN redcap_record_counts AS c
+                ON a.project_id=c.project_id
+                WHERE a.project_id IN (" . $qMarks . ")  
+                GROUP BY a.project_id
+                ORDER BY a.project_id ASC  
+                    "
+            );
+        ?>
         <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
-
         <?php
+
 
         // Displays submit form if the page is My or All projects.  Class = tablesorter is how tablesorter is applied to the table.
         if($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
@@ -501,7 +477,7 @@ if(SUPER_USER == 1) {
             <?php
             $this->Display_Pager();
             $this->Table_Header();
-        }
+        }  // End if($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page)
 
         //  If the page is json or csv and a value was submitted, display submit form, otherwise show error no results.
         if($Current_URL == $json_Page) {
@@ -541,7 +517,7 @@ if(SUPER_USER == 1) {
             $stmt->execute();
             $Get_Result = $stmt->get_result();
 
-            // Builds HTML rows and displays sql results for json and csv.
+            // Builds HTML rows and displays sql results for submitted json and csv.
             while ($row = $Get_Result->fetch_assoc()) {
                 ?>
 
@@ -557,16 +533,12 @@ if(SUPER_USER == 1) {
                     }
                     ?>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox'
-                               name="Select_Project" value=<?php echo $row['project_id']; ?>>
+                        <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row['project_id']; ?>>
                     </td>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
                         <?php echo $row['project_id']; ?>
                     </td>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <!--                    <a href="-->
-                        <?php //sprintf("https://%s%sProjectSetup/index.php?pid=%d", SERVER_NAME, APP_PATH_WEBROOT, $row['project_id']); ?><!--" > -->
-                        <?php //echo $row['app_title']; ?><!-- </a>-->
                         <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['app_title']; ?> </a>
                     </td>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
@@ -624,17 +596,12 @@ if(SUPER_USER == 1) {
                     }
                     ?>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox'
-                               name="Select_Project" value=<?php echo $row['project_id']; ?>>
+                        <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row['project_id']; ?>>
                     </td>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
                         <?php echo $row['project_id']; ?>
                     </td>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <!--                    <a href="-->
-                        <?php //sprintf("https://%s%sProjectSetup/index.php?pid=%d", SERVER_NAME, APP_PATH_WEBROOT, $row['project_id']);
-                        ?><!--" > --><?php //echo $row['app_title'];
-                        ?><!-- </a>-->
                         <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['app_title']; ?> </a>
                     </td>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
@@ -700,11 +667,16 @@ if(SUPER_USER == 1) {
                     }  // End of foreach Post Values
                 }  // End of foreach Pre Values
 
-//            echo "Referred from custom json page";
                 header("Location: {$_SERVER['HTTP_REFERER']}");
-            }
+            }  // End if(SUPER_USER == 1)
             else {
+                REDCap::logEvent("Non super user, " . USERID . ", tried to delete/undelete projects via the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
+                echo "<br>";
+                echo "<br>";
+                echo "<br>";
+                echo "<br>";
                 echo "This function is for super users only";
+                echo "<br>";
             }  // End super user check
         }  // End of Submit()
 
@@ -742,16 +714,6 @@ if(SUPER_USER == 1) {
                 db_connect(false);
             }
 
-// Echo </br> needed to display echos under redcap nav bar
-            echo "</br>";
-            echo "</br>";
-            echo "</br>";
-            echo "</br>";
-            echo "</br>";
-            echo "</br>";
-//        echo $this->Get_PID();
-
-
             // Converts submitted PID_Box string to array for bind_param()
             $PID_Array = explode(",", $this->Get_PID());
 
@@ -763,10 +725,10 @@ if(SUPER_USER == 1) {
             $Integers = join(array_pad(array(), count($Get_Integers), "i"));
 
             $sqlUpdateProject = "
-        UPDATE redcap_projects
-        SET date_deleted = IF(date_deleted IS NULL, '" . NOW . "', NULL)
-        WHERE project_id IN (" . $qMarks . ")
-        ";
+            UPDATE redcap_projects
+            SET date_deleted = IF(date_deleted IS NULL, '" . NOW . "', NULL)
+            WHERE project_id IN (" . $qMarks . ")
+            ";
 
             // https://stackoverflow.com/questions/3703180/a-prepared-statement-where-in-query-and-sorting-with-mysql/45905752#45905752.
             $stmt = $conn->prepare($sqlUpdateProject);
@@ -779,6 +741,8 @@ if(SUPER_USER == 1) {
     }  // End QuickDeleter class
 }  // End if(SUPER_USER == 1)
 else {
+    REDCap::logEvent("Non super user, " . USERID . ", tried to access the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
     echo "This function is for super users only";
+    echo "<br>";
 }
 
