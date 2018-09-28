@@ -545,7 +545,7 @@ if(SUPER_USER == 1) {
                         <?php echo $row['Purpose']; ?>
                     </td>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['Statuses']; ?>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/other_functionality.php?pid=" . $row['project_id']; ?>" ><?php echo $row['Statuses']; ?></a>
                     </td>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
                         <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>"> <?php echo $row['record_count']; ?></a>
@@ -608,7 +608,7 @@ if(SUPER_USER == 1) {
                         <?php echo $row['Purpose']; ?>
                     </td>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['Statuses']; ?>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/other_functionality.php?pid=" . $row['project_id']; ?>" ><?php echo $row['Statuses']; ?></a>
                     </td>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
                         <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>"> <?php echo $row['record_count']; ?></a>
