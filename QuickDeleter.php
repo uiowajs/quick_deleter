@@ -536,7 +536,7 @@ if(SUPER_USER == 1) {
                         <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row['project_id']; ?>>
                     </td>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['project_id']; ?>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "/index.php?pid=" . $row['project_id']; ?>"><?php echo $row['project_id']; ?></a>
                     </td>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
                         <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['app_title']; ?> </a>
@@ -599,7 +599,7 @@ if(SUPER_USER == 1) {
                         <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row['project_id']; ?>>
                     </td>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['project_id']; ?>
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "/index.php?pid=" . $row['project_id']; ?>"><?php echo $row['project_id']; ?></a>
                     </td>
                     <td align='center' class="color" <?php echo $Row_Color ?>>
                         <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['app_title']; ?> </a>

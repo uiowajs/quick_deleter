@@ -116,7 +116,7 @@ $(document).ready(function () {
     // ***********************
     .tablesorter({
       theme: 'blue',
-        widthFixed: false,
+        widthFixed: true,
         usNumberFormat: false,
         sortReset: false,
         sortRestart: true,
