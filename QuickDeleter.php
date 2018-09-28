@@ -239,40 +239,35 @@ if(SUPER_USER == 1) {
         //  Displays table headers
         public function Table_Header()
         {
+            $Current_URL = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+            $Tab0 = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
+            $Tab1 = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
 
-
-            ?>
-
-            <thead>
-            <tr>
-                <?php
-
-                $Current_URL = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-                $Tab0 = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
-                $Tab1 = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
-
-                if ($Current_URL == $Tab0 || $Current_URL == $Tab1) {
-                    ?>
-                    <th></th> <?php
-                } else {
-                    ?>
-                    <th style="text-align:center" data-filter="false"><input name="check_all" id="check_all"
-                                                                             type="checkbox"></th> <?php
-                }
+             if ($Current_URL == $Tab0 || $Current_URL == $Tab1) {
                 ?>
-                <th style="text-align:center"><b>PID</b></th>
-                <th style="text-align:center"><b>Project Name</b></th>
-                <th style="text-align:center"><b>Purpose</b></th>
-                <th style="text-align:center"><b>Status</b></th>
-                <th style="text-align:center"><b>Record Count</b></th>
-                <th style="text-align:center"><b>Users</b></th>
-                <th style="text-align:center"><b>Date Created</b></th>
-                <th style="text-align:center"><b>Last Event Date</b></th>
-                <th style="text-align:center"><b>Days Since Event</b></th>
-                <th style="text-align:center"><b>Delete Flagged</b></th>
-                <th style="text-align:center"><b>Final Delete</b></th>
-                <!--                                <th style="text-align:center"><b>Days Until Delete</b></th>-->
-            </tr>
+             <thead>
+                <tr>
+                    <th data-filter="false"></th> <?php
+            } else {
+                ?>
+            <thead>
+                <tr>
+                    <th style="text-align:center" data-filter="false"><input name="check_all" id="check_all" type="checkbox"></th> <?php
+            }
+            ?>
+                    <th style="text-align:center"><b>PID</b></th>
+                    <th style="text-align:center"><b>Project Name</b></th>
+                    <th style="text-align:center"><b>Purpose</b></th>
+                    <th style="text-align:center"><b>Status</b></th>
+                    <th style="text-align:center"><b>Record Count</b></th>
+                    <th style="text-align:center"><b>Users</b></th>
+                    <th style="text-align:center"><b>Date Created</b></th>
+                    <th style="text-align:center"><b>Last Event Date</b></th>
+                    <th style="text-align:center"><b>Days Since Event</b></th>
+                    <th style="text-align:center"><b>Delete Flagged</b></th>
+                    <th style="text-align:center"><b>Final Delete</b></th>
+                    <!--                                <th style="text-align:center"><b>Days Until Delete</b></th>-->
+                </tr>
             </thead>
             <?php
         }
@@ -314,7 +309,7 @@ if(SUPER_USER == 1) {
             return $Posted_csv;
         }
 
-        //  Runs SQL query for displaying table.  Takes parsed json if necessary.
+        //  Runs SQL query and displays results tablesorter table.  Takes parsed json/csv if necessary.
         public function Display_Table()
         {
 
@@ -324,10 +319,9 @@ if(SUPER_USER == 1) {
             }
 
             $tab = $_REQUEST['tab'];  //  Tabs for SQL array
+            $this->Tablesorter_Includes();  // Enables tablesorter
 
-            $this->Tablesorter_Includes();
-
-            //  Calls parsed json if tab=2
+            //  Get results for submitted json or csv
             if (!isset($_REQUEST['tab'])) {
                 die;
             } else {
@@ -335,17 +329,14 @@ if(SUPER_USER == 1) {
                 $Parsed_csv = $this->Parse_Posted_Csv();
             }
 
+            //  Page urls
             $Current_URL = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
             $My_Projects_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
             $All_Projects_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
             $json_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
             $csv_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
 
-//            $Parsed_json_array = explode(",", $Parsed_json);
-//            $Parsed_csv_array = explode(",", $Parsed_csv);
-
-
-
+            // Set variables depending on page
             if($Current_URL == $json_Page) {
                 $Parsed_Array = explode(",", $Parsed_json);
                 $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
@@ -359,30 +350,7 @@ if(SUPER_USER == 1) {
                 $Integers = join(array_pad(array(), count($Get_Integers), "i"));
             }
 
-
-
-
-
-////         Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
-//            $qMarks_json = str_repeat('?,', count($Parsed_json_array) - 1) . '?';
-////        echo $qMarks;
-//
-////         Forms int placeholder string for bind_param().  e.g. 'iii'
-//            $Get_Integers = explode(",", $Parsed_json);
-//            $Integers = join(array_pad(array(), count($Get_Integers), "i"));
-////        echo $Integers;
-//
-//        $Parsed_csv_array = explode(",", $Parsed_csv);
-//        //         Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
-//        $qMarks_Csv = str_repeat('?,', count($Parsed_csv_array) - 1) . '?';
-////        echo $qMarksCsv;
-//
-////         Forms int placeholder string for bind_param().  e.g. 'iii'
-//        $Get_IntegersCsv = explode(",", $Parsed_csv);
-//        $IntegersCsv = join(array_pad(array(), count($Get_IntegersCsv), "i"));
-////        echo $IntegersCsv;
-
-
+            // SQL
             $Project_Pages = array("
         SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
         CAST(CASE a.status
@@ -523,7 +491,7 @@ if(SUPER_USER == 1) {
 
         <?php
 
-        // Loads tablesorter and displays submit form if the page is My or All projects.
+        // Displays submit form if the page is My or All projects.  Class = tablesorter is how tablesorter is applied to the table.
         if($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
 
             $this->Display_Submit_Button(); ?>
@@ -545,11 +513,11 @@ if(SUPER_USER == 1) {
                 <?php
                 $this->Display_Pager();
                 $this->Table_Header();
-            }
+            }  // End if ($Parsed_json != "")
             else {
                 echo "Error, no results.  Please enter a value";
             }
-        }
+        }  // End if($Current_URL == $json_Page)
         elseif($Current_URL == $csv_Page) {
             if ($Parsed_csv != "" ) {
 
@@ -560,11 +528,11 @@ if(SUPER_USER == 1) {
                 <?php
                 $this->Display_Pager();
                 $this->Table_Header();
-            }
+            }  // End if ($Parsed_csv != "" )
             else {
                 echo "Error, no results.  Please enter a value";
             }
-        }
+        }  // End elseif($Current_URL == $csv_Page)
 
         if($Current_URL == $json_Page || $Current_URL == $csv_Page) {
             $stmt = $conn->prepare($Project_Pages[$tab]);
@@ -572,6 +540,7 @@ if(SUPER_USER == 1) {
             $stmt->execute();
             $Get_Result = $stmt->get_result();
 
+            // Builds HTML rows and displays sql results for json and csv.
             while ($row = $Get_Result->fetch_assoc()) {
                 ?>
 
@@ -632,8 +601,8 @@ if(SUPER_USER == 1) {
                 </tr>
                 <?php
             }  // End while loop
-        }
-        else {
+        }  // End if($Current_URL == $json_Page || $Current_URL == $csv_Page)
+        elseif($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
             // Results for My or All Projects SQL query.
             $Result = db_query($Project_Pages[$tab]);
 
@@ -699,9 +668,9 @@ if(SUPER_USER == 1) {
                     ?>
                 </tr>
                 <?php
-                }  // End while loop
-            }    // End GetProjectList()
-        }
+                }  // End while loop for My/All projects
+            }    // End elseif($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page)
+        }  //  End Display_Table()
 
         // This function is called on form submit.  Gets pre values, executes update query, gets post values, adds project update to REDCap Activity Log.
         public function Submit()
