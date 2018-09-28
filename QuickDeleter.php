@@ -295,6 +295,7 @@ if(SUPER_USER == 1) {
             return $Parsed_json;
         }
 
+        //  Takes user submitted csv and parses it into PIDs.  Stores in session variable to retain after deleting/undeleting projects.
         public function Parse_Posted_Csv()
         {
             $Custom_Box_csv = $_POST['Custom_Box_csv'];
@@ -753,17 +754,13 @@ if(SUPER_USER == 1) {
 
             // Converts submitted PID_Box string to array for bind_param()
             $PID_Array = explode(",", $this->Get_PID());
-//        print_r($PID_Array);
-//        var_dump($PID_Array);
 
             // Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
             $qMarks = str_repeat('?,', count($PID_Array) - 1) . '?';
-//        echo $qMarks;
 
             // Forms int placeholder string for bind_param().  e.g. 'iii'
             $Get_Integers = explode(",", $this->Get_PID());
             $Integers = join(array_pad(array(), count($Get_Integers), "i"));
-//        echo $Integers;
 
             $sqlUpdateProject = "
         UPDATE redcap_projects
@@ -779,10 +776,9 @@ if(SUPER_USER == 1) {
 
             return $sqlUpdateProject;
         }  // End Update_Project()
-
     }  // End QuickDeleter class
-}
+}  // End if(SUPER_USER == 1)
 else {
     echo "This function is for super users only";
-}  // End super user check
+}
 
