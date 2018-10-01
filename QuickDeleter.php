@@ -155,7 +155,10 @@ use REDCap;
         {
 
             $Current_URL = "http://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-            $Home_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index";
+//            $Current_URL = $this->getUrl("index.php");
+//            echo $Current_URL;
+//            $Home_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index";
+            $Home_Page = $this->getUrl("index.php");
             if ($Current_URL == $Home_Page) {
                 ?>
                 <div>
@@ -236,8 +239,17 @@ use REDCap;
         {
 
             // Page url variables
-            $Current_URL = "http://" . SERVER_NAME . $_SERVER['REQUEST_URI'];
-            $My_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
+//            $Current_URL = SERVER_NAME . $_SERVER['REQUEST_URI'];
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
+            $Current_URL = $protocol . SERVER_NAME . $_SERVER['REQUEST_URI'];
+            echo $protocol;
+            echo "<br>";
+//            $Current_URL = $_SERVER['PHP_SELF'];
+            echo $Current_URL;
+            $My_Projects_Page = $this->getUrl("index.php") . "&tab=0";
+            echo "<br>";
+            echo $My_Projects_Page;
+//            $My_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
             $All_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
             $json_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
             $csv_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
@@ -334,6 +346,7 @@ use REDCap;
 
             //  Page urls
             $Current_URL = "http://" . SERVER_NAME . $_SERVER['REQUEST_URI'];
+//            $Current_URL = APP_PATH_WEBROOT_FULL     ;
             $My_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
             $All_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
             $json_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
@@ -379,9 +392,9 @@ use REDCap;
                 CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
                 GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
                 FROM redcap_projects as a
-                JOIN redcap_user_rights AS b
+                LEFT JOIN redcap_user_rights AS b
                 ON a.project_id=b.project_id
-                JOIN redcap_record_counts AS c
+                LEFT JOIN redcap_record_counts AS c
                 ON a.project_id=c.project_id
                 WHERE username = '" . USERID . "'
                 GROUP BY a.project_id
@@ -413,9 +426,9 @@ use REDCap;
                 CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
                 GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
                 FROM redcap_projects as a
-                JOIN redcap_user_rights AS b
+                LEFT JOIN redcap_user_rights AS b
                 ON a.project_id=b.project_id
-                JOIN redcap_record_counts AS c
+                LEFT JOIN redcap_record_counts AS c
                 ON a.project_id=c.project_id
                 GROUP BY a.project_id
                 ORDER BY a.project_id ASC
