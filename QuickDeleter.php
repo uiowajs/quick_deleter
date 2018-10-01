@@ -154,8 +154,8 @@ use REDCap;
         public function Display_Home_Page()
         {
 
-            $Current_URL = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-            $Home_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index";
+            $Current_URL = "http://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+            $Home_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index";
             if ($Current_URL == $Home_Page) {
                 ?>
                 <div>
@@ -236,11 +236,11 @@ use REDCap;
         {
 
             // Page url variables
-            $Current_URL = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-            $My_Projects_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
-            $All_Projects_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
-            $json_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
-            $csv_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
+            $Current_URL = "http://" . SERVER_NAME . $_SERVER['REQUEST_URI'];
+            $My_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
+            $All_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
+            $json_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
+            $csv_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
 
              if ($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
                 ?>
@@ -333,11 +333,11 @@ use REDCap;
 //            }
 
             //  Page urls
-            $Current_URL = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-            $My_Projects_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
-            $All_Projects_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
-            $json_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
-            $csv_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
+            $Current_URL = "http://" . SERVER_NAME . $_SERVER['REQUEST_URI'];
+            $My_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
+            $All_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
+            $json_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
+            $csv_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
 
             // Set variables depending on json/csv page
             if($Current_URL == $json_Page) {
@@ -602,12 +602,6 @@ use REDCap;
                 </tr>
                 <?php
             }  // End while loop
-
-
-
-
-
-
 
         }  // End if($Current_URL == $json_Page || $Current_URL == $csv_Page)
         elseif($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
