@@ -62,11 +62,15 @@ use REDCap;
         public function Display_Page()
         {
 
-            if(SUPER_USER != 1) {
+            if(SUPER_USER == 1) {
+
 
                 $this->Display_Header();
                 $this->Display_Home_Page();
                 $this->Display_Table();
+
+                // Logs when a super user accesses quick deleter
+                REDCap::logEvent("Super user, " . USERID . ", accessed the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
 
                 ?>
 
@@ -82,7 +86,6 @@ use REDCap;
 
                     //  Highlight row when box checked
                     $(".PID_Checkbox").on('change', function () {
-//                 $("form[name=Form]").on("change", "input[type=checkbox]", function () {
                         if ($(this).is(':checked'))
                         // console.log($(this).attr('id'));
                             if ($(this).prop('id') === '0')
@@ -136,6 +139,7 @@ use REDCap;
 
             }  // End if(SUPER_USER == 1)
             else {
+                // Echos needed to display message under REDCap navbar
                 echo "<br>";
                 echo "<br>";
                 echo "<br>";
@@ -144,7 +148,6 @@ use REDCap;
                 echo "This function is for super users only";
                 echo "<br>";
             }
-
         }
 
         //  Displays home page
@@ -231,16 +234,20 @@ use REDCap;
         //  Displays table headers
         public function Table_Header()
         {
-            $Current_URL = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-            $Tab0 = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
-            $Tab1 = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
 
-             if ($Current_URL == $Tab0 || $Current_URL == $Tab1) {
+            // Page url variables
+            $Current_URL = $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+            $My_Projects_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
+            $All_Projects_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
+            $json_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
+            $csv_Page = SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
+
+             if ($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
                 ?>
              <thead>
                 <tr>
                     <th data-filter="false"></th> <?php
-            } else {
+            } elseif ($Current_URL == $json_Page || $Current_URL == $csv_Page) {
                 ?>
             <thead>
                 <tr>
@@ -287,6 +294,8 @@ use REDCap;
             return $Parsed_json;
         }  // End Parse_Posted_Json()
 
+
+
         //  Takes user submitted csv and parses it into PIDs.  Stores in session variable to retain after deleting/undeleting projects.
         public function Parse_Posted_Csv()
         {
@@ -298,6 +307,7 @@ use REDCap;
             } elseif (isset($_SESSION['Custom_csv'])) {
                 $Posted_csv = $_SESSION['Custom_csv'];
             }
+
 
             return $Posted_csv;
         }  // End Parse_Posted_Csv()
@@ -493,6 +503,14 @@ use REDCap;
             $this->Table_Header();
         }  // End if($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page)
 
+        if($Current_URL == $json_Page || $Current_URL == $csv_Page) {
+            $stmt = $conn->prepare($Project_Pages[$tab]);
+            $stmt->bind_param($Integers, ...$Parsed_Array);
+            $stmt->execute();
+            $Get_Result = $stmt->get_result();
+            $num_rows = mysqli_num_rows($Get_Result);
+//            var_dump($Get_Result);
+
         //  If the page is json or csv and a value was submitted, display submit form, otherwise show error no results.
         if($Current_URL == $json_Page) {
             if ($Parsed_json != "") {
@@ -510,26 +528,29 @@ use REDCap;
             }
         }  // End if($Current_URL == $json_Page)
         elseif($Current_URL == $csv_Page) {
-            if ($Parsed_csv != "" ) {
 
-                $this->Display_Submit_Button(); ?>
+            // Only display table is submitted csv started with a number
+            $csv_is_number = is_numeric(substr($Parsed_csv, 0, 1));
 
-                <div id="id_projects_table" align="center">
-                <table id='Projects_Table' class='tablesorter'>
-                <?php
-                $this->Display_Pager();
-                $this->Table_Header();
-            }  // End if ($Parsed_csv != "" )
+            if ($num_rows >= 1) {
+                if ($csv_is_number == true) {
+
+                    $this->Display_Submit_Button(); ?>
+
+                    <div id="id_projects_table" align="center">
+                    <table id='Projects_Table' class='tablesorter'>
+                    <?php
+                    $this->Display_Pager();
+                    $this->Table_Header();
+                }  // End if ($csv_is_number == true)
+                            else {
+                    echo "Error, no results.  Please enter a value";
+                }
+            }
             else {
                 echo "Error, no results.  Please enter a value";
             }
         }  // End elseif($Current_URL == $csv_Page)
-
-        if($Current_URL == $json_Page || $Current_URL == $csv_Page) {
-            $stmt = $conn->prepare($Project_Pages[$tab]);
-            $stmt->bind_param($Integers, ...$Parsed_Array);
-            $stmt->execute();
-            $Get_Result = $stmt->get_result();
 
             // Builds HTML rows and displays sql results for submitted json and csv.
             while ($row = $Get_Result->fetch_assoc()) {
@@ -588,6 +609,13 @@ use REDCap;
                 </tr>
                 <?php
             }  // End while loop
+
+
+
+
+
+
+
         }  // End if($Current_URL == $json_Page || $Current_URL == $csv_Page)
         elseif($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
             // Results for My or All Projects SQL query.
