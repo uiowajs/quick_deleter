@@ -529,24 +529,17 @@ use REDCap;
         }  // End if($Current_URL == $json_Page)
         elseif($Current_URL == $csv_Page) {
 
-            // Only display table is submitted csv started with a number
-            $csv_is_number = is_numeric(substr($Parsed_csv, 0, 1));
-
+            // Only display table when submitted csv has results
             if ($num_rows >= 1) {
-                if ($csv_is_number == true) {
 
-                    $this->Display_Submit_Button(); ?>
+                $this->Display_Submit_Button(); ?>
 
-                    <div id="id_projects_table" align="center">
-                    <table id='Projects_Table' class='tablesorter'>
-                    <?php
-                    $this->Display_Pager();
-                    $this->Table_Header();
-                }  // End if ($csv_is_number == true)
-                            else {
-                    echo "Error, no results.  Please enter a value";
-                }
-            }
+                <div id="id_projects_table" align="center">
+                <table id='Projects_Table' class='tablesorter'>
+                <?php
+                $this->Display_Pager();
+                $this->Table_Header();
+            }  // End if ($num_rows >= 1)
             else {
                 echo "Error, no results.  Please enter a value";
             }
