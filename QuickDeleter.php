@@ -8,7 +8,7 @@ use DateTimeRC;
 use Project;
 use REDCap;
 
-if(SUPER_USER == 1) {
+//if(SUPER_USER == 1) {
 
 //  Session for returning submitted json after deleting/undeleting project.
     session_start();
@@ -62,75 +62,89 @@ if(SUPER_USER == 1) {
         public function Display_Page()
         {
 
-            $this->Display_Header();
-            $this->Display_Home_Page();
-            $this->Display_Table();
+            if(SUPER_USER != 1) {
 
-            ?>
+                $this->Display_Header();
+                $this->Display_Home_Page();
+                $this->Display_Table();
 
-            <script type="text/javascript">
+                ?>
 
-                // Puts comma separated values of checkboxes in PID_Box.
-                $("form[name=Form]").on("change", "input[type=checkbox]", function () {
-                    var values = $.map($("input[type=checkbox]:checked"), function (pid) {
-                        return pid.value;
-                    });
-                    $("form[name=Form]").find("input[id=PID_Box]").val(values);
-                });
+                <script type="text/javascript">
 
-                //  Highlight row when box checked
-                $(".PID_Checkbox").on('change', function () {
-//                 $("form[name=Form]").on("change", "input[type=checkbox]", function () {
-                    if ($(this).is(':checked'))
-                    // console.log($(this).attr('id'));
-                        if ($(this).prop('id') === '0')
-                        // console.log($(this).attr('id'));
-                            $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                        else
-                        // console.log($(this).attr('id'));
-                            $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                    else
-                    // console.log("Hi");
-                        $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                });
-
-                // Highlights all rows when check all box checked
-                $(document).ready(function () {
-                    $("#check_all").on('change', function () {
-                        var PID_Checkboxes = $(".PID_Checkbox");
-                        console.log($(this));
-                        PID_Checkboxes.each(function () {
-
-                            // $(this).toggle($(this).checked);
-                            console.log($(this).checked);
-                            if ($(this).is(':checked'))
-
-                            // console.log($(this).attr('id'));
-                                if ($(this).prop('id') === '0')
-                                // console.log($(this).attr('id'));
-                                    $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                                else
-                                // console.log($(this).attr('id'));
-                                    $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                            else
-                            // console.log("Hi");
-                                $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                    // Puts comma separated values of checkboxes in PID_Box.
+                    $("form[name=Form]").on("change", "input[type=checkbox]", function () {
+                        var values = $.map($("input[type=checkbox]:checked"), function (pid) {
+                            return pid.value;
                         });
-                    })
-                });
+                        $("form[name=Form]").find("input[id=PID_Box]").val(values);
+                    });
 
-                // Removes checked row color on form reset
-                function Clear_Row_Styling() {
-                    $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
-                }
+                    //  Highlight row when box checked
+                    $(".PID_Checkbox").on('change', function () {
+//                 $("form[name=Form]").on("change", "input[type=checkbox]", function () {
+                        if ($(this).is(':checked'))
+                        // console.log($(this).attr('id'));
+                            if ($(this).prop('id') === '0')
+                            // console.log($(this).attr('id'));
+                                $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                            else
+                            // console.log($(this).attr('id'));
+                                $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                        else
+                        // console.log("Hi");
+                            $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                    });
 
-                // Avoids having to resubmit the form on page refresh
-                if (window.history.replaceState) {
-                    window.history.replaceState(null, null, window.location.href);
-                }
-            </script>
+                    // Highlights all rows when check all box checked
+                    $(document).ready(function () {
+                        $("#check_all").on('change', function () {
+                            var PID_Checkboxes = $(".PID_Checkbox");
+                            console.log($(this));
+                            PID_Checkboxes.each(function () {
 
-            <?php
+                                // $(this).toggle($(this).checked);
+                                console.log($(this).checked);
+                                if ($(this).is(':checked'))
+
+                                // console.log($(this).attr('id'));
+                                    if ($(this).prop('id') === '0')
+                                    // console.log($(this).attr('id'));
+                                        $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                                    else
+                                    // console.log($(this).attr('id'));
+                                        $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                                else
+                                // console.log("Hi");
+                                    $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                            });
+                        })
+                    });
+
+                    // Removes checked row color on form reset
+                    function Clear_Row_Styling() {
+                        $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
+                    }
+
+                    // Avoids having to resubmit the form on page refresh
+                    if (window.history.replaceState) {
+                        window.history.replaceState(null, null, window.location.href);
+                    }
+                </script>
+
+                <?php
+
+            }  // End if(SUPER_USER == 1)
+            else {
+                echo "<br>";
+                echo "<br>";
+                echo "<br>";
+                echo "<br>";
+                REDCap::logEvent("Non super user, " . USERID . ", tried to access the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
+                echo "This function is for super users only";
+                echo "<br>";
+            }
+
         }
 
         //  Displays home page
@@ -739,10 +753,10 @@ if(SUPER_USER == 1) {
             return $sqlUpdateProject;
         }  // End Update_Project()
     }  // End QuickDeleter class
-}  // End if(SUPER_USER == 1)
-else {
-    REDCap::logEvent("Non super user, " . USERID . ", tried to access the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
-    echo "This function is for super users only";
-    echo "<br>";
-}
+//}  // End if(SUPER_USER == 1)
+//else {
+//    REDCap::logEvent("Non super user, " . USERID . ", tried to access the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
+//    echo "This function is for super users only";
+//    echo "<br>";
+//}
 

@@ -18,6 +18,8 @@ The Quick Deleter external module allows REDCap super users to quickly delete an
 
 -  The json and csv page feature a check all checkbox to highlight all the rows in the table.  This will highlight all rows in the query, not just the visible ones.  Be careful when using this feature, you may accidentally delete/undelete project you didn't intend to.  This feature is intentionally missing from the my projects and all project pages.
 
+-  Project deletes and undeletes are logged both at the project and system level.
+
 -  Many values in the table are links that will take you to various pages in the REDCap project:
     -  PID:  Project home
     -  Project name:  Project setup
