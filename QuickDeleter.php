@@ -8,8 +8,6 @@ use DateTimeRC;
 use Project;
 use REDCap;
 
-//if(SUPER_USER == 1) {
-
 //  Session for returning submitted json/csv after deleting/restoring project.
     session_start();
 
@@ -433,7 +431,9 @@ use REDCap;
                     <?php
         }  // End Display_Table_Header()
 
+        // Checks if custom type is json or csv
         public function Get_Custom_Type() {
+
             $Custom_Box = $_POST['Custom_Box'];
 
             if(isset($Custom_Box)) {
@@ -451,8 +451,9 @@ use REDCap;
             }
 
             return $Custom_Type;
-        }
+        }  // End Get_Custom_Type()
 
+        // Parses custom json and csv
         public function Parse_Custom() {
 
             $Custom_Box = $_POST['Custom_Box'];
@@ -460,7 +461,6 @@ use REDCap;
 
             if(isset($Custom_Box)) {
                 if($Get_Custom_Type == "json") {
-//                    echo "json";
                     $Custom_Value = $Custom_Box;
 
                     $json_decode = json_decode($Custom_Value);
@@ -471,20 +471,12 @@ use REDCap;
                     }
 
                     $Custom_Value = implode(",", $Custom_PID);
-
-//                    echo $Custom_Value;
                     $_SESSION['Custom_Value'] = $Custom_Value;
-//                    echo $_SESSION['Custom_Value'];
-
                 }
                 elseif($Get_Custom_Type == "csv") {
-//                    echo "Hello";
-//                    echo "<br>";
-//                    echo $Custom_Box;
                     $Custom_Value = $Custom_Box;
                     $_SESSION['Custom_Value'] = $Custom_Box;
-                    }
-
+                }
             } elseif(isset($_SESSION['Custom_Value'])) {
                 $Custom_Value = $_SESSION['Custom_Value'];
             }
@@ -554,7 +546,34 @@ use REDCap;
         {
             if(SUPER_USER == 1) {
                 $Pre_Values = $this->Get_Values();
-                $this->Update_Project();
+
+            global $conn;
+            if (!isset($conn)) {
+                db_connect(false);
+            }
+
+            // Converts submitted PID_Box string to array for bind_param()
+            $PID_Array = explode(",", $this->Get_PID());
+
+            // Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
+            $qMarks = str_repeat('?,', count($PID_Array) - 1) . '?';
+
+            // Forms int placeholder string for bind_param().  e.g. 'iii'
+            $Get_Integers = explode(",", $this->Get_PID());
+            $Integers = join(array_pad(array(), count($Get_Integers), "i"));
+
+            $sqlUpdateProject = "
+            UPDATE redcap_projects
+            SET date_deleted = IF(date_deleted IS NULL, '" . NOW . "', NULL)
+            WHERE project_id IN (" . $qMarks . ")
+            ";
+
+            // https://stackoverflow.com/questions/3703180/a-prepared-statement-where-in-query-and-sorting-with-mysql/45905752#45905752.
+            $stmt = $conn->prepare($sqlUpdateProject);
+            $stmt->bind_param($Integers, ...$PID_Array);
+            $stmt->execute();
+            $stmt->close();
+
                 $Post_Values = $this->Get_Values();
 
                 // Adds logging to REDCap
@@ -613,45 +632,6 @@ use REDCap;
             }
             return $Results;
         }  // End Get_Values()
-
-        // Prepared query to delete or restore projects
-        public function Update_Project()
-        {
-
-            global $conn;
-            if (!isset($conn)) {
-                db_connect(false);
-            }
-
-            // Converts submitted PID_Box string to array for bind_param()
-            $PID_Array = explode(",", $this->Get_PID());
-
-            // Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
-            $qMarks = str_repeat('?,', count($PID_Array) - 1) . '?';
-
-            // Forms int placeholder string for bind_param().  e.g. 'iii'
-            $Get_Integers = explode(",", $this->Get_PID());
-            $Integers = join(array_pad(array(), count($Get_Integers), "i"));
-
-            $sqlUpdateProject = "
-            UPDATE redcap_projects
-            SET date_deleted = IF(date_deleted IS NULL, '" . NOW . "', NULL)
-            WHERE project_id IN (" . $qMarks . ")
-            ";
-
-            // https://stackoverflow.com/questions/3703180/a-prepared-statement-where-in-query-and-sorting-with-mysql/45905752#45905752.
-            $stmt = $conn->prepare($sqlUpdateProject);
-            $stmt->bind_param($Integers, ...$PID_Array);
-            $stmt->execute();
-            $stmt->close();
-
-            return $sqlUpdateProject;
-        }  // End Update_Project()
     }  // End QuickDeleter class
-//}  // End if(SUPER_USER == 1)
-//else {
-//    REDCap::logEvent("Non super user, " . USERID . ", tried to access the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
-//    echo "This function is for super users only";
-//    echo "<br>";
-//}
+
 
