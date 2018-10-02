@@ -40,28 +40,13 @@ use REDCap;
                             <td>
                                 <a href="<?= $this->getUrl("index.php?tab=1") ?> ">All Projects</a>
                             </td>
-<!--                            <form name="Custom_Form_json" id="Custom_Form_json" method="POST" action="--><?//= $this->getUrl("index.php?tab=2") ?><!--">-->
-<!--                                <td>-->
-<!--                                    <button class="Button_Link" type="submit" id="Custom_Page_json" name="Custom_Page_json">json</button>-->
-<!--                                </td>-->
-<!--                                <td>-->
-<!--                                    <input id="Custom_Box_json" class="Button_Box" type='text' name='Custom_Box_json' value="">-->
-<!--                                </td>-->
-<!--                            </form>-->
-<!--                            <form name="Custom_Form_csv" id="Custom_Form_csv" method="POST" action="--><?//= $this->getUrl("index.php?tab=3") ?><!--">-->
-<!--                                <td>-->
-<!--                                    <button class="Button_Link" type="submit" id="Custom_Page_csv" name="Custom_Page_csv">csv</button>-->
-<!--                                </td>-->
-<!--                                <td>-->
-<!--                                    <input id="Custom_Box_csv" class="Button_Box" type='text' name='Custom_Box_csv' value="">-->
-<!--                                </td>-->
-                                <form name="Custom_Form" id="Custom_Form" method="POST" action="<?= $this->getUrl("index.php?tab=2") ?>">
-                                <td>
-                                    <button class="Button_Link" type="submit" id="Custom_Page" name="Custom_Page">Custom</button>
-                                </td>
-                                <td>
-                                    <input id="Custom_Box" class="Button_Box" type='text' name='Custom_Box' value="">
-                                </td>
+                            <form name="Custom_Form" id="Custom_Form" method="POST" action="<?= $this->getUrl("index.php?tab=2") ?>">
+                            <td>
+                                <button class="Button_Link" type="submit" id="Custom_Page" name="Custom_Page">Custom</button>
+                            </td>
+                            <td>
+                                <input id="Custom_Box" class="Button_Box" type='text' name='Custom_Box' value="">
+                            </td>
                             </form>
                         </tr>
                     </table>
@@ -102,50 +87,12 @@ use REDCap;
                 <script src="<?= $this->getUrl("/QuickDeleter.js") ?>"></script>
                 <?php
 
-                //  Get results for submitted json or csv
-
-//                $Parsed_json = $this->Parse_Posted_Json();
-
-
-//                echo $Parsed_Custom;
-//                $Parsed_csv = $this->Parse_Posted_Csv();
-
-
-                //  Check if http or https
                 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
                 $Parsed_Custom = $this->Parse_Custom();
-
-                // Set variables depending on json/csv page
-//                if($tab == 2) {
-//                    $Parsed_Array = explode(",", $Parsed_json);
-//                    $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
-//                    $Get_Integers = explode(",", $Parsed_json);
-//                    $Integers = join(array_pad(array(), count($Get_Integers), "i"));
-//                }
-//                elseif($tab == 3) {
-//                    $Parsed_Array = explode(",", $Parsed_csv);
-//                    $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
-//                    $Get_Integers = explode(",", $Parsed_csv);
-//                    $Integers = join(array_pad(array(), count($Get_Integers), "i"));
-//                }
-
-//                $Get_Custom_Type = $this->Get_Custom_Type();
-
-//                if($Get_Custom_Type == "json") {
-                    $Parsed_Array = explode(",", $Parsed_Custom);
-                    $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
-                    $Get_Integers = explode(",", $Parsed_Custom);
-                    $Integers = join(array_pad(array(), count($Get_Integers), "i"));
-//                }
-//                elseif($Get_Custom_Type == "csv") {
-//                    $Parsed_Array = explode(",", $Parsed_Custom);
-//                    $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
-//                    $Get_Integers = explode(",", $Parsed_Custom);
-//                    $Integers = join(array_pad(array(), count($Get_Integers), "i"));
-//                    echo $Integers;
-//                }
-
-
+                $Parsed_Array = explode(",", $Parsed_Custom);
+                $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
+                $Get_Integers = explode(",", $Parsed_Custom);
+                $Integers = join(array_pad(array(), count($Get_Integers), "i"));
 
                 // SQL
                 $Project_Pages = array("
@@ -246,39 +193,6 @@ use REDCap;
                     WHERE a.project_id IN (" . $qMarks . ")  
                     GROUP BY a.project_id
                     ORDER BY a.project_id ASC
-                        ",
-                        "
-                    SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
-                    CAST(CASE a.status
-                         WHEN 0 THEN 'Development'
-                         WHEN 1 THEN 'Production'
-                         WHEN 2 THEN 'Inactive'
-                         WHEN 3 THEN 'Archived'
-                         ELSE a.status
-                         END AS CHAR(50)) AS 'Statuses',
-                    CAST(CASE a.purpose
-                        WHEN 0 THEN 'Practice / Just for fun'
-                        WHEN 4 THEN 'Operational Support'
-                        WHEN 2 THEN 'Research'
-                        WHEN 3 THEN 'Quality Improvement'
-                        WHEN 1 THEN 'Other'
-                        ELSE a.purpose
-                        END AS CHAR(50)) AS 'Purpose',
-                    CAST(creation_time AS date) AS 'New Creation Time', 
-                    CAST(a.date_deleted AS date) AS 'New Date Deleted', 
-                    CAST(last_logged_event AS date) AS 'New Last Event', 
-                    DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
-                    CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
-                    CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS CHAR(50)) AS 'Flagged',
-                    GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
-                    FROM redcap_projects as a
-                    LEFT JOIN redcap_user_rights AS b
-                    ON a.project_id=b.project_id
-                    LEFT JOIN redcap_record_counts AS c
-                    ON a.project_id=c.project_id
-                    WHERE a.project_id IN (" . $qMarks . ")  
-                    GROUP BY a.project_id
-                    ORDER BY a.project_id ASC
                         "
                 );
             ?>
@@ -293,7 +207,7 @@ use REDCap;
             }
 
             // Prepare sql if json or csv
-            if($tab == 2 || $tab == 3) {
+            if($tab == 2) {
                 $stmt = $conn->prepare($Project_Pages[$tab]);
                 $stmt->bind_param($Integers, ...$Parsed_Array);
                 $stmt->execute();
@@ -301,7 +215,7 @@ use REDCap;
                 $num_rows = mysqli_num_rows($Get_Result);
 
             //  If the page is json or csv and a value was submitted, display submit form, otherwise show error no results.
-            if($tab == 2) {
+
                 if ($num_rows != "") {
 
                     $this->Display_Table_Header();
@@ -312,21 +226,6 @@ use REDCap;
                     <h5 style="text-align: center; padding-top:100px; padding-bottom:5px;  color:white;">Error, no results.  Please enter a value</h5>
                     <?php
                 }
-            }  // End if($Current_URL == $json_Page)
-//            elseif($tab == 3) {
-//
-//                // Only display table when submitted csv has results
-//                if ($num_rows >= 1) {
-//
-//                    $this->Display_Table_Header();
-//
-//                }  // End if ($num_rows >= 1)
-//                else {
-//                    ?>
-<!--                    <h1 style="text-align: center; padding-top:20px; padding-bottom:5px;  color:white;">Error, no results.  Please enter a value</h1>-->
-<!--                    --><?php
-//                }
-//            }  // End elseif($Current_URL == $csv_Page)
 
                 // Builds HTML rows and displays sql results for submitted json and csv.
                 while ($row = $Get_Result->fetch_assoc()) {
@@ -510,7 +409,7 @@ use REDCap;
                      <thead>
                         <tr>
                             <th data-sorter="false" data-filter="false"></th> <?php
-                    } elseif ($tab == 2 || $tab == 3) {
+                    } elseif ($tab == 2) {
                         ?>
                     <thead>
                         <tr>
@@ -592,44 +491,6 @@ use REDCap;
 
             return $Custom_Value;
         }  // End Parse_Custom()
-
-        //  Takes user submitted json and parses it into PIDs.  Stores in session variable to retain after deleting/undeleting projects.
-//        public function Parse_Posted_Json()
-//        {
-//            $Custom_Box_json = $_POST['Custom_Box_json'];
-//
-//            if (isset($Custom_Box_json)) {
-//                $Posted_json = $Custom_Box_json;
-//                $_SESSION['Custom_json'] = $Custom_Box_json;
-//            } elseif (isset($_SESSION['Custom_json'])) {
-//                $Posted_json = $_SESSION['Custom_json'];
-//            }
-
-//            $Decoded_json = json_decode($Posted_json);
-//
-//            $Custom_PID = array();
-//            foreach ($Decoded_json AS $values) {
-//                $Custom_PID[] = $values->PID;
-//            }
-//
-//            $Parsed_json = implode(",", $Custom_PID);
-//            return $Parsed_json;
-//        }  // End Parse_Posted_Json()
-
-        //  Takes user submitted csv and parses it into PIDs.  Stores in session variable to retain after deleting/undeleting projects.
-//        public function Parse_Posted_Csv()
-//        {
-//            $Custom_Box_csv = $_POST['Custom_Box_csv'];
-//
-//            if (isset($Custom_Box_csv)) {
-//                $Posted_csv = $Custom_Box_csv;
-//                $_SESSION['Custom_csv'] = $Custom_Box_csv;
-//            } elseif (isset($_SESSION['Custom_csv'])) {
-//                $Posted_csv = $_SESSION['Custom_csv'];
-//            }
-//
-//            return $Posted_csv;
-//        }  // End Parse_Posted_Csv()
 
         public function Build_HTML_Table($row, $protocol) {
             ?>
