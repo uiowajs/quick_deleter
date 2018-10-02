@@ -24,6 +24,7 @@ input[type=checkbox]
     -o-transform: scale(1.5); /* Opera */
     margin-right: 10px;
     margin-left: 10px;
+    vertical-align: middle;
 }
 
 #check_all {

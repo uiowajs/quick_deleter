@@ -64,7 +64,6 @@ use REDCap;
 
             if(SUPER_USER == 1) {
 
-
                 $this->Display_Header();
                 $this->Display_Home_Page();
                 $this->Display_Table();
@@ -153,11 +152,8 @@ use REDCap;
         //  Displays home page
         public function Display_Home_Page()
         {
-
-            $Current_URL = "http://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-//            $Current_URL = $this->getUrl("index.php");
-//            echo $Current_URL;
-//            $Home_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index";
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
+            $Current_URL = $protocol . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
             $Home_Page = $this->getUrl("index.php");
             if ($Current_URL == $Home_Page) {
                 ?>
@@ -186,8 +182,6 @@ use REDCap;
                     <option value="25">25</option>
                     <option value="50">50</option>
                     <option value="100">100</option>
-                    <option value="500">500</option>
-                    <option value="all">All Rows</option>
                 </select>
 
             </div>
@@ -216,44 +210,17 @@ use REDCap;
             <?php
         }  // End Display_Submit_Button()
 
-        //  Contains source files for table sorter
-        public function Tablesorter_Includes()
-        {
-            ?>
-            <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.min.js") ?>"></script>
-            <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.widgets.min.js") ?>"></script>
-            <script src="<?= $this->getUrl("/resources/tablesorter/widgets/widget-pager.min.js") ?>"></script>
-            <script src="<?= $this->getUrl("/resources/tablesorter/parsers/parser-input-select.min.js") ?>"></script>
-            <script src="<?= $this->getUrl("/resources/tablesorter/widgets/widget-output.min.js") ?>"></script>
-
-            <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/theme.blue.min.css") ?>" rel="stylesheet">
-            <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/jquery.tablesorter.pager.min.css") ?>" rel="stylesheet">
-            <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
-
-            <script src="<?= $this->getUrl("/QuickDeleter.js") ?>"></script>
-            <?php
-        }  // End Tablesorter_Includes()
-
         //  Displays table headers
         public function Table_Header()
         {
+            $tab = $_REQUEST['tab'];
 
-            // Page url variables
-//            $Current_URL = SERVER_NAME . $_SERVER['REQUEST_URI'];
-            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
-            $Current_URL = $protocol . SERVER_NAME . $_SERVER['REQUEST_URI'];
-            $My_Projects_Page = $this->getUrl("index.php") . "&tab=0";
-//            $My_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
-            $All_Projects_Page = $this->getUrl("index.php") . "&tab=1";
-            $json_Page = $this->getUrl("index.php") . "&tab=2";
-            $csv_Page = $this->getUrl("index.php") . "&tab=3";
-
-             if ($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
+             if ($tab == 0 || $tab == 1) {
                 ?>
              <thead>
                 <tr>
                     <th data-filter="false"></th> <?php
-            } elseif ($Current_URL == $json_Page || $Current_URL == $csv_Page) {
+            } elseif ($tab == 2 || $tab == 3) {
                 ?>
             <thead>
                 <tr>
@@ -300,8 +267,6 @@ use REDCap;
             return $Parsed_json;
         }  // End Parse_Posted_Json()
 
-
-
         //  Takes user submitted csv and parses it into PIDs.  Stores in session variable to retain after deleting/undeleting projects.
         public function Parse_Posted_Csv()
         {
@@ -314,9 +279,65 @@ use REDCap;
                 $Posted_csv = $_SESSION['Custom_csv'];
             }
 
-
             return $Posted_csv;
         }  // End Parse_Posted_Csv()
+
+        public function Build_HTML_Table($row, $protocol) {
+            ?>
+
+            <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
+
+                    if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
+                    {
+                        $Row_Color = "style=\"background-color: rgba(0, 200, 0, 0.1);\"";
+    //                 $Flagged = 0;
+                    } else {
+                        $Row_Color = "style=\"background-color: rgba(200, 0, 0, 0.1);\"";
+    //                 $Flagged = 1;
+                    }
+                    ?>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row['project_id']; ?>>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "ControlCenter/edit_project.php?project=" . $row['project_id']; ?>"><?php echo $row['project_id']; ?></a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['app_title']; ?> </a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['Purpose']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/other_functionality.php?pid=" . $row['project_id']; ?>" ><?php echo $row['Statuses']; ?></a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>"> <?php echo $row['record_count']; ?></a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "UserRights/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Users']; ?> </a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['New Creation Time']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['New Last Event']; ?></a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Days Since Last Event']; ?></a>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['New Date Deleted']; ?>
+                    </td>
+                    <td align='center' class="color" <?php echo $Row_Color ?>>
+                        <?php echo $row['New Final Delete Date']; ?>
+                    </td>
+
+                    <?php ;
+                    ?>
+            </tr>
+                <?php
+        }
 
         //  Runs SQL query and displays results tablesorter table.  Takes parsed json/csv if necessary.
         public function Display_Table()
@@ -328,44 +349,38 @@ use REDCap;
             }
 
             $tab = $_REQUEST['tab'];  //  Tabs for SQL array
-            $this->Tablesorter_Includes();  // Enables tablesorter
+
+            // Enables tablesorter
+            ?>
+            <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.min.js") ?>"></script>
+            <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.widgets.min.js") ?>"></script>
+            <script src="<?= $this->getUrl("/resources/tablesorter/widgets/widget-pager.min.js") ?>"></script>
+            <script src="<?= $this->getUrl("/resources/tablesorter/parsers/parser-input-select.min.js") ?>"></script>
+            <script src="<?= $this->getUrl("/resources/tablesorter/widgets/widget-output.min.js") ?>"></script>
+
+            <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/theme.blue.min.css") ?>" rel="stylesheet">
+            <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/jquery.tablesorter.pager.min.css") ?>" rel="stylesheet">
+            <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
+
+            <script src="<?= $this->getUrl("/QuickDeleter.js") ?>"></script>
+            <?php
 
             //  Get results for submitted json or csv
-//            if (!isset($_REQUEST['tab'])) {
-//                die;
-//            } else {
-                $Parsed_json = $this->Parse_Posted_Json();
-                $Parsed_csv = $this->Parse_Posted_Csv();
 
-//                echo $Parsed_csv;
-//            }
+            $Parsed_json = $this->Parse_Posted_Json();
+            $Parsed_csv = $this->Parse_Posted_Csv();
 
-            //  Page urls
+            //  Check if http or https
             $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
-            $Current_URL = $protocol . SERVER_NAME .  $_SERVER['REQUEST_URI'];
-            $My_Projects_Page = $this->getUrl("index.php") . "&tab=0";
-//            $My_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
-            $All_Projects_Page = $this->getUrl("index.php") . "&tab=1";
-            $json_Page = $this->getUrl("index.php") . "&tab=2";
-            $csv_Page = $this->getUrl("index.php") . "&tab=3";
-
-
-//            $Current_URL = "http://" . SERVER_NAME . $_SERVER['REQUEST_URI'];
-////            $Current_URL = APP_PATH_WEBROOT_FULL     ;
-//            $My_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
-//            $All_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
-//            $json_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
-////            $csv_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
-//            $csv_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
 
             // Set variables depending on json/csv page
-            if($Current_URL == $json_Page) {
+            if($tab == 2) {
                 $Parsed_Array = explode(",", $Parsed_json);
                 $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
                 $Get_Integers = explode(",", $Parsed_json);
                 $Integers = join(array_pad(array(), count($Get_Integers), "i"));
             }
-            elseif($Current_URL == $csv_Page) {
+            elseif($tab == 3) {
                 $Parsed_Array = explode(",", $Parsed_csv);
                 $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
                 $Get_Integers = explode(",", $Parsed_csv);
@@ -510,9 +525,8 @@ use REDCap;
         <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
         <?php
 
-
         // Displays submit form if the page is My or All projects.  Class = tablesorter is how tablesorter is applied to the table.
-        if($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
+        if($tab == 0 || $tab == 1) {
 
             $this->Display_Submit_Button(); ?>
             <div id="id_projects_table" align="center">
@@ -520,18 +534,18 @@ use REDCap;
             <?php
             $this->Display_Pager();
             $this->Table_Header();
-        }  // End if($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page)
+        }
 
-        if($Current_URL == $json_Page || $Current_URL == $csv_Page) {
+        if($tab == 2 || $tab == 3) {
             $stmt = $conn->prepare($Project_Pages[$tab]);
             $stmt->bind_param($Integers, ...$Parsed_Array);
             $stmt->execute();
             $Get_Result = $stmt->get_result();
             $num_rows = mysqli_num_rows($Get_Result);
-//            print_r($Get_Result);
+
 
         //  If the page is json or csv and a value was submitted, display submit form, otherwise show error no results.
-        if($Current_URL == $json_Page) {
+        if($tab == 2) {
             if ($Parsed_json != "") {
 
                 $this->Display_Submit_Button(); ?>
@@ -546,7 +560,7 @@ use REDCap;
                 echo "Error, no results.  Please enter a value";
             }
         }  // End if($Current_URL == $json_Page)
-        elseif($Current_URL == $csv_Page) {
+        elseif($tab == 3) {
 
             // Only display table when submitted csv has results
             if ($num_rows >= 1) {
@@ -566,124 +580,20 @@ use REDCap;
 
             // Builds HTML rows and displays sql results for submitted json and csv.
             while ($row = $Get_Result->fetch_assoc()) {
-                ?>
 
-                <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
+                $this->Build_HTML_Table($row, $protocol);
 
-                    if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
-                    {
-                        $Row_Color = "style=\"background-color: rgba(0, 200, 0, 0.1);\"";
-    //                 $Flagged = 0;
-                    } else {
-                        $Row_Color = "style=\"background-color: rgba(200, 0, 0, 0.1);\"";
-    //                 $Flagged = 1;
-                    }
-                    ?>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row['project_id']; ?>>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "/index.php?pid=" . $row['project_id']; ?>"><?php echo $row['project_id']; ?></a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['app_title']; ?> </a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['Purpose']; ?>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/other_functionality.php?pid=" . $row['project_id']; ?>" ><?php echo $row['Statuses']; ?></a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>"> <?php echo $row['record_count']; ?></a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "UserRights/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Users']; ?> </a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['New Creation Time']; ?>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['New Last Event']; ?></a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Days Since Last Event']; ?></a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['New Date Deleted']; ?>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['New Final Delete Date']; ?>
-                    </td>
-
-                    <?php ;
-                    ?>
-                </tr>
-                <?php
             }  // End while loop
 
         }  // End if($Current_URL == $json_Page || $Current_URL == $csv_Page)
-        elseif($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
+        elseif($tab == 0 || $tab == 1) {
             // Results for My or All Projects SQL query.
             $Result = db_query($Project_Pages[$tab]);
 
             // Builds HTML rows and displays sql results for My Projects and All Projects.
             while ($row = db_fetch_assoc($Result))  // $sqlGetAllProjects
             {
-                ?>
-
-                <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
-
-                    if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
-                    {
-                        $Row_Color = "style=\"background-color: rgba(0, 200, 0, 0.1);\"";
-    //                 $Flagged = 0;
-                    } else {
-                        $Row_Color = "style=\"background-color: rgba(200, 0, 0, 0.1);\"";
-    //                 $Flagged = 1;
-                    }
-                    ?>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row['project_id']; ?>>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "/index.php?pid=" . $row['project_id']; ?>"><?php echo $row['project_id']; ?></a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['app_title']; ?> </a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['Purpose']; ?>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/other_functionality.php?pid=" . $row['project_id']; ?>" ><?php echo $row['Statuses']; ?></a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>"> <?php echo $row['record_count']; ?></a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "UserRights/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Users']; ?> </a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['New Creation Time']; ?>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['New Last Event']; ?></a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Days Since Last Event']; ?></a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['New Date Deleted']; ?>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['New Final Delete Date']; ?>
-                    </td>
-
-                    <?php ;
-                    ?>
-                </tr>
-                <?php
+                $this->Build_HTML_Table($row, $protocol);
                 }  // End while loop for My/All projects
             }    // End elseif($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page)
         }  //  End Display_Table()
