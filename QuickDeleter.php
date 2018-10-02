@@ -336,15 +336,27 @@ use REDCap;
 //            } else {
                 $Parsed_json = $this->Parse_Posted_Json();
                 $Parsed_csv = $this->Parse_Posted_Csv();
+
+//                echo $Parsed_csv;
 //            }
 
             //  Page urls
-            $Current_URL = "http://" . SERVER_NAME . $_SERVER['REQUEST_URI'];
-//            $Current_URL = APP_PATH_WEBROOT_FULL     ;
-            $My_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
-            $All_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
-            $json_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
-            $csv_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
+            $Current_URL = $protocol . SERVER_NAME .  $_SERVER['REQUEST_URI'];
+            $My_Projects_Page = $this->getUrl("index.php") . "&tab=0";
+//            $My_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
+            $All_Projects_Page = $this->getUrl("index.php") . "&tab=1";
+            $json_Page = $this->getUrl("index.php") . "&tab=2";
+            $csv_Page = $this->getUrl("index.php") . "&tab=3";
+
+
+//            $Current_URL = "http://" . SERVER_NAME . $_SERVER['REQUEST_URI'];
+////            $Current_URL = APP_PATH_WEBROOT_FULL     ;
+//            $My_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
+//            $All_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
+//            $json_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
+////            $csv_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
+//            $csv_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
 
             // Set variables depending on json/csv page
             if($Current_URL == $json_Page) {
@@ -383,7 +395,7 @@ use REDCap;
                 CAST(last_logged_event AS date) AS 'New Last Event', 
                 DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
                 CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
-                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
+                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS CHAR(50)) AS 'Flagged',
                 GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
                 FROM redcap_projects as a
                 LEFT JOIN redcap_user_rights AS b
@@ -417,7 +429,7 @@ use REDCap;
                 CAST(last_logged_event AS date) AS 'New Last Event', 
                 DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
                 CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
-                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
+                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS CHAR(50)) AS 'Flagged',
                 GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
                 FROM redcap_projects as a
                 LEFT JOIN redcap_user_rights AS b
@@ -449,18 +461,18 @@ use REDCap;
                 CAST(last_logged_event AS date) AS 'New Last Event', 
                 DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
                 CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
-                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
+                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS CHAR(50)) AS 'Flagged',
                 GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
                 FROM redcap_projects as a
-                JOIN redcap_user_rights AS b
+                LEFT JOIN redcap_user_rights AS b
                 ON a.project_id=b.project_id
-                JOIN redcap_record_counts AS c
+                LEFT JOIN redcap_record_counts AS c
                 ON a.project_id=c.project_id
                 WHERE a.project_id IN (" . $qMarks . ")  
                 GROUP BY a.project_id
-                ORDER BY a.project_id ASC  
+                ORDER BY a.project_id ASC
                     ",
-                        "
+                    "
                 SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
                 CAST(CASE a.status
                      WHEN 0 THEN 'Development'
@@ -482,16 +494,16 @@ use REDCap;
                 CAST(last_logged_event AS date) AS 'New Last Event', 
                 DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
                 CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
-                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS INT) AS 'Flagged',
+                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS CHAR(50)) AS 'Flagged',
                 GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
                 FROM redcap_projects as a
-                JOIN redcap_user_rights AS b
+                LEFT JOIN redcap_user_rights AS b
                 ON a.project_id=b.project_id
-                JOIN redcap_record_counts AS c
+                LEFT JOIN redcap_record_counts AS c
                 ON a.project_id=c.project_id
                 WHERE a.project_id IN (" . $qMarks . ")  
                 GROUP BY a.project_id
-                ORDER BY a.project_id ASC  
+                ORDER BY a.project_id ASC
                     "
             );
         ?>
@@ -516,7 +528,7 @@ use REDCap;
             $stmt->execute();
             $Get_Result = $stmt->get_result();
             $num_rows = mysqli_num_rows($Get_Result);
-//            var_dump($Get_Result);
+            print_r($Get_Result);
 
         //  If the page is json or csv and a value was submitted, display submit form, otherwise show error no results.
         if($Current_URL == $json_Page) {
