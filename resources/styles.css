@@ -65,6 +65,11 @@ table#Links_Table, #Links_Table tr, #Links_Table td {
 
 }
 
+.tablesorter-blue .tablesorter-header {
+    color:black;
+    font-size:12px;
+}
+
 .tablesorter a:link, .tablesorter a:visited, .tablesorter a:hover, .tablesorter a:active {
     text-decoration: none;
     color:Black;
@@ -133,6 +138,7 @@ h2 {
     color:black;
     font-weight: bold;
     font-size: 14px;
+
 }
 
 .tablesorter-blue tbody td, .tablesorter-blue tfoot td, .tablesorter-blue tfoot th {

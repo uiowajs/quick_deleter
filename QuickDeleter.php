@@ -24,7 +24,7 @@ use REDCap;
 
                 <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
 
-                <h1 style="text-align: center; padding-top:30px; padding-bottom:5px; color:white;" class="Main_Header">
+                <h1 style="text-align: center; padding-top:40px; padding-bottom:5px; color:white;" class="Main_Header">
                     <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index"; ?>">Quick Deleter </a>
                 </h1>
 
@@ -528,7 +528,7 @@ use REDCap;
             $stmt->execute();
             $Get_Result = $stmt->get_result();
             $num_rows = mysqli_num_rows($Get_Result);
-            print_r($Get_Result);
+//            print_r($Get_Result);
 
         //  If the page is json or csv and a value was submitted, display submit form, otherwise show error no results.
         if($Current_URL == $json_Page) {
