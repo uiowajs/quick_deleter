@@ -10,7 +10,7 @@ use REDCap;
 
 //if(SUPER_USER == 1) {
 
-//  Session for returning submitted json after deleting/undeleting project.
+//  Session for returning submitted json/csv after deleting/restoring project.
     session_start();
 
     class QuickDeleter extends AbstractExternalModule
@@ -75,7 +75,7 @@ use REDCap;
                 if ($Current_URL == $Home_Page) {
                     ?>
                     <div>
-                        <h2 style="text-align: center; padding-top:50px; color:white;">Quickly delete and undelete projects</h2>
+                        <h2 style="text-align: center; padding-top:50px; color:white;">Quickly delete and restore projects</h2>
                     </div>
                     <?php
                 }
@@ -105,7 +105,7 @@ use REDCap;
                 //  Get results for submitted json or csv
 
 //                $Parsed_json = $this->Parse_Posted_Json();
-                $Parsed_Custom = $this->Parse_Custom();
+
 
 //                echo $Parsed_Custom;
 //                $Parsed_csv = $this->Parse_Posted_Csv();
@@ -113,6 +113,7 @@ use REDCap;
 
                 //  Check if http or https
                 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
+                $Parsed_Custom = $this->Parse_Custom();
 
                 // Set variables depending on json/csv page
 //                if($tab == 2) {
@@ -281,7 +282,7 @@ use REDCap;
                         "
                 );
             ?>
-            <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
+            <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/restored');">
             <?php
 
             // Displays submit form if the page is My or All projects and not home page.
@@ -346,7 +347,7 @@ use REDCap;
                 }
 
                     // Logs when a super user accesses quick deleter
-                    REDCap::logEvent("Super user, " . USERID . ", accessed the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
+                    //REDCap::logEvent("Super user, " . USERID . ", accessed the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
 
                     ?>
 
@@ -574,7 +575,7 @@ use REDCap;
 
 //                    echo $Custom_Value;
                     $_SESSION['Custom_Value'] = $Custom_Value;
-                    echo $_SESSION['Custom_Value'];
+//                    echo $_SESSION['Custom_Value'];
 
                 }
                 elseif($Get_Custom_Type == "csv") {
@@ -701,7 +702,7 @@ use REDCap;
                         if ($Post_Value['project_id'] == $Pre_Value['project_id']) {
                             if ($Post_Value != $Pre_Value) {
                                 if ($Post_Value['date_deleted'] == NULL) {
-                                    REDCap::logEvent("Project " . $Post_Value['project_id'] . " undeleted via Quick Deleter by " . USERID . "", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
+                                    REDCap::logEvent("Project " . $Post_Value['project_id'] . " restored via Quick Deleter by " . USERID . "", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
                                 }  // End of if (date_delete == NULL)
                                 else {
                                     REDCap::logEvent("Project " . $Post_Value['project_id'] . " deleted via Quick Deleter by " . USERID . "", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
@@ -717,7 +718,7 @@ use REDCap;
                 header("Location: {$_SERVER['HTTP_REFERER']}");
             }  // End if(SUPER_USER == 1)
             else {
-                REDCap::logEvent("Non super user, " . USERID . ", tried to delete/undelete projects via the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
+                REDCap::logEvent("Non super user, " . USERID . ", tried to delete/restore projects via the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
                 echo "<br>";
                 echo "<br>";
                 echo "<br>";
@@ -752,7 +753,7 @@ use REDCap;
             return $Results;
         }  // End Get_Values()
 
-        // Prepared query to delete or undelete projects
+        // Prepared query to delete or restore projects
         public function Update_Project()
         {
 
