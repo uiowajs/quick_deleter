@@ -242,17 +242,11 @@ use REDCap;
 //            $Current_URL = SERVER_NAME . $_SERVER['REQUEST_URI'];
             $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
             $Current_URL = $protocol . SERVER_NAME . $_SERVER['REQUEST_URI'];
-            echo $protocol;
-            echo "<br>";
-//            $Current_URL = $_SERVER['PHP_SELF'];
-            echo $Current_URL;
             $My_Projects_Page = $this->getUrl("index.php") . "&tab=0";
-            echo "<br>";
-            echo $My_Projects_Page;
 //            $My_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=0";
-            $All_Projects_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=1";
-            $json_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=2";
-            $csv_Page = "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index&tab=3";
+            $All_Projects_Page = $this->getUrl("index.php") . "&tab=1";
+            $json_Page = $this->getUrl("index.php") . "&tab=2";
+            $csv_Page = $this->getUrl("index.php") . "&tab=3";
 
              if ($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page) {
                 ?>
