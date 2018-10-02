@@ -301,27 +301,31 @@ use REDCap;
 
             //  If the page is json or csv and a value was submitted, display submit form, otherwise show error no results.
             if($tab == 2) {
-                if ($Parsed_Custom != "") {
+                if ($num_rows != "") {
 
                     $this->Display_Table_Header();
 
                 }  // End if ($Parsed_json != "")
                 else {
-                    echo "Error, no results.  Please enter a value";
+                    ?>
+                    <h5 style="text-align: center; padding-top:100px; padding-bottom:5px;  color:white;">Error, no results.  Please enter a value</h5>
+                    <?php
                 }
             }  // End if($Current_URL == $json_Page)
-            elseif($tab == 3) {
-
-                // Only display table when submitted csv has results
-                if ($num_rows >= 1) {
-
-                    $this->Display_Table_Header();
-
-                }  // End if ($num_rows >= 1)
-                else {
-                    echo "Error, no results.  Please enter a value";
-                }
-            }  // End elseif($Current_URL == $csv_Page)
+//            elseif($tab == 3) {
+//
+//                // Only display table when submitted csv has results
+//                if ($num_rows >= 1) {
+//
+//                    $this->Display_Table_Header();
+//
+//                }  // End if ($num_rows >= 1)
+//                else {
+//                    ?>
+<!--                    <h1 style="text-align: center; padding-top:20px; padding-bottom:5px;  color:white;">Error, no results.  Please enter a value</h1>-->
+<!--                    --><?php
+//                }
+//            }  // End elseif($Current_URL == $csv_Page)
 
                 // Builds HTML rows and displays sql results for submitted json and csv.
                 while ($row = $Get_Result->fetch_assoc()) {
@@ -425,6 +429,7 @@ use REDCap;
         public function Display_Table_Header() {
 
             $tab = $_REQUEST['tab'];
+            $Custom_Type = $this->Get_Custom_Type();
             echo "<br>";
             ?>
 
@@ -441,9 +446,14 @@ use REDCap;
                     <h2 style="text-align: center; padding-top:5px; padding-bottom:5px; color:white;">All Projects</h2>
                     <?php
                 }
-                elseif($tab == 2 || $tab == 3) {
+                elseif($tab == 2 && $Custom_Type == "json") {
                     ?>
-                    <h2 style="text-align: center; padding-top:5px; padding-bottom:5px; color:white;">Custom</h2>
+                    <h2 style="text-align: center; padding-top:5px; padding-bottom:5px; color:white;">Custom json</h2>
+                    <?php
+                }
+                elseif($tab == 2 && $Custom_Type == "csv") {
+                    ?>
+                    <h2 style="text-align: center; padding-top:5px; padding-bottom:5px; color:white;">Custom csv</h2>
                     <?php
                 }
                 ?>
@@ -523,28 +533,33 @@ use REDCap;
                     <?php
         }  // End Display_Table_Header()
 
-//        public function Get_Custom_Type () {
-//            $Custom_Box = $_POST['Custom_Box'];
-//
-//            if(isset($Custom_Box)) {
-//                if(substr($Custom_Box, 0, 1) == "[") {
-//                    $Custom_Type = "json";
-//                }
-//                elseif(is_numeric(substr($Custom_Box, 0 ,1)) == true) {
-//                    $Custom_Type = "csv";
-//                }
-//            }
-//
-//            return $Custom_Type;
-//        }
+        public function Get_Custom_Type() {
+            $Custom_Box = $_POST['Custom_Box'];
+
+            if(isset($Custom_Box)) {
+                if(substr($Custom_Box, 0, 1) == "[") {
+                    $Custom_Type = "json";
+                    $_SESSION['Custom_Type'] = $Custom_Type;
+                }
+                elseif(is_numeric(substr($Custom_Box, 0 ,1)) == true) {
+                    $Custom_Type = "csv";
+                    $_SESSION['Custom_Type'] = $Custom_Type;
+                }
+            }
+            elseif(isset($_SESSION['Custom_Type'])) {
+                $Custom_Type = $_SESSION['Custom_Type'];
+            }
+
+            return $Custom_Type;
+        }
 
         public function Parse_Custom() {
 
             $Custom_Box = $_POST['Custom_Box'];
-//            $Get_Custom_Type = $this->Get_Custom_Type();
+            $Get_Custom_Type = $this->Get_Custom_Type();
 
             if(isset($Custom_Box)) {
-                if(substr($Custom_Box, 0, 1) == "[") {
+                if($Get_Custom_Type == "json") {
 //                    echo "json";
                     $Custom_Value = $Custom_Box;
 
@@ -562,7 +577,7 @@ use REDCap;
                     echo $_SESSION['Custom_Value'];
 
                 }
-                elseif(is_numeric(substr($Custom_Box, 0 ,1)) == true) {
+                elseif($Get_Custom_Type == "csv") {
 //                    echo "Hello";
 //                    echo "<br>";
 //                    echo $Custom_Box;
