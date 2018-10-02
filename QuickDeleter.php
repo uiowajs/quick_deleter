@@ -16,158 +16,408 @@ use REDCap;
     class QuickDeleter extends AbstractExternalModule
     {
 
-        //  Displays title and page links
-        public function Display_Header()
-        {
-            ?>
-            <div align="center" id="div_Header">
-
-                <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
-
-                <h1 style="text-align: center; padding-top:40px; padding-bottom:5px; color:white;" class="Main_Header">
-                    <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index"; ?>">Quick Deleter </a>
-                </h1>
-
-                <table id="Pages_Table">
-                    <tr>
-                        <td>
-                            <a href="<?= $this->getUrl("index.php?tab=0") ?>">My Projects</a>
-                        </td>
-                        <td>
-                            <a href="<?= $this->getUrl("index.php?tab=1") ?> ">All Projects</a>
-                        </td>
-                        <form name="Custom_Form_json" id="Custom_Form_json" method="POST" action="<?= $this->getUrl("index.php?tab=2") ?>">
-                            <td>
-                                <button class="Button_Link" type="submit" id="Custom_Page_json" name="Custom_Page_json">json</button>
-                            </td>
-                            <td>
-                                <input id="Custom_Box_json" class="Button_Box" type='text' name='Custom_Box_json' value="">
-                            </td>
-                        </form>
-                        <form name="Custom_Form_csv" id="Custom_Form_csv" method="POST" action="<?= $this->getUrl("index.php?tab=3") ?>">
-                            <td>
-                                <button class="Button_Link" type="submit" id="Custom_Page_csv" name="Custom_Page_csv">csv</button>
-                            </td>
-                            <td>
-                                <input id="Custom_Box_csv" class="Button_Box" type='text' name='Custom_Box_csv' value="">
-                            </td>
-                        </form>
-                    </tr>
-                </table>
-            </div>
-            <?php
-        }
-
         //  Displays header, home page, and table.  Contains javascript
         public function Display_Page()
         {
 
             if(SUPER_USER == 1) {
 
-                $this->Display_Header();
-                $this->Display_Home_Page();
-                $this->Display_Table();
-
-                // Logs when a super user accesses quick deleter
-                REDCap::logEvent("Super user, " . USERID . ", accessed the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
-
+                // Display page header
                 ?>
+                <div align="center" id="div_Header">
 
-                <script type="text/javascript">
+                    <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
 
-                    // Puts comma separated values of checkboxes in PID_Box.
-                    $("form[name=Form]").on("change", "input[type=checkbox]", function () {
-                        var values = $.map($("input[type=checkbox]:checked"), function (pid) {
-                            return pid.value;
-                        });
-                        $("form[name=Form]").find("input[id=PID_Box]").val(values);
-                    });
+                    <h1 style="text-align: center; padding-top:40px; padding-bottom:5px; color:white;" class="Main_Header">
+                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index"; ?>">Quick Deleter </a>
+                    </h1>
 
-                    //  Highlight row when box checked
-                    $(".PID_Checkbox").on('change', function () {
-                        if ($(this).is(':checked'))
-                        // console.log($(this).attr('id'));
-                            if ($(this).prop('id') === '0')
-                            // console.log($(this).attr('id'));
-                                $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                            else
-                            // console.log($(this).attr('id'));
-                                $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                        else
-                        // console.log("Hi");
-                            $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                    });
-
-                    // Highlights all rows when check all box checked
-                    $(document).ready(function () {
-                        $("#check_all").on('change', function () {
-                            var PID_Checkboxes = $(".PID_Checkbox");
-                            console.log($(this));
-                            PID_Checkboxes.each(function () {
-
-                                // $(this).toggle($(this).checked);
-                                console.log($(this).checked);
-                                if ($(this).is(':checked'))
-
-                                // console.log($(this).attr('id'));
-                                    if ($(this).prop('id') === '0')
-                                    // console.log($(this).attr('id'));
-                                        $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                                    else
-                                    // console.log($(this).attr('id'));
-                                        $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                                else
-                                // console.log("Hi");
-                                    $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                            });
-                        })
-                    });
-
-                    // Removes checked row color on form reset
-                    function Clear_Row_Styling() {
-                        $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
-                    }
-
-                    // Avoids having to resubmit the form on page refresh
-                    if (window.history.replaceState) {
-                        window.history.replaceState(null, null, window.location.href);
-                    }
-                </script>
-
-                <?php
-
-            }  // End if(SUPER_USER == 1)
-            else {
-                // Echos needed to display message under REDCap navbar
-                echo "<br>";
-                echo "<br>";
-                echo "<br>";
-                echo "<br>";
-                REDCap::logEvent("Non super user, " . USERID . ", tried to access the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
-                echo "This function is for super users only";
-                echo "<br>";
-            }
-        }
-
-        //  Displays home page
-        public function Display_Home_Page()
-        {
-            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
-            $Current_URL = $protocol . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
-            $Home_Page = $this->getUrl("index.php");
-            if ($Current_URL == $Home_Page) {
-                ?>
-                <div>
-                    <h2 style="text-align: center; padding-top:50px; color:white;">Quickly delete and undelete projects</h2>
+                    <table id="Pages_Table">
+                        <tr>
+                            <td>
+                                <a href="<?= $this->getUrl("index.php?tab=0") ?>">My Projects</a>
+                            </td>
+                            <td>
+                                <a href="<?= $this->getUrl("index.php?tab=1") ?> ">All Projects</a>
+                            </td>
+                            <form name="Custom_Form_json" id="Custom_Form_json" method="POST" action="<?= $this->getUrl("index.php?tab=2") ?>">
+                                <td>
+                                    <button class="Button_Link" type="submit" id="Custom_Page_json" name="Custom_Page_json">json</button>
+                                </td>
+                                <td>
+                                    <input id="Custom_Box_json" class="Button_Box" type='text' name='Custom_Box_json' value="">
+                                </td>
+                            </form>
+                            <form name="Custom_Form_csv" id="Custom_Form_csv" method="POST" action="<?= $this->getUrl("index.php?tab=3") ?>">
+                                <td>
+                                    <button class="Button_Link" type="submit" id="Custom_Page_csv" name="Custom_Page_csv">csv</button>
+                                </td>
+                                <td>
+                                    <input id="Custom_Box_csv" class="Button_Box" type='text' name='Custom_Box_csv' value="">
+                                </td>
+                            </form>
+                        </tr>
+                    </table>
                 </div>
                 <?php
-            }
-        }
 
-        //  Displays page limit dropdown
-        public function Display_Pager()
-        {
+                // Display home page
+                $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
+                $Current_URL = $protocol . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+                $Home_Page = $this->getUrl("index.php");
+                if ($Current_URL == $Home_Page) {
+                    ?>
+                    <div>
+                        <h2 style="text-align: center; padding-top:50px; color:white;">Quickly delete and undelete projects</h2>
+                    </div>
+                    <?php
+                }
+
+                            global $conn;
+                if (!isset($conn)) {
+                    db_connect(false);
+                }
+
+                $tab = $_REQUEST['tab'];  //  Tabs for SQL array
+
+                // Enables tablesorter
+                ?>
+                <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.min.js") ?>"></script>
+                <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.widgets.min.js") ?>"></script>
+                <script src="<?= $this->getUrl("/resources/tablesorter/widgets/widget-pager.min.js") ?>"></script>
+                <script src="<?= $this->getUrl("/resources/tablesorter/parsers/parser-input-select.min.js") ?>"></script>
+                <script src="<?= $this->getUrl("/resources/tablesorter/widgets/widget-output.min.js") ?>"></script>
+
+                <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/theme.blue.min.css") ?>" rel="stylesheet">
+                <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/jquery.tablesorter.pager.min.css") ?>" rel="stylesheet">
+                <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
+
+                <script src="<?= $this->getUrl("/QuickDeleter.js") ?>"></script>
+                <?php
+
+                //  Get results for submitted json or csv
+
+                $Parsed_json = $this->Parse_Posted_Json();
+                $Parsed_csv = $this->Parse_Posted_Csv();
+
+                //  Check if http or https
+                $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
+
+                // Set variables depending on json/csv page
+                if($tab == 2) {
+                    $Parsed_Array = explode(",", $Parsed_json);
+                    $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
+                    $Get_Integers = explode(",", $Parsed_json);
+                    $Integers = join(array_pad(array(), count($Get_Integers), "i"));
+                }
+                elseif($tab == 3) {
+                    $Parsed_Array = explode(",", $Parsed_csv);
+                    $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
+                    $Get_Integers = explode(",", $Parsed_csv);
+                    $Integers = join(array_pad(array(), count($Get_Integers), "i"));
+                }
+
+                // SQL
+                $Project_Pages = array("
+                    SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
+                    CAST(CASE a.status
+                         WHEN 0 THEN 'Development'
+                         WHEN 1 THEN 'Production'
+                         WHEN 2 THEN 'Inactive'
+                         WHEN 3 THEN 'Archived'
+                         ELSE a.status
+                         END AS CHAR(50)) AS 'Statuses',
+                    CAST(CASE a.purpose
+                        WHEN 0 THEN 'Practice / Just for fun'
+                        WHEN 4 THEN 'Operational Support'
+                        WHEN 2 THEN 'Research'
+                        WHEN 3 THEN 'Quality Improvement'
+                        WHEN 1 THEN 'Other'
+                        ELSE a.purpose
+                        END AS CHAR(50)) AS 'Purpose',
+                    CAST(creation_time AS date) AS 'New Creation Time', 
+                    CAST(a.date_deleted AS date) AS 'New Date Deleted', 
+                    CAST(last_logged_event AS date) AS 'New Last Event', 
+                    DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
+                    CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
+                    CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS CHAR(50)) AS 'Flagged',
+                    GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
+                    FROM redcap_projects as a
+                    LEFT JOIN redcap_user_rights AS b
+                    ON a.project_id=b.project_id
+                    LEFT JOIN redcap_record_counts AS c
+                    ON a.project_id=c.project_id
+                    WHERE username = '" . USERID . "'
+                    GROUP BY a.project_id
+                    ORDER BY a.project_id ASC  
+                    "
+                        ,
+                            "
+                    SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
+                    CAST(CASE a.status
+                         WHEN 0 THEN 'Development'
+                         WHEN 1 THEN 'Production'
+                         WHEN 2 THEN 'Inactive'
+                         WHEN 3 THEN 'Archived'
+                         ELSE a.status
+                         END AS CHAR(50)) AS 'Statuses',
+                    CAST(CASE a.purpose
+                        WHEN 0 THEN 'Practice / Just for fun'
+                        WHEN 4 THEN 'Operational Support'
+                        WHEN 2 THEN 'Research'
+                        WHEN 3 THEN 'Quality Improvement'
+                        WHEN 1 THEN 'Other'
+                        ELSE a.purpose
+                        END AS CHAR(50)) AS 'Purpose',
+                    CAST(creation_time AS date) AS 'New Creation Time', 
+                    CAST(a.date_deleted AS date) AS 'New Date Deleted', 
+                    CAST(last_logged_event AS date) AS 'New Last Event', 
+                    DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
+                    CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
+                    CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS CHAR(50)) AS 'Flagged',
+                    GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
+                    FROM redcap_projects as a
+                    LEFT JOIN redcap_user_rights AS b
+                    ON a.project_id=b.project_id
+                    LEFT JOIN redcap_record_counts AS c
+                    ON a.project_id=c.project_id
+                    GROUP BY a.project_id
+                    ORDER BY a.project_id ASC
+                    ",
+                            "
+                    SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
+                    CAST(CASE a.status
+                         WHEN 0 THEN 'Development'
+                         WHEN 1 THEN 'Production'
+                         WHEN 2 THEN 'Inactive'
+                         WHEN 3 THEN 'Archived'
+                         ELSE a.status
+                         END AS CHAR(50)) AS 'Statuses',
+                    CAST(CASE a.purpose
+                        WHEN 0 THEN 'Practice / Just for fun'
+                        WHEN 4 THEN 'Operational Support'
+                        WHEN 2 THEN 'Research'
+                        WHEN 3 THEN 'Quality Improvement'
+                        WHEN 1 THEN 'Other'
+                        ELSE a.purpose
+                        END AS CHAR(50)) AS 'Purpose',
+                    CAST(creation_time AS date) AS 'New Creation Time', 
+                    CAST(a.date_deleted AS date) AS 'New Date Deleted', 
+                    CAST(last_logged_event AS date) AS 'New Last Event', 
+                    DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
+                    CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
+                    CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS CHAR(50)) AS 'Flagged',
+                    GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
+                    FROM redcap_projects as a
+                    LEFT JOIN redcap_user_rights AS b
+                    ON a.project_id=b.project_id
+                    LEFT JOIN redcap_record_counts AS c
+                    ON a.project_id=c.project_id
+                    WHERE a.project_id IN (" . $qMarks . ")  
+                    GROUP BY a.project_id
+                    ORDER BY a.project_id ASC
+                        ",
+                        "
+                    SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
+                    CAST(CASE a.status
+                         WHEN 0 THEN 'Development'
+                         WHEN 1 THEN 'Production'
+                         WHEN 2 THEN 'Inactive'
+                         WHEN 3 THEN 'Archived'
+                         ELSE a.status
+                         END AS CHAR(50)) AS 'Statuses',
+                    CAST(CASE a.purpose
+                        WHEN 0 THEN 'Practice / Just for fun'
+                        WHEN 4 THEN 'Operational Support'
+                        WHEN 2 THEN 'Research'
+                        WHEN 3 THEN 'Quality Improvement'
+                        WHEN 1 THEN 'Other'
+                        ELSE a.purpose
+                        END AS CHAR(50)) AS 'Purpose',
+                    CAST(creation_time AS date) AS 'New Creation Time', 
+                    CAST(a.date_deleted AS date) AS 'New Date Deleted', 
+                    CAST(last_logged_event AS date) AS 'New Last Event', 
+                    DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
+                    CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
+                    CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS CHAR(50)) AS 'Flagged',
+                    GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
+                    FROM redcap_projects as a
+                    LEFT JOIN redcap_user_rights AS b
+                    ON a.project_id=b.project_id
+                    LEFT JOIN redcap_record_counts AS c
+                    ON a.project_id=c.project_id
+                    WHERE a.project_id IN (" . $qMarks . ")  
+                    GROUP BY a.project_id
+                    ORDER BY a.project_id ASC
+                        "
+                );
             ?>
+            <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
+            <?php
+
+            // Displays submit form if the page is My or All projects and not home page.
+            if(($tab == 0 || $tab == 1) && $protocol . SERVER_NAME . $_SERVER['REQUEST_URI'] != $this->getUrl("index.php")) {
+
+                $this->Display_Table_Header();
+
+            }
+
+            if($tab == 2 || $tab == 3) {
+                $stmt = $conn->prepare($Project_Pages[$tab]);
+                $stmt->bind_param($Integers, ...$Parsed_Array);
+                $stmt->execute();
+                $Get_Result = $stmt->get_result();
+                $num_rows = mysqli_num_rows($Get_Result);
+
+
+            //  If the page is json or csv and a value was submitted, display submit form, otherwise show error no results.
+            if($tab == 2) {
+                if ($Parsed_json != "") {
+
+                    $this->Display_Table_Header();
+
+                }  // End if ($Parsed_json != "")
+                else {
+                    echo "Error, no results.  Please enter a value";
+                }
+            }  // End if($Current_URL == $json_Page)
+            elseif($tab == 3) {
+
+                // Only display table when submitted csv has results
+                if ($num_rows >= 1) {
+
+                    $this->Display_Table_Header();
+
+                }  // End if ($num_rows >= 1)
+                else {
+                    echo "Error, no results.  Please enter a value";
+                }
+            }  // End elseif($Current_URL == $csv_Page)
+
+                // Builds HTML rows and displays sql results for submitted json and csv.
+                while ($row = $Get_Result->fetch_assoc()) {
+
+                    $this->Build_HTML_Table($row, $protocol);
+
+                }  // End while loop
+            }
+            elseif($tab == 0 || $tab == 1) {
+                // Results for My or All Projects SQL query.
+                $Result = db_query($Project_Pages[$tab]);
+
+                // Builds HTML rows and displays sql results for My Projects and All Projects.
+                while ($row = db_fetch_assoc($Result))  // $sqlGetAllProjects
+                {
+                    $this->Build_HTML_Table($row, $protocol);
+                    }  // End while loop for My/All projects
+                }
+
+                    // Logs when a super user accesses quick deleter
+                    REDCap::logEvent("Super user, " . USERID . ", accessed the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
+
+                    ?>
+
+                    <script type="text/javascript">
+
+                        // Puts comma separated values of checkboxes in PID_Box.
+                        $("form[name=Form]").on("change", "input[type=checkbox]", function () {
+                            var values = $.map($("input[type=checkbox]:checked"), function (pid) {
+                                return pid.value;
+                            });
+                            $("form[name=Form]").find("input[id=PID_Box]").val(values);
+                        });
+
+                        //  Highlight row when box checked
+                        $(".PID_Checkbox").on('change', function () {
+                            if ($(this).is(':checked'))
+                            // console.log($(this).attr('id'));
+                                if ($(this).prop('id') === '0')
+                                // console.log($(this).attr('id'));
+                                    $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                                else
+                                // console.log($(this).attr('id'));
+                                    $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                            else
+                            // console.log("Hi");
+                                $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                        });
+
+                        // Highlights all rows when check all box checked
+                        $(document).ready(function () {
+                            $("#check_all").on('change', function () {
+                                var PID_Checkboxes = $(".PID_Checkbox");
+                                console.log($(this));
+                                PID_Checkboxes.each(function () {
+
+                                    // $(this).toggle($(this).checked);
+                                    console.log($(this).checked);
+                                    if ($(this).is(':checked'))
+
+                                    // console.log($(this).attr('id'));
+                                        if ($(this).prop('id') === '0')
+                                        // console.log($(this).attr('id'));
+                                            $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                                        else
+                                        // console.log($(this).attr('id'));
+                                            $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                                    else
+                                    // console.log("Hi");
+                                        $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                                });
+                            })
+                        });
+
+                        // Removes checked row color on form reset
+                        function Clear_Row_Styling() {
+                            $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
+                        }
+
+                        // Avoids having to resubmit the form on page refresh
+                        if (window.history.replaceState) {
+                            window.history.replaceState(null, null, window.location.href);
+                        }
+                    </script>
+
+                    <?php
+
+                }  // End if(SUPER_USER == 1)
+                else {
+                    // Echos needed to display message under REDCap navbar
+                    echo "<br>";
+                    echo "<br>";
+                    echo "<br>";
+                    echo "<br>";
+                    REDCap::logEvent("Non super user, " . USERID . ", tried to access the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
+                    echo "This function is for super users only";
+                    echo "<br>";
+                }
+            }  // End Display_Page()
+
+        public function Display_Table_Header() {
+
+            ?>
+
+            <!-- Submit button -->
+            <div align="center">
+                <table id='Submit_Table'>
+                    <tr>
+                        <td>
+                            <input class="reset_button" type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()">
+                        </td>
+                        <td>
+                            <input class="submit_button" type='submit' id='submit' name='submit'>
+                        </td>
+                        <td>
+                            <input id='PID_Box' type='text' name='PID' hidden readonly>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="id_projects_table" align="center">
+            <table id='Projects_Table' class='tablesorter'>
+
+            <!-- Pager -->
             <div id="pager" class="pager" align="center">
 
                 <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/first.png") ?>" class="first"/>
@@ -185,38 +435,14 @@ use REDCap;
                 </select>
 
             </div>
-            <?php
-        }
 
-        //  Displays submit button for deleting/undeleting projects
-        public function Display_Submit_Button()
-        {
-            ?>
-            <div align="center">
-                <table id='Submit_Table'>
-                    <tr>
-                        <td>
-                            <input class="reset_button" type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()">
-                        </td>
-                        <td>
-                            <input class="submit_button" type='submit' id='submit' name='submit'>
-                        </td>
-                        <td>
-                            <input id='PID_Box' type='text' name='PID' hidden readonly>
-                        </td>
-                    </tr>
-                </table>
-            </div>
             <?php
-        }  // End Display_Submit_Button()
 
-        //  Displays table headers
-        public function Table_Header()
-        {
-            $tab = $_REQUEST['tab'];
+             $tab = $_REQUEST['tab'];
 
              if ($tab == 0 || $tab == 1) {
                 ?>
+
              <thead>
                 <tr>
                     <th data-filter="false"></th> <?php
@@ -242,7 +468,7 @@ use REDCap;
                 </tr>
             </thead>
             <?php
-        }  // End Table_Header()
+        }
 
         //  Takes user submitted json and parses it into PIDs.  Stores in session variable to retain after deleting/undeleting projects.
         public function Parse_Posted_Json()
@@ -287,316 +513,57 @@ use REDCap;
 
             <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
 
-                    if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
-                    {
-                        $Row_Color = "style=\"background-color: rgba(0, 200, 0, 0.1);\"";
-    //                 $Flagged = 0;
-                    } else {
-                        $Row_Color = "style=\"background-color: rgba(200, 0, 0, 0.1);\"";
-    //                 $Flagged = 1;
-                    }
-                    ?>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row['project_id']; ?>>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "ControlCenter/edit_project.php?project=" . $row['project_id']; ?>"><?php echo $row['project_id']; ?></a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['app_title']; ?> </a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['Purpose']; ?>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/other_functionality.php?pid=" . $row['project_id']; ?>" ><?php echo $row['Statuses']; ?></a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>"> <?php echo $row['record_count']; ?></a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "UserRights/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Users']; ?> </a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['New Creation Time']; ?>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['New Last Event']; ?></a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Days Since Last Event']; ?></a>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['New Date Deleted']; ?>
-                    </td>
-                    <td align='center' class="color" <?php echo $Row_Color ?>>
-                        <?php echo $row['New Final Delete Date']; ?>
-                    </td>
+                if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
+                {
+                    $Row_Color = "style=\"background-color: rgba(0, 200, 0, 0.1);\"";
+//                 $Flagged = 0;
+                } else {
+                    $Row_Color = "style=\"background-color: rgba(200, 0, 0, 0.1);\"";
+//                 $Flagged = 1;
+                }
+                ?>
+                <td align='center' class="color" <?php echo $Row_Color ?>>
+                    <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row['project_id']; ?>>
+                </td>
+                <td align='center' class="color" <?php echo $Row_Color ?>>
+                    <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "ControlCenter/edit_project.php?project=" . $row['project_id']; ?>"><?php echo $row['project_id']; ?></a>
+                </td>
+                <td align='center' class="color" <?php echo $Row_Color ?>>
+                    <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['app_title']; ?> </a>
+                </td>
+                <td align='center' class="color" <?php echo $Row_Color ?>>
+                    <?php echo $row['Purpose']; ?>
+                </td>
+                <td align='center' class="color" <?php echo $Row_Color ?>>
+                    <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/other_functionality.php?pid=" . $row['project_id']; ?>" ><?php echo $row['Statuses']; ?></a>
+                </td>
+                <td align='center' class="color" <?php echo $Row_Color ?>>
+                    <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>"> <?php echo $row['record_count']; ?></a>
+                </td>
+                <td align='center' class="color" <?php echo $Row_Color ?>>
+                    <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "UserRights/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Users']; ?> </a>
+                </td>
+                <td align='center' class="color" <?php echo $Row_Color ?>>
+                    <?php echo $row['New Creation Time']; ?>
+                </td>
+                <td align='center' class="color" <?php echo $Row_Color ?>>
+                    <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['New Last Event']; ?></a>
+                </td>
+                <td align='center' class="color" <?php echo $Row_Color ?>>
+                    <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Days Since Last Event']; ?></a>
+                </td>
+                <td align='center' class="color" <?php echo $Row_Color ?>>
+                    <?php echo $row['New Date Deleted']; ?>
+                </td>
+                <td align='center' class="color" <?php echo $Row_Color ?>>
+                    <?php echo $row['New Final Delete Date']; ?>
+                </td>
 
-                    <?php ;
-                    ?>
+                <?php ;
+                ?>
             </tr>
-                <?php
-        }
-
-        //  Runs SQL query and displays results tablesorter table.  Takes parsed json/csv if necessary.
-        public function Display_Table()
-        {
-
-            global $conn;
-            if (!isset($conn)) {
-                db_connect(false);
-            }
-
-            $tab = $_REQUEST['tab'];  //  Tabs for SQL array
-
-            // Enables tablesorter
-            ?>
-            <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.min.js") ?>"></script>
-            <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.widgets.min.js") ?>"></script>
-            <script src="<?= $this->getUrl("/resources/tablesorter/widgets/widget-pager.min.js") ?>"></script>
-            <script src="<?= $this->getUrl("/resources/tablesorter/parsers/parser-input-select.min.js") ?>"></script>
-            <script src="<?= $this->getUrl("/resources/tablesorter/widgets/widget-output.min.js") ?>"></script>
-
-            <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/theme.blue.min.css") ?>" rel="stylesheet">
-            <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/jquery.tablesorter.pager.min.css") ?>" rel="stylesheet">
-            <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
-
-            <script src="<?= $this->getUrl("/QuickDeleter.js") ?>"></script>
             <?php
-
-            //  Get results for submitted json or csv
-
-            $Parsed_json = $this->Parse_Posted_Json();
-            $Parsed_csv = $this->Parse_Posted_Csv();
-
-            //  Check if http or https
-            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
-
-            // Set variables depending on json/csv page
-            if($tab == 2) {
-                $Parsed_Array = explode(",", $Parsed_json);
-                $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
-                $Get_Integers = explode(",", $Parsed_json);
-                $Integers = join(array_pad(array(), count($Get_Integers), "i"));
-            }
-            elseif($tab == 3) {
-                $Parsed_Array = explode(",", $Parsed_csv);
-                $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
-                $Get_Integers = explode(",", $Parsed_csv);
-                $Integers = join(array_pad(array(), count($Get_Integers), "i"));
-            }
-
-            // SQL
-            $Project_Pages = array("
-                SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
-                CAST(CASE a.status
-                     WHEN 0 THEN 'Development'
-                     WHEN 1 THEN 'Production'
-                     WHEN 2 THEN 'Inactive'
-                     WHEN 3 THEN 'Archived'
-                     ELSE a.status
-                     END AS CHAR(50)) AS 'Statuses',
-                CAST(CASE a.purpose
-                    WHEN 0 THEN 'Practice / Just for fun'
-                    WHEN 4 THEN 'Operational Support'
-                    WHEN 2 THEN 'Research'
-                    WHEN 3 THEN 'Quality Improvement'
-                    WHEN 1 THEN 'Other'
-                    ELSE a.purpose
-                    END AS CHAR(50)) AS 'Purpose',
-                CAST(creation_time AS date) AS 'New Creation Time', 
-                CAST(a.date_deleted AS date) AS 'New Date Deleted', 
-                CAST(last_logged_event AS date) AS 'New Last Event', 
-                DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
-                CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
-                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS CHAR(50)) AS 'Flagged',
-                GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
-                FROM redcap_projects as a
-                LEFT JOIN redcap_user_rights AS b
-                ON a.project_id=b.project_id
-                LEFT JOIN redcap_record_counts AS c
-                ON a.project_id=c.project_id
-                WHERE username = '" . USERID . "'
-                GROUP BY a.project_id
-                ORDER BY a.project_id ASC  
-                "
-                    ,
-                        "
-                SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
-                CAST(CASE a.status
-                     WHEN 0 THEN 'Development'
-                     WHEN 1 THEN 'Production'
-                     WHEN 2 THEN 'Inactive'
-                     WHEN 3 THEN 'Archived'
-                     ELSE a.status
-                     END AS CHAR(50)) AS 'Statuses',
-                CAST(CASE a.purpose
-                    WHEN 0 THEN 'Practice / Just for fun'
-                    WHEN 4 THEN 'Operational Support'
-                    WHEN 2 THEN 'Research'
-                    WHEN 3 THEN 'Quality Improvement'
-                    WHEN 1 THEN 'Other'
-                    ELSE a.purpose
-                    END AS CHAR(50)) AS 'Purpose',
-                CAST(creation_time AS date) AS 'New Creation Time', 
-                CAST(a.date_deleted AS date) AS 'New Date Deleted', 
-                CAST(last_logged_event AS date) AS 'New Last Event', 
-                DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
-                CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
-                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS CHAR(50)) AS 'Flagged',
-                GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
-                FROM redcap_projects as a
-                LEFT JOIN redcap_user_rights AS b
-                ON a.project_id=b.project_id
-                LEFT JOIN redcap_record_counts AS c
-                ON a.project_id=c.project_id
-                GROUP BY a.project_id
-                ORDER BY a.project_id ASC
-                ",
-                        "
-                SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
-                CAST(CASE a.status
-                     WHEN 0 THEN 'Development'
-                     WHEN 1 THEN 'Production'
-                     WHEN 2 THEN 'Inactive'
-                     WHEN 3 THEN 'Archived'
-                     ELSE a.status
-                     END AS CHAR(50)) AS 'Statuses',
-                CAST(CASE a.purpose
-                    WHEN 0 THEN 'Practice / Just for fun'
-                    WHEN 4 THEN 'Operational Support'
-                    WHEN 2 THEN 'Research'
-                    WHEN 3 THEN 'Quality Improvement'
-                    WHEN 1 THEN 'Other'
-                    ELSE a.purpose
-                    END AS CHAR(50)) AS 'Purpose',
-                CAST(creation_time AS date) AS 'New Creation Time', 
-                CAST(a.date_deleted AS date) AS 'New Date Deleted', 
-                CAST(last_logged_event AS date) AS 'New Last Event', 
-                DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
-                CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
-                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS CHAR(50)) AS 'Flagged',
-                GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
-                FROM redcap_projects as a
-                LEFT JOIN redcap_user_rights AS b
-                ON a.project_id=b.project_id
-                LEFT JOIN redcap_record_counts AS c
-                ON a.project_id=c.project_id
-                WHERE a.project_id IN (" . $qMarks . ")  
-                GROUP BY a.project_id
-                ORDER BY a.project_id ASC
-                    ",
-                    "
-                SELECT a.project_id, app_title, a.date_deleted, a.purpose, a.status, record_count, last_logged_event, creation_time, username,
-                CAST(CASE a.status
-                     WHEN 0 THEN 'Development'
-                     WHEN 1 THEN 'Production'
-                     WHEN 2 THEN 'Inactive'
-                     WHEN 3 THEN 'Archived'
-                     ELSE a.status
-                     END AS CHAR(50)) AS 'Statuses',
-                CAST(CASE a.purpose
-                    WHEN 0 THEN 'Practice / Just for fun'
-                    WHEN 4 THEN 'Operational Support'
-                    WHEN 2 THEN 'Research'
-                    WHEN 3 THEN 'Quality Improvement'
-                    WHEN 1 THEN 'Other'
-                    ELSE a.purpose
-                    END AS CHAR(50)) AS 'Purpose',
-                CAST(creation_time AS date) AS 'New Creation Time', 
-                CAST(a.date_deleted AS date) AS 'New Date Deleted', 
-                CAST(last_logged_event AS date) AS 'New Last Event', 
-                DATEDIFF(now(), last_logged_event) AS 'Days Since Last Event',
-                CAST(DATE_ADD(a.date_deleted, INTERVAL 30 DAY) AS date) AS 'New Final Delete Date',
-                CAST(CASE WHEN a.date_deleted IS NULL THEN 0 ELSE 1 END AS CHAR(50)) AS 'Flagged',
-                GROUP_CONCAT((b.username) SEPARATOR ', ') AS 'Users'
-                FROM redcap_projects as a
-                LEFT JOIN redcap_user_rights AS b
-                ON a.project_id=b.project_id
-                LEFT JOIN redcap_record_counts AS c
-                ON a.project_id=c.project_id
-                WHERE a.project_id IN (" . $qMarks . ")  
-                GROUP BY a.project_id
-                ORDER BY a.project_id ASC
-                    "
-            );
-        ?>
-        <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/undeleted');">
-        <?php
-
-        // Displays submit form if the page is My or All projects.  Class = tablesorter is how tablesorter is applied to the table.
-        if($tab == 0 || $tab == 1) {
-
-            $this->Display_Submit_Button(); ?>
-            <div id="id_projects_table" align="center">
-            <table id='Projects_Table' class='tablesorter'>
-            <?php
-            $this->Display_Pager();
-            $this->Table_Header();
         }
-
-        if($tab == 2 || $tab == 3) {
-            $stmt = $conn->prepare($Project_Pages[$tab]);
-            $stmt->bind_param($Integers, ...$Parsed_Array);
-            $stmt->execute();
-            $Get_Result = $stmt->get_result();
-            $num_rows = mysqli_num_rows($Get_Result);
-
-
-        //  If the page is json or csv and a value was submitted, display submit form, otherwise show error no results.
-        if($tab == 2) {
-            if ($Parsed_json != "") {
-
-                $this->Display_Submit_Button(); ?>
-
-                <div id="id_projects_table" align="center">
-                <table id='Projects_Table' class='tablesorter'>
-                <?php
-                $this->Display_Pager();
-                $this->Table_Header();
-            }  // End if ($Parsed_json != "")
-            else {
-                echo "Error, no results.  Please enter a value";
-            }
-        }  // End if($Current_URL == $json_Page)
-        elseif($tab == 3) {
-
-            // Only display table when submitted csv has results
-            if ($num_rows >= 1) {
-
-                $this->Display_Submit_Button(); ?>
-
-                <div id="id_projects_table" align="center">
-                <table id='Projects_Table' class='tablesorter'>
-                <?php
-                $this->Display_Pager();
-                $this->Table_Header();
-            }  // End if ($num_rows >= 1)
-            else {
-                echo "Error, no results.  Please enter a value";
-            }
-        }  // End elseif($Current_URL == $csv_Page)
-
-            // Builds HTML rows and displays sql results for submitted json and csv.
-            while ($row = $Get_Result->fetch_assoc()) {
-
-                $this->Build_HTML_Table($row, $protocol);
-
-            }  // End while loop
-
-        }  // End if($Current_URL == $json_Page || $Current_URL == $csv_Page)
-        elseif($tab == 0 || $tab == 1) {
-            // Results for My or All Projects SQL query.
-            $Result = db_query($Project_Pages[$tab]);
-
-            // Builds HTML rows and displays sql results for My Projects and All Projects.
-            while ($row = db_fetch_assoc($Result))  // $sqlGetAllProjects
-            {
-                $this->Build_HTML_Table($row, $protocol);
-                }  // End while loop for My/All projects
-            }    // End elseif($Current_URL == $My_Projects_Page || $Current_URL == $All_Projects_Page)
-        }  //  End Display_Table()
 
         // This function is called on form submit.  Gets pre values, executes update query, gets post values, adds project update to REDCap Activity Log.
         public function Submit()
