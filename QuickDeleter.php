@@ -395,6 +395,10 @@ use REDCap;
 
         public function Display_Table_Header() {
 
+            $tab = $_REQUEST['tab'];
+
+            echo "<br>";
+            
             ?>
 
             <!-- Submit button -->
@@ -412,6 +416,27 @@ use REDCap;
                         </td>
                     </tr>
                 </table>
+            </div>
+
+            <div>
+                <?php
+
+                if($tab == 0) {
+                    ?>
+                    <h2 style="text-align: center; padding-top:5px; padding-bottom:5px;  color:white;">My Projects</h2>
+                    <?php
+                }
+                elseif($tab == 1) {
+                    ?>
+                    <h2 style="text-align: center; padding-top:5px; padding-bottom:5px; color:white;">All Projects</h2>
+                    <?php
+                }
+                elseif($tab == 2 || $tab == 3) {
+                    ?>
+                    <h2 style="text-align: center; padding-top:5px; padding-bottom:5px; color:white;">Custom</h2>
+                    <?php
+                }
+                ?>
             </div>
 
             <!-- Pager -->
