@@ -16,13 +16,3 @@ $(document).ready(function()
     }
 );
 }(window.jQuery, window, document));
-
-
-
-
-
-
-
-
-
-

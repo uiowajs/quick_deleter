@@ -437,38 +437,38 @@ use REDCap;
             <div id="id_projects_table" align="center">
                 <table id='Projects_Table' class='tablesorter'>
 
-            <?php
+                     <?php
 
-             $tab = $_REQUEST['tab'];
+                     $tab = $_REQUEST['tab'];
 
-             if ($tab == 0 || $tab == 1) {
-                ?>
+                     if ($tab == 0 || $tab == 1) {
+                        ?>
 
-             <thead>
-                <tr>
-                    <th data-filter="false"></th> <?php
-            } elseif ($tab == 2 || $tab == 3) {
-                ?>
-            <thead>
-                <tr>
-                    <th style="text-align:center" data-filter="false"><input name="check_all" id="check_all" type="checkbox"></th> <?php
-            }
-            ?>
-                    <th style="text-align:center"><b>PID</b></th>
-                    <th style="text-align:center"><b>Project Name</b></th>
-                    <th style="text-align:center"><b>Purpose</b></th>
-                    <th style="text-align:center"><b>Status</b></th>
-                    <th style="text-align:center"><b>Record Count</b></th>
-                    <th style="text-align:center"><b>Users</b></th>
-                    <th style="text-align:center"><b>Date Created</b></th>
-                    <th style="text-align:center"><b>Last Event Date</b></th>
-                    <th style="text-align:center"><b>Days Since Event</b></th>
-                    <th style="text-align:center"><b>Delete Flagged</b></th>
-                    <th style="text-align:center"><b>Final Delete</b></th>
-                    <!--                                <th style="text-align:center"><b>Days Until Delete</b></th>-->
-                </tr>
-            </thead>
-            <?php
+                     <thead>
+                        <tr>
+                            <th data-sorter="false" data-filter="false"></th> <?php
+                    } elseif ($tab == 2 || $tab == 3) {
+                        ?>
+                    <thead>
+                        <tr>
+                            <th data-sorter="false" style="text-align:center" data-filter="false"><input name="check_all" id="check_all" type="checkbox"></th> <?php
+                    }
+                    ?>
+                            <th style="text-align:center"><b>PID</b></th>
+                            <th style="text-align:center"><b>Project Name</b></th>
+                            <th style="text-align:center"><b>Purpose</b></th>
+                            <th style="text-align:center"><b>Status</b></th>
+                            <th style="text-align:center"><b>Record Count</b></th>
+                            <th style="text-align:center"><b>Users</b></th>
+                            <th style="text-align:center"><b>Date Created</b></th>
+                            <th style="text-align:center"><b>Last Event Date</b></th>
+                            <th style="text-align:center"><b>Days Since Event</b></th>
+                            <th style="text-align:center"><b>Delete Flagged</b></th>
+                            <th style="text-align:center"><b>Final Delete</b></th>
+                            <!--                                <th style="text-align:center"><b>Days Until Delete</b></th>-->
+                        </tr>
+                    </thead>
+                    <?php
         }
 
         //  Takes user submitted json and parses it into PIDs.  Stores in session variable to retain after deleting/undeleting projects.
