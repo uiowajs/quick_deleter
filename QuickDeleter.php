@@ -73,7 +73,7 @@ use REDCap;
                     <?php
                 }
 
-                            global $conn;
+                global $conn;
                 if (!isset($conn)) {
                     db_connect(false);
                 }
@@ -256,19 +256,19 @@ use REDCap;
             <?php
 
             // Displays submit form if the page is My or All projects and not home page.
-            if(($tab == 0 || $tab == 1) && $protocol . SERVER_NAME . $_SERVER['REQUEST_URI'] != $this->getUrl("index.php")) {
+            if(($tab == 0 || $tab == 1) && $Current_URL != $this->getUrl("index.php")) {
 
                 $this->Display_Table_Header();
 
             }
 
+            // Prepare sql if json or csv
             if($tab == 2 || $tab == 3) {
                 $stmt = $conn->prepare($Project_Pages[$tab]);
                 $stmt->bind_param($Integers, ...$Parsed_Array);
                 $stmt->execute();
                 $Get_Result = $stmt->get_result();
                 $num_rows = mysqli_num_rows($Get_Result);
-
 
             //  If the page is json or csv and a value was submitted, display submit form, otherwise show error no results.
             if($tab == 2) {
@@ -415,26 +415,26 @@ use REDCap;
             </div>
 
             <div id="id_projects_table" align="center">
-            <table id='Projects_Table' class='tablesorter'>
+                <table id='Projects_Table' class='tablesorter'>
 
-            <!-- Pager -->
-            <div id="pager" class="pager" align="center">
+                    <!-- Pager -->
+                    <div id="pager" class="pager" align="center">
 
-                <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/first.png") ?>" class="first"/>
-                <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/prev.png") ?>" class="prev"/>
-                <!-- the "pagedisplay" can be any element, including an input -->
-                <span class="pagedisplay" data-pager-output-filtered="{startRow:input} &ndash; {endRow} / {filteredRows} of {totalRows} total rows"></span>
-                <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/next.png") ?>" class="next"/>
-                <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/last.png") ?>" class="last"/>
+                        <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/first.png") ?>" class="first"/>
+                        <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/prev.png") ?>" class="prev"/>
+                        <!-- the "pagedisplay" can be any element, including an input -->
+                        <span class="pagedisplay" data-pager-output-filtered="{startRow:input} &ndash; {endRow} / {filteredRows} of {totalRows} total rows"></span>
+                        <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/next.png") ?>" class="next"/>
+                        <img src="<?= $this->getUrl("resources/tablesorter/tablesorter/images/icons/last.png") ?>" class="last"/>
 
-                <select class="pagesize">
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
+                        <select class="pagesize">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
 
-            </div>
+                    </div>
 
             <?php
 
