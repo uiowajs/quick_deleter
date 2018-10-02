@@ -40,20 +40,27 @@ use REDCap;
                             <td>
                                 <a href="<?= $this->getUrl("index.php?tab=1") ?> ">All Projects</a>
                             </td>
-                            <form name="Custom_Form_json" id="Custom_Form_json" method="POST" action="<?= $this->getUrl("index.php?tab=2") ?>">
+<!--                            <form name="Custom_Form_json" id="Custom_Form_json" method="POST" action="--><?//= $this->getUrl("index.php?tab=2") ?><!--">-->
+<!--                                <td>-->
+<!--                                    <button class="Button_Link" type="submit" id="Custom_Page_json" name="Custom_Page_json">json</button>-->
+<!--                                </td>-->
+<!--                                <td>-->
+<!--                                    <input id="Custom_Box_json" class="Button_Box" type='text' name='Custom_Box_json' value="">-->
+<!--                                </td>-->
+<!--                            </form>-->
+<!--                            <form name="Custom_Form_csv" id="Custom_Form_csv" method="POST" action="--><?//= $this->getUrl("index.php?tab=3") ?><!--">-->
+<!--                                <td>-->
+<!--                                    <button class="Button_Link" type="submit" id="Custom_Page_csv" name="Custom_Page_csv">csv</button>-->
+<!--                                </td>-->
+<!--                                <td>-->
+<!--                                    <input id="Custom_Box_csv" class="Button_Box" type='text' name='Custom_Box_csv' value="">-->
+<!--                                </td>-->
+                                <form name="Custom_Form" id="Custom_Form" method="POST" action="<?= $this->getUrl("index.php?tab=2") ?>">
                                 <td>
-                                    <button class="Button_Link" type="submit" id="Custom_Page_json" name="Custom_Page_json">json</button>
+                                    <button class="Button_Link" type="submit" id="Custom_Page" name="Custom_Page">Custom</button>
                                 </td>
                                 <td>
-                                    <input id="Custom_Box_json" class="Button_Box" type='text' name='Custom_Box_json' value="">
-                                </td>
-                            </form>
-                            <form name="Custom_Form_csv" id="Custom_Form_csv" method="POST" action="<?= $this->getUrl("index.php?tab=3") ?>">
-                                <td>
-                                    <button class="Button_Link" type="submit" id="Custom_Page_csv" name="Custom_Page_csv">csv</button>
-                                </td>
-                                <td>
-                                    <input id="Custom_Box_csv" class="Button_Box" type='text' name='Custom_Box_csv' value="">
+                                    <input id="Custom_Box" class="Button_Box" type='text' name='Custom_Box' value="">
                                 </td>
                             </form>
                         </tr>
@@ -97,25 +104,47 @@ use REDCap;
 
                 //  Get results for submitted json or csv
 
-                $Parsed_json = $this->Parse_Posted_Json();
-                $Parsed_csv = $this->Parse_Posted_Csv();
+//                $Parsed_json = $this->Parse_Posted_Json();
+                $Parsed_Custom = $this->Parse_Custom();
+
+//                echo $Parsed_Custom;
+//                $Parsed_csv = $this->Parse_Posted_Csv();
+
 
                 //  Check if http or https
                 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
 
                 // Set variables depending on json/csv page
-                if($tab == 2) {
-                    $Parsed_Array = explode(",", $Parsed_json);
+//                if($tab == 2) {
+//                    $Parsed_Array = explode(",", $Parsed_json);
+//                    $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
+//                    $Get_Integers = explode(",", $Parsed_json);
+//                    $Integers = join(array_pad(array(), count($Get_Integers), "i"));
+//                }
+//                elseif($tab == 3) {
+//                    $Parsed_Array = explode(",", $Parsed_csv);
+//                    $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
+//                    $Get_Integers = explode(",", $Parsed_csv);
+//                    $Integers = join(array_pad(array(), count($Get_Integers), "i"));
+//                }
+
+//                $Get_Custom_Type = $this->Get_Custom_Type();
+
+//                if($Get_Custom_Type == "json") {
+                    $Parsed_Array = explode(",", $Parsed_Custom);
                     $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
-                    $Get_Integers = explode(",", $Parsed_json);
+                    $Get_Integers = explode(",", $Parsed_Custom);
                     $Integers = join(array_pad(array(), count($Get_Integers), "i"));
-                }
-                elseif($tab == 3) {
-                    $Parsed_Array = explode(",", $Parsed_csv);
-                    $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
-                    $Get_Integers = explode(",", $Parsed_csv);
-                    $Integers = join(array_pad(array(), count($Get_Integers), "i"));
-                }
+//                }
+//                elseif($Get_Custom_Type == "csv") {
+//                    $Parsed_Array = explode(",", $Parsed_Custom);
+//                    $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
+//                    $Get_Integers = explode(",", $Parsed_Custom);
+//                    $Integers = join(array_pad(array(), count($Get_Integers), "i"));
+//                    echo $Integers;
+//                }
+
+
 
                 // SQL
                 $Project_Pages = array("
@@ -272,7 +301,7 @@ use REDCap;
 
             //  If the page is json or csv and a value was submitted, display submit form, otherwise show error no results.
             if($tab == 2) {
-                if ($Parsed_json != "") {
+                if ($Parsed_Custom != "") {
 
                     $this->Display_Table_Header();
 
@@ -396,27 +425,8 @@ use REDCap;
         public function Display_Table_Header() {
 
             $tab = $_REQUEST['tab'];
-
             echo "<br>";
-            
             ?>
-
-            <!-- Submit button -->
-            <div align="center">
-                <table id='Submit_Table'>
-                    <tr>
-                        <td>
-                            <input class="reset_button" type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()">
-                        </td>
-                        <td>
-                            <input class="submit_button" type='submit' id='submit' name='submit'>
-                        </td>
-                        <td>
-                            <input id='PID_Box' type='text' name='PID' hidden readonly>
-                        </td>
-                    </tr>
-                </table>
-            </div>
 
             <div>
                 <?php
@@ -437,6 +447,23 @@ use REDCap;
                     <?php
                 }
                 ?>
+            </div>
+
+            <!-- Submit button -->
+            <div align="center">
+                <table id='Submit_Table'>
+                    <tr>
+                        <td>
+                            <input class="reset_button" type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()">
+                        </td>
+                        <td>
+                            <input class="submit_button" type='submit' id='submit' name='submit'>
+                        </td>
+                        <td>
+                            <input id='PID_Box' type='text' name='PID' hidden readonly>
+                        </td>
+                    </tr>
+                </table>
             </div>
 
             <!-- Pager -->
@@ -494,45 +521,99 @@ use REDCap;
                         </tr>
                     </thead>
                     <?php
-        }
+        }  // End Display_Table_Header()
+
+//        public function Get_Custom_Type () {
+//            $Custom_Box = $_POST['Custom_Box'];
+//
+//            if(isset($Custom_Box)) {
+//                if(substr($Custom_Box, 0, 1) == "[") {
+//                    $Custom_Type = "json";
+//                }
+//                elseif(is_numeric(substr($Custom_Box, 0 ,1)) == true) {
+//                    $Custom_Type = "csv";
+//                }
+//            }
+//
+//            return $Custom_Type;
+//        }
+
+        public function Parse_Custom() {
+
+            $Custom_Box = $_POST['Custom_Box'];
+//            $Get_Custom_Type = $this->Get_Custom_Type();
+
+            if(isset($Custom_Box)) {
+                if(substr($Custom_Box, 0, 1) == "[") {
+//                    echo "json";
+                    $Custom_Value = $Custom_Box;
+
+                    $json_decode = json_decode($Custom_Value);
+
+                    $Custom_PID = array();
+                    foreach ($json_decode AS $values) {
+                        $Custom_PID[] = $values->PID;
+                    }
+
+                    $Custom_Value = implode(",", $Custom_PID);
+
+//                    echo $Custom_Value;
+                    $_SESSION['Custom_Value'] = $Custom_Value;
+                    echo $_SESSION['Custom_Value'];
+
+                }
+                elseif(is_numeric(substr($Custom_Box, 0 ,1)) == true) {
+//                    echo "Hello";
+//                    echo "<br>";
+//                    echo $Custom_Box;
+                    $Custom_Value = $Custom_Box;
+                    $_SESSION['Custom_Value'] = $Custom_Box;
+                    }
+
+            } elseif(isset($_SESSION['Custom_Value'])) {
+                $Custom_Value = $_SESSION['Custom_Value'];
+            }
+
+            return $Custom_Value;
+        }  // End Parse_Custom()
 
         //  Takes user submitted json and parses it into PIDs.  Stores in session variable to retain after deleting/undeleting projects.
-        public function Parse_Posted_Json()
-        {
-            $Custom_Box_json = $_POST['Custom_Box_json'];
+//        public function Parse_Posted_Json()
+//        {
+//            $Custom_Box_json = $_POST['Custom_Box_json'];
+//
+//            if (isset($Custom_Box_json)) {
+//                $Posted_json = $Custom_Box_json;
+//                $_SESSION['Custom_json'] = $Custom_Box_json;
+//            } elseif (isset($_SESSION['Custom_json'])) {
+//                $Posted_json = $_SESSION['Custom_json'];
+//            }
 
-            if (isset($Custom_Box_json)) {
-                $Posted_json = $Custom_Box_json;
-                $_SESSION['Custom_json'] = $Custom_Box_json;
-            } elseif (isset($_SESSION['Custom_json'])) {
-                $Posted_json = $_SESSION['Custom_json'];
-            }
-
-            $Decoded_json = json_decode($Posted_json);
-
-            $Custom_PID = array();
-            foreach ($Decoded_json AS $values) {
-                $Custom_PID[] = $values->PID;
-            }
-
-            $Parsed_json = implode(",", $Custom_PID);
-            return $Parsed_json;
-        }  // End Parse_Posted_Json()
+//            $Decoded_json = json_decode($Posted_json);
+//
+//            $Custom_PID = array();
+//            foreach ($Decoded_json AS $values) {
+//                $Custom_PID[] = $values->PID;
+//            }
+//
+//            $Parsed_json = implode(",", $Custom_PID);
+//            return $Parsed_json;
+//        }  // End Parse_Posted_Json()
 
         //  Takes user submitted csv and parses it into PIDs.  Stores in session variable to retain after deleting/undeleting projects.
-        public function Parse_Posted_Csv()
-        {
-            $Custom_Box_csv = $_POST['Custom_Box_csv'];
-
-            if (isset($Custom_Box_csv)) {
-                $Posted_csv = $Custom_Box_csv;
-                $_SESSION['Custom_csv'] = $Custom_Box_csv;
-            } elseif (isset($_SESSION['Custom_csv'])) {
-                $Posted_csv = $_SESSION['Custom_csv'];
-            }
-
-            return $Posted_csv;
-        }  // End Parse_Posted_Csv()
+//        public function Parse_Posted_Csv()
+//        {
+//            $Custom_Box_csv = $_POST['Custom_Box_csv'];
+//
+//            if (isset($Custom_Box_csv)) {
+//                $Posted_csv = $Custom_Box_csv;
+//                $_SESSION['Custom_csv'] = $Custom_Box_csv;
+//            } elseif (isset($_SESSION['Custom_csv'])) {
+//                $Posted_csv = $_SESSION['Custom_csv'];
+//            }
+//
+//            return $Posted_csv;
+//        }  // End Parse_Posted_Csv()
 
         public function Build_HTML_Table($row, $protocol) {
             ?>
