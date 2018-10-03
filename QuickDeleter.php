@@ -194,7 +194,7 @@ use REDCap;
                         "
                 );
             ?>
-            <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST" onsubmit="return confirm('Confirm that the selected projects should be deleted/restored');">
+            <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST">
             <?php
 
             // Displays submit form if the page is My or All projects and not home page.
@@ -307,9 +307,40 @@ use REDCap;
                         if (window.history.replaceState) {
                             window.history.replaceState(null, null, window.location.href);
                         }
+
+                        // Confirmation on submit
+                        $('#submit').click(function() {
+
+                            // var PID = $(this).val() + " : " +
+
+                            var checked_PID = $("input:checkbox:checked", "#Projects_Table").map(function() {
+                                return $(this).val();
+                            }).get();
+
+                            var checked_Project = $("input:checkbox:checked", "#Projects_Table").map(function() {
+                                return $(this).parent().parent().find('td:eq(2)').text();
+                            }).get();
+
+                            // Removes space in array string
+                            checked_Project = checked_Project.map(function (el) {
+                                  return el.trim();
+                                });
+                                console.log(checked_Project);
+
+                            // checked_Project = checked_Project.split(',').join("<br />");
+
+
+
+                            if(!confirm("Confirm that the following projects should be modified: \n\n" + checked_Project)) return false;
+                        });
+
                     </script>
 
-                    <?php
+
+
+
+
+            <?php
 
                 }  // End if(SUPER_USER == 1)
                 else {
@@ -365,7 +396,7 @@ use REDCap;
                             <input class="reset_button" type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()">
                         </td>
                         <td>
-                            <input class="submit_button" type='submit' id='submit' name='submit'>
+                            <button class="submit_button" id='submit' name='submit'>Submit</button>
                         </td>
                         <td>
                             <input id='PID_Box' type='text' name='PID' hidden readonly>
