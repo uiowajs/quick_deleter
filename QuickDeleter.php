@@ -308,14 +308,8 @@ use REDCap;
                             window.history.replaceState(null, null, window.location.href);
                         }
 
-                        // Confirmation on submit
+                        // Confirmation on submit, display checked projects
                         $('#submit').click(function() {
-
-                            // var PID = $(this).val() + " : " +
-
-                            var checked_PID = $("input:checkbox:checked", "#Projects_Table").map(function() {
-                                return $(this).val();
-                            }).get();
 
                             var checked_Project = $("input:checkbox:checked", "#Projects_Table").map(function() {
                                 return $(this).parent().parent().find('td:eq(2)').text();
@@ -327,9 +321,7 @@ use REDCap;
                                 });
                                 console.log(checked_Project);
 
-                            // checked_Project = checked_Project.split(',').join("<br />");
-
-
+                            checked_Project = checked_Project.join("\n");
 
                             if(!confirm("Confirm that the following projects should be modified: \n\n" + checked_Project)) return false;
                         });
