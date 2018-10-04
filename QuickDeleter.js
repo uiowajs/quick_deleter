@@ -9,7 +9,15 @@
             usNumberFormat: true,
             sortReset: false,
             sortRestart: false,
-            widgets: ['filter', 'stickyHeaders', 'pager']
+            widgets: ['stickyHeaders', 'filter', 'pager'],
+
+            widgetOptions: {
+
+                stickyHeaders_offset: 50,
+
+            }
+
+
 
         });
     });

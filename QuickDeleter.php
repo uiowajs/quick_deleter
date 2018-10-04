@@ -326,7 +326,7 @@ use REDCap;
                             var Delete_Projects = [];
                             var Restore_Projects = [];
 
-                            // Get value of object key, puts project title in array
+                            // Get value (delete flag) of object key, checks if 0 or 1, puts project title in array
                             for(key in Combined_Array) {
                                 if(Combined_Array.hasOwnProperty(key)) {
                                     var value = Combined_Array[key];
@@ -600,34 +600,35 @@ use REDCap;
         public function Submit()
         {
             if(SUPER_USER == 1) {
+
                 $Pre_Values = $this->Get_Values();
 
-            global $conn;
-            if (!isset($conn)) {
-                db_connect(false);
-            }
+                global $conn;
+                if (!isset($conn)) {
+                    db_connect(false);
+                }
 
-            // Converts submitted PID_Box string to array for bind_param()
-            $PID_Array = explode(",", $this->Get_PID());
+                // Converts submitted PID_Box string to array for bind_param()
+                $PID_Array = explode(",", $this->Get_PID());
 
-            // Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
-            $qMarks = str_repeat('?,', count($PID_Array) - 1) . '?';
+                // Forms comma separated question mark placeholder string for SQL WHERE IN () query.  e.g. ?,?,?
+                $qMarks = str_repeat('?,', count($PID_Array) - 1) . '?';
 
-            // Forms int placeholder string for bind_param().  e.g. 'iii'
-            $Get_Integers = explode(",", $this->Get_PID());
-            $Integers = join(array_pad(array(), count($Get_Integers), "i"));
+                // Forms int placeholder string for bind_param().  e.g. 'iii'
+                $Get_Integers = explode(",", $this->Get_PID());
+                $Integers = join(array_pad(array(), count($Get_Integers), "i"));
 
-            $sqlUpdateProject = "
-            UPDATE redcap_projects
-            SET date_deleted = IF(date_deleted IS NULL, '" . NOW . "', NULL)
-            WHERE project_id IN (" . $qMarks . ")
-            ";
+                $sqlUpdateProject = "
+                UPDATE redcap_projects
+                SET date_deleted = IF(date_deleted IS NULL, '" . NOW . "', NULL)
+                WHERE project_id IN (" . $qMarks . ")
+                ";
 
-            // https://stackoverflow.com/questions/3703180/a-prepared-statement-where-in-query-and-sorting-with-mysql/45905752#45905752.
-            $stmt = $conn->prepare($sqlUpdateProject);
-            $stmt->bind_param($Integers, ...$PID_Array);
-            $stmt->execute();
-            $stmt->close();
+                // https://stackoverflow.com/questions/3703180/a-prepared-statement-where-in-query-and-sorting-with-mysql/45905752#45905752.
+                $stmt = $conn->prepare($sqlUpdateProject);
+                $stmt->bind_param($Integers, ...$PID_Array);
+                $stmt->execute();
+                $stmt->close();
 
                 $Post_Values = $this->Get_Values();
 
@@ -637,10 +638,10 @@ use REDCap;
                         if ($Post_Value['project_id'] == $Pre_Value['project_id']) {
                             if ($Post_Value != $Pre_Value) {
                                 if ($Post_Value['date_deleted'] == NULL) {
-                                    REDCap::logEvent("Project " . $Post_Value['project_id'] . " restored via Quick Deleter by " . USERID . "", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
+                                    REDCap::logEvent("Project restored via Quick Deleter by " . USERID . "", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
                                 }  // End of if (date_delete == NULL)
                                 else {
-                                    REDCap::logEvent("Project " . $Post_Value['project_id'] . " deleted via Quick Deleter by " . USERID . "", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
+                                    REDCap::logEvent("Project deleted via Quick Deleter by " . USERID . "", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
                                 }  // End of else (date_deleted != NULL)
                             }  // End of if ($Post_Value == $Pre_Value)
                             else {
@@ -650,16 +651,16 @@ use REDCap;
                     }  // End of foreach Post Values
                 }  // End of foreach Pre Values
 
-                header("Location: {$_SERVER['HTTP_REFERER']}");
-            }  // End if(SUPER_USER == 1)
-            else {
-                REDCap::logEvent("Non super user, " . USERID . ", tried to delete/restore projects via the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
-                echo "<br>";
-                echo "<br>";
-                echo "<br>";
-                echo "<br>";
-                echo "This function is for super users only";
-                echo "<br>";
+                    header("Location: {$_SERVER['HTTP_REFERER']}");
+                }  // End if(SUPER_USER == 1)
+                else {
+                    REDCap::logEvent("Non super user, " . USERID . ", tried to delete/restore projects via the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
+                    echo "<br>";
+                    echo "<br>";
+                    echo "<br>";
+                    echo "<br>";
+                    echo "This function is for super users only";
+                    echo "<br>";
             }  // End super user check
         }  // End of Submit()
 
