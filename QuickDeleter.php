@@ -411,14 +411,21 @@ var Restore_Projects = [];
 for(key in Combined_Array) {
     if(Combined_Array.hasOwnProperty(key)) {
         var value = Combined_Array[key];
-        if (value === 0) {
+        if (value === "0") {
             console.log(value);
+            console.log("Deleting");
+            Delete_Projects = Delete_Projects.push(Object.keys(Combined_Array));
         } else {
             console.log(value);
+            console.log("Restoring");
+            Restore_Projects = Restore_Projects.push(Object.keys(Combined_Array));
         }
     }
 }
 
+
+console.log(Delete_Projects);
+// console.log(Restore_Projects);
 
 
 // for (var j = 0; j < Combined_Array.length; i++) {
@@ -430,8 +437,7 @@ for(key in Combined_Array) {
 //     }
 // }
 
-// console.log(Delete_Projects);
-// console.log(Restore_Projects);
+
 
 
 
