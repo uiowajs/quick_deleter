@@ -290,224 +290,67 @@ use REDCap;
                                 if ($(this).prop('id') === '0')
                                 // console.log($(this).attr('id'));
                                     $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-
-                                    // var Delete_Projects = ("#Projects_Table").map(function() {
-                                    //     return $(this).parent().parent().find('td:eq(2)').text();
-                                    // }).get();
-                                    //
-                                    //   Delete_Projects = Delete_Projects.map(function (el) {
-                                    //       return el.trim();
-                                    //     });
-                                    //
-                                    // var Delete_Projects_Final = Delete_Projects.join("\n");  // Prints each array element on new line
-
                                 else
                                 // console.log($(this).attr('id'));
                                     $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-
-                                //     var Restore_Projects = ("#Projects_Table").map(function() {
-                                //         return $(this).parent().parent().find('td:eq(2)').text();
-                                // }).get();
-                                //
-                                //     Restore_Projects = Restore_Projects.map(function (el) {
-                                //           return el.trim();
-                                //         });
-                                //
-                                //     var Restore_Projects_Final = Restore_Projects.join("\n");  // Prints each array element on new line
-
                             else
                             // console.log("Hi");
                                 $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
                         });
 
-
-
-
-                        // $(".PID_Checkbox").on('change', function () {
-                        //
-                        //     if ($(this).is(':checked'))
-                        //
-                        //         var Delete_Projects = $("input:checkbox:checked", "#Projects_Table").map(function() {
-                        //             return $(this).parent().parent().find('td:eq(2)').text();
-                        //         }).get();
-                        //
-                        //         var Restore_Projects = $("input:checkbox:checked", "#Projects_Table").map(function() {
-                        //             return $(this).parent().parent().find('td:eq(2)').text();
-                        //         }).get();
-                        //
-                        //             // Removes spaces in array element
-                        //             Delete_Projects = Delete_Projects.map(function (el) {
-                        //                   return el.trim();
-                        //                 });
-                        //
-                        //             var Delete_Projects_Final = Delete_Projects.join("\n");  // Prints each array element on new line
-                        //
-                        //             Restore_Projects = Restore_Projects.map(function (el) {
-                        //                   return el.trim();
-                        //                 });
-                        //
-                        //             var Restore_Projects_Final = Restore_Projects.join("\n");  // Prints each array element on new line
-                        //
-                        //             console.log(Delete_Projects);
-                        //
-                        //             });
-
-                        // Displays checked projects in confirmation on submit
-                        // $(".PID_Checkbox").on('change', function () {
-                        //     if ($(this).is(':checked')) {
+                        // Displays projects set for delete and restore on submit confirmation
                         $('#submit').click(function() {
 
+                            // Finds if project was already set for delete or not
+                            var Delete_Flagged = $("input:checkbox:checked", "#Projects_Table").map(function() {
+                                return $(this).prop('id');
+                            }).get();
 
+                            // Gets title for selected projects
+                            var Selected_Projects = $("input:checkbox:checked", "#Projects_Table").map(function() {
+                                return $(this).parent().parent().find('td:eq(2)').text();
+                            }).get();
 
-                                // if $(".PID_Checkbox").is(':checked')
-                            // // console.log($(this).attr('id'));
-                            //         if ($(this).prop('id') === '0')
-
-
-                                        var Delete_Flagged = $("input:checkbox:checked", "#Projects_Table").map(function() {
-                                            return $(this).prop('id');
-                                            }).get();
-
-                                            // console.log(Delete_Flagged);
-
-
-
-                                        var Selected_Projects = $("input:checkbox:checked", "#Projects_Table").map(function() {
-                                    return $(this).parent().parent().find('td:eq(2)').text();
-                                }).get();
-
-                                        Selected_Projects = Selected_Projects.map(function (el) {
-                                          return el.trim();
-                                        });
-
-                                        var Selected_Projects_Final = Selected_Projects.join("\n");  // Prints each array element on new line
-
-
-// console.log(Delete_Flagged);
-// console.log(Selected_Projects);
-
-
-// keys.forEach((key, i) => result[key] = values[i]);
-
-// var Combined_Array = {};
-// Selected_Projects.forEach((Selected_Projects, i) => Combined_Array[Selected_Projects] = Delete_Flagged[i]);
-// console.log(Selected_Projects);
-
-
-var Combined_Array = {};
-for (var i = 0; i < Selected_Projects.length; i++) {
-  Combined_Array[Selected_Projects[i]] = Delete_Flagged[i];
-}
-// console.log(Combined_Array);
-//
-// console.log(Object.keys(Combined_Array));
-// console.log(Object.values(Combined_Array));
-
-
-var Delete_Projects = [];
-var Restore_Projects = [];
-
-
-for(key in Combined_Array) {
-    if(Combined_Array.hasOwnProperty(key)) {
-        var value = Combined_Array[key];
-        if (value === "0") {
-            console.log(value);
-            console.log("Deleting");
-            Delete_Projects = Delete_Projects.concat(key);
-        } else {
-            console.log(value);
-            console.log("Restoring");
-            Restore_Projects = Restore_Projects.concat(key);
-        }
-    }
-}
-
-var Delete_Projects = Delete_Projects.join("\n");  // Prints each array element on new line
-var Restore_Projects = Restore_Projects.join("\n");  // Prints each array element on new line
-
-
-console.log(Delete_Projects);
-console.log(Restore_Projects);
-
-
-
-
- if(!confirm("Confirm that the following projects should be modified: \n\n" +
-                            "DELETE:\n" + Delete_Projects + "\n\n" + "RESTORE:\n" + Restore_Projects)
-                            ) return false;
+                        // Removes spaces before and after title in array element
+                        Selected_Projects = Selected_Projects.map(function (el) {
+                            return el.trim();
                         });
 
+                        //  Creates object with project title as key and delete flag as value
+                        var Combined_Array = {};
+                        for (var i = 0; i < Selected_Projects.length; i++) {
+                          Combined_Array[Selected_Projects[i]] = Delete_Flagged[i];
+                        }
 
-                                        // var Combine_Array = {}, i;
-                                        // for (i = 0, i < Selected_Projects.length; i++) {
-                                        //     Combine_Array[Selected_Projects[i]] = Delete_Flagged[i];
-                                        // }
-                                        //
-                                        // console.log(Combine_Array);
+                        // Create arrays
+                        var Delete_Projects = [];
+                        var Restore_Projects = [];
 
+                        // Get value of object key, puts project title in array
+                        for(key in Combined_Array) {
+                            if(Combined_Array.hasOwnProperty(key)) {
+                                var value = Combined_Array[key];
+                                if (value === "0") {
+                                    console.log(value);
+                                    console.log("Deleting");
+                                    Delete_Projects = Delete_Projects.concat(key);
+                                } else {
+                                    console.log(value);
+                                    console.log("Restoring");
+                                    Restore_Projects = Restore_Projects.concat(key);
+                                }
+                            }
+                        }
 
+                        // Displays each title on new line
+                        Delete_Projects = Delete_Projects.join("\n");  // Prints each array element on new line
+                        Restore_Projects = Restore_Projects.join("\n");  // Prints each array element on new line
 
-
-                                    //     var Delete_Projects = $("input:checkbox:checked", "#Projects_Table").map(function() {
-                                    //         return $(this).parent().parent().find('td:eq(2)').text();
-                                    //     }).get();
-                                    //
-                                    // // else
-                                    //     var Restore_Projects = $("input:checkbox:checked", "#Projects_Table").map(function() {
-                                    //         return $(this).parent().parent().find('td:eq(2)').text();
-                                    //     }).get();
-
-                                    // var Delete_Projects = [];
-                                    // var Restore_Projects = [];
-                                    //
-                                    //
-                                    // for (var i = 0; i < Selected_Projects.length; i++) {
-                                    //     for (var j = 0; j < Delete_Flagged.length; j++) {
-                                    //         if (i === j) {
-                                    //             if(Delete_Flagged === 0) {
-                                    //                var Delete_Projects = Selected_Projects[i];
-                                    //             }
-                                    //             else {
-                                    //                 var Restore_Projects = Selected_Projects[i];
-                                    //             }
-                                    //         } else {}
-                                    //     }
-                                    // }
-
-
-
-                                    // Selected_Projects.forEach(function(Project) {
-                                    //     Delete_Flagged.forEach(function(Flagged) {
-                                    //
-                                    //     });
-                                    // });
-
-                                    // console.log(Delete_Projects);
-                                    // console.log(Restore_Projects);
-
-                                    // Removes spaces in array element
-                                    // Delete_Projects = Delete_Projects.map(function (el) {
-                                    //       return el.trim();
-                                    //     });
-                                    //
-                                    // var Delete_Projects_Final = Delete_Projects.join("\n");  // Prints each array element on new line
-                                    //
-                                    // Restore_Projects = Restore_Projects.map(function (el) {
-                                    //       return el.trim();
-                                    //     });
-                                    //
-                                    // var Restore_Projects_Final = Restore_Projects.join("\n");  // Prints each array element on new line
-                                    // //
-                                    // // console.log(Delete_Projects);
-
-                        // if(!confirm("Confirm that the following projects should be modified: \n\n" +
-                        //     "DELETE:\n" + Delete_Projects_Final + "\n\n" + "RESTORE:\n" + Restore_Projects_Final)
-                        //     ) return false;
-                        // });
-
-
-
+                        // Confirmation dialog popup on submit
+                        if(!confirm("Confirm that the following projects should be modified: \n\n" +
+                            "DELETE:\n" + Delete_Projects + "\n\n" + "RESTORE:\n" + Restore_Projects)
+                        ) return false;
+                        });
 
                         // Removes checked row color on form reset
                         function Clear_Row_Styling() {
@@ -520,10 +363,6 @@ console.log(Restore_Projects);
                         }
 
                     </script>
-
-
-
-
 
             <?php
 
