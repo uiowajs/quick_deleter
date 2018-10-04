@@ -6,7 +6,7 @@
 
             theme: 'blue',
             widthFixed: true,
-            usNumberFormat: false,
+            usNumberFormat: true,
             sortReset: false,
             sortRestart: false,
             widgets: ['filter', 'stickyHeaders', 'pager']

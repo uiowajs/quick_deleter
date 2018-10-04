@@ -311,45 +311,45 @@ use REDCap;
                                 return $(this).parent().parent().find('td:eq(2)').text();
                             }).get();
 
-                        // Removes spaces before and after title in array element
-                        Selected_Projects = Selected_Projects.map(function (el) {
-                            return el.trim();
-                        });
+                            // Removes spaces before and after title in array element
+                            Selected_Projects = Selected_Projects.map(function (el) {
+                                return el.trim();
+                            });
 
-                        //  Creates object with project title as key and delete flag as value
-                        var Combined_Array = {};
-                        for (var i = 0; i < Selected_Projects.length; i++) {
-                          Combined_Array[Selected_Projects[i]] = Delete_Flagged[i];
-                        }
+                            //  Creates object with project title as key and delete flag as value
+                            var Combined_Array = {};
+                            for (var i = 0; i < Selected_Projects.length; i++) {
+                              Combined_Array[Selected_Projects[i]] = Delete_Flagged[i];
+                            }
 
-                        // Create arrays
-                        var Delete_Projects = [];
-                        var Restore_Projects = [];
+                            // Create arrays
+                            var Delete_Projects = [];
+                            var Restore_Projects = [];
 
-                        // Get value of object key, puts project title in array
-                        for(key in Combined_Array) {
-                            if(Combined_Array.hasOwnProperty(key)) {
-                                var value = Combined_Array[key];
-                                if (value === "0") {
-                                    console.log(value);
-                                    console.log("Deleting");
-                                    Delete_Projects = Delete_Projects.concat(key);
-                                } else {
-                                    console.log(value);
-                                    console.log("Restoring");
-                                    Restore_Projects = Restore_Projects.concat(key);
+                            // Get value of object key, puts project title in array
+                            for(key in Combined_Array) {
+                                if(Combined_Array.hasOwnProperty(key)) {
+                                    var value = Combined_Array[key];
+                                    if (value === "0") {
+                                        // console.log(value);
+                                        // console.log("Deleting");
+                                        Delete_Projects = Delete_Projects.concat(key);
+                                    } else {
+                                        // console.log(value);
+                                        // console.log("Restoring");
+                                        Restore_Projects = Restore_Projects.concat(key);
+                                    }
                                 }
                             }
-                        }
 
-                        // Displays each title on new line
-                        Delete_Projects = Delete_Projects.join("\n");  // Prints each array element on new line
-                        Restore_Projects = Restore_Projects.join("\n");  // Prints each array element on new line
+                            // Displays each project title on new line
+                            Delete_Projects = Delete_Projects.join("\n");  // Prints each array element on new line
+                            Restore_Projects = Restore_Projects.join("\n");  // Prints each array element on new line
 
-                        // Confirmation dialog popup on submit
-                        if(!confirm("Confirm that the following projects should be modified: \n\n" +
-                            "DELETE:\n" + Delete_Projects + "\n\n" + "RESTORE:\n" + Restore_Projects)
-                        ) return false;
+                            // Confirmation dialog popup on submit
+                            if(!confirm("Confirm that the following projects should be modified: \n\n" +
+                                "DELETE:\n" + Delete_Projects + "\n\n" + "RESTORE:\n" + Restore_Projects)
+                            ) return false;
                         });
 
                         // Removes checked row color on form reset
@@ -476,7 +476,7 @@ use REDCap;
                             <th style="text-align:center"><b>Record Count</b></th>
                             <th style="text-align:center"><b>Users</b></th>
                             <th style="text-align:center"><b>Date Created</b></th>
-                            <th style="text-align:center"><b>Last Event Date</b></th>
+<!--                            <th style="text-align:center"><b>Last Event Date</b></th>-->
                             <th style="text-align:center"><b>Days Since Event</b></th>
                             <th style="text-align:center"><b>Delete Flagged</b></th>
                             <th style="text-align:center"><b>Final Delete</b></th>
@@ -577,9 +577,9 @@ use REDCap;
                 <td align='center' class="color" <?php echo $Row_Color ?>>
                     <?php echo $row['New Creation Time']; ?>
                 </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['New Last Event']; ?></a>
-                </td>
+             <!--   <td align='center' class="color" <?php //echo $Row_Color ?>>
+                    <a href="<//?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php// echo $row['New Last Event']; ?></a>
+                </td>  -->
                 <td align='center' class="color" <?php echo $Row_Color ?>>
                     <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Days Since Last Event']; ?></a>
                 </td>
