@@ -8,7 +8,7 @@
             widthFixed: true,
             usNumberFormat: false,
             sortReset: false,
-            sortRestart: true,
+            sortRestart: false,
             widgets: ['filter', 'stickyHeaders', 'pager']
 
         });

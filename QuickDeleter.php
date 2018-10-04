@@ -258,36 +258,21 @@ use REDCap;
                             $("form[name=Form]").find("input[id=PID_Box]").val(values);
                         });
 
-                        //  Highlight row when box checked
-                        $(".PID_Checkbox").on('change', function () {
-                            if ($(this).is(':checked'))
-                            // console.log($(this).attr('id'));
-                                if ($(this).prop('id') === '0')
-                                // console.log($(this).attr('id'));
-                                    $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                                else
-                                // console.log($(this).attr('id'));
-                                    $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                            else
-                            // console.log("Hi");
-                                $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                        });
-
                         // Highlights all rows when check all box checked
                         $(document).ready(function () {
                             $("#check_all").on('change', function () {
                                 var PID_Checkboxes = $(".PID_Checkbox");
-                                console.log($(this));
+                                // console.log($(this));
                                 PID_Checkboxes.each(function () {
 
-                                    // $(this).toggle($(this).checked);
-                                    console.log($(this).checked);
+                                    // console.log($(this).checked);
                                     if ($(this).is(':checked'))
 
                                     // console.log($(this).attr('id'));
                                         if ($(this).prop('id') === '0')
                                         // console.log($(this).attr('id'));
                                             $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+
                                         else
                                         // console.log($(this).attr('id'));
                                             $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
@@ -298,6 +283,264 @@ use REDCap;
                             })
                         });
 
+                        //  Highlight row when box checked
+                        $(".PID_Checkbox").on('change', function () {
+                            if ($(this).is(':checked'))
+                            // console.log($(this).attr('id'));
+                                if ($(this).prop('id') === '0')
+                                // console.log($(this).attr('id'));
+                                    $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+
+                                    // var Delete_Projects = ("#Projects_Table").map(function() {
+                                    //     return $(this).parent().parent().find('td:eq(2)').text();
+                                    // }).get();
+                                    //
+                                    //   Delete_Projects = Delete_Projects.map(function (el) {
+                                    //       return el.trim();
+                                    //     });
+                                    //
+                                    // var Delete_Projects_Final = Delete_Projects.join("\n");  // Prints each array element on new line
+
+                                else
+                                // console.log($(this).attr('id'));
+                                    $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+
+                                //     var Restore_Projects = ("#Projects_Table").map(function() {
+                                //         return $(this).parent().parent().find('td:eq(2)').text();
+                                // }).get();
+                                //
+                                //     Restore_Projects = Restore_Projects.map(function (el) {
+                                //           return el.trim();
+                                //         });
+                                //
+                                //     var Restore_Projects_Final = Restore_Projects.join("\n");  // Prints each array element on new line
+
+                            else
+                            // console.log("Hi");
+                                $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                        });
+
+
+
+
+                        // $(".PID_Checkbox").on('change', function () {
+                        //
+                        //     if ($(this).is(':checked'))
+                        //
+                        //         var Delete_Projects = $("input:checkbox:checked", "#Projects_Table").map(function() {
+                        //             return $(this).parent().parent().find('td:eq(2)').text();
+                        //         }).get();
+                        //
+                        //         var Restore_Projects = $("input:checkbox:checked", "#Projects_Table").map(function() {
+                        //             return $(this).parent().parent().find('td:eq(2)').text();
+                        //         }).get();
+                        //
+                        //             // Removes spaces in array element
+                        //             Delete_Projects = Delete_Projects.map(function (el) {
+                        //                   return el.trim();
+                        //                 });
+                        //
+                        //             var Delete_Projects_Final = Delete_Projects.join("\n");  // Prints each array element on new line
+                        //
+                        //             Restore_Projects = Restore_Projects.map(function (el) {
+                        //                   return el.trim();
+                        //                 });
+                        //
+                        //             var Restore_Projects_Final = Restore_Projects.join("\n");  // Prints each array element on new line
+                        //
+                        //             console.log(Delete_Projects);
+                        //
+                        //             });
+
+                        // Displays checked projects in confirmation on submit
+                        // $(".PID_Checkbox").on('change', function () {
+                        //     if ($(this).is(':checked')) {
+                        $('#submit').click(function() {
+
+
+
+                                // if $(".PID_Checkbox").is(':checked')
+                            // // console.log($(this).attr('id'));
+                            //         if ($(this).prop('id') === '0')
+
+
+                                        var Delete_Flagged = $("input:checkbox:checked", "#Projects_Table").map(function() {
+                                            return $(this).prop('id');
+                                            }).get();
+
+                                            // console.log(Delete_Flagged);
+
+
+
+                                        var Selected_Projects = $("input:checkbox:checked", "#Projects_Table").map(function() {
+                                    return $(this).parent().parent().find('td:eq(2)').text();
+                                }).get();
+
+                                        Selected_Projects = Selected_Projects.map(function (el) {
+                                          return el.trim();
+                                        });
+
+                                        var Selected_Projects_Final = Selected_Projects.join("\n");  // Prints each array element on new line
+
+
+// console.log(Delete_Flagged);
+// console.log(Selected_Projects);
+
+
+// keys.forEach((key, i) => result[key] = values[i]);
+
+// var Combined_Array = {};
+// Selected_Projects.forEach((Selected_Projects, i) => Combined_Array[Selected_Projects] = Delete_Flagged[i]);
+// console.log(Selected_Projects);
+
+
+var Combined_Array = {};
+for (var i = 0; i < Selected_Projects.length; i++) {
+  Combined_Array[Selected_Projects[i]] = Delete_Flagged[i];
+}
+// console.log(Combined_Array);
+//
+// console.log(Object.keys(Combined_Array));
+// console.log(Object.values(Combined_Array));
+
+
+var Delete_Projects = [];
+var Restore_Projects = [];
+
+
+for(key in Combined_Array) {
+    if(Combined_Array.hasOwnProperty(key)) {
+        var value = Combined_Array[key];
+        if (value === 0) {
+            console.log(value);
+        } else {
+            console.log(value);
+        }
+    }
+}
+
+
+
+// for (var j = 0; j < Combined_Array.length; i++) {
+//     if (Object.values(Combined_Array) === ["0"]) {
+//         Delete_Projects = Delete_Projects.push(Object.keys(Combined_Array));
+//     }
+//     else {
+//         Restore_Projects = Restore_Projects.push(Object.keys(Combined_Array));
+//     }
+// }
+
+// console.log(Delete_Projects);
+// console.log(Restore_Projects);
+
+
+
+
+
+                                        // var Combine_Array = {}, i;
+                                        // for (i = 0, i < Selected_Projects.length; i++) {
+                                        //     Combine_Array[Selected_Projects[i]] = Delete_Flagged[i];
+                                        // }
+                                        //
+                                        // console.log(Combine_Array);
+
+
+
+
+                                    // for (var i = 0; i < Selected_Projects.length; i++) {
+                                    //     for (var j = 0; j < Delete_Flagged.length; j++) {
+                                    //         if (i === j) {
+                                    //             if(Delete_Flagged === 0) {
+                                    //                var Delete_Projects = Selected_Projects[i];
+                                    //             }
+                                    //             else {
+                                    //                 var Restore_Projects = Selected_Projects[i];
+                                    //             }
+                                    //         } else {}
+                                    //     }
+                                    // }
+
+                                    // console.log(Delete_Projects);
+                                    // console.log(Restore_Projects);
+
+
+
+ if(!confirm("Confirm that the following projects should be modified: \n\n" +
+                            "DELETE:\n" + Selected_Projects_Final + "\n\n" + "RESTORE:\n" + Selected_Projects_Final)
+                            ) return false;
+                        });
+
+
+                                        // var Combine_Array = {}, i;
+                                        // for (i = 0, i < Selected_Projects.length; i++) {
+                                        //     Combine_Array[Selected_Projects[i]] = Delete_Flagged[i];
+                                        // }
+                                        //
+                                        // console.log(Combine_Array);
+
+
+
+
+                                    //     var Delete_Projects = $("input:checkbox:checked", "#Projects_Table").map(function() {
+                                    //         return $(this).parent().parent().find('td:eq(2)').text();
+                                    //     }).get();
+                                    //
+                                    // // else
+                                    //     var Restore_Projects = $("input:checkbox:checked", "#Projects_Table").map(function() {
+                                    //         return $(this).parent().parent().find('td:eq(2)').text();
+                                    //     }).get();
+
+                                    // var Delete_Projects = [];
+                                    // var Restore_Projects = [];
+                                    //
+                                    //
+                                    // for (var i = 0; i < Selected_Projects.length; i++) {
+                                    //     for (var j = 0; j < Delete_Flagged.length; j++) {
+                                    //         if (i === j) {
+                                    //             if(Delete_Flagged === 0) {
+                                    //                var Delete_Projects = Selected_Projects[i];
+                                    //             }
+                                    //             else {
+                                    //                 var Restore_Projects = Selected_Projects[i];
+                                    //             }
+                                    //         } else {}
+                                    //     }
+                                    // }
+
+
+
+                                    // Selected_Projects.forEach(function(Project) {
+                                    //     Delete_Flagged.forEach(function(Flagged) {
+                                    //
+                                    //     });
+                                    // });
+
+                                    // console.log(Delete_Projects);
+                                    // console.log(Restore_Projects);
+
+                                    // Removes spaces in array element
+                                    // Delete_Projects = Delete_Projects.map(function (el) {
+                                    //       return el.trim();
+                                    //     });
+                                    //
+                                    // var Delete_Projects_Final = Delete_Projects.join("\n");  // Prints each array element on new line
+                                    //
+                                    // Restore_Projects = Restore_Projects.map(function (el) {
+                                    //       return el.trim();
+                                    //     });
+                                    //
+                                    // var Restore_Projects_Final = Restore_Projects.join("\n");  // Prints each array element on new line
+                                    // //
+                                    // // console.log(Delete_Projects);
+
+                        // if(!confirm("Confirm that the following projects should be modified: \n\n" +
+                        //     "DELETE:\n" + Delete_Projects_Final + "\n\n" + "RESTORE:\n" + Restore_Projects_Final)
+                        //     ) return false;
+                        // });
+
+
+
+
                         // Removes checked row color on form reset
                         function Clear_Row_Styling() {
                             $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
@@ -307,24 +550,6 @@ use REDCap;
                         if (window.history.replaceState) {
                             window.history.replaceState(null, null, window.location.href);
                         }
-
-                        // Confirmation on submit, display checked projects
-                        $('#submit').click(function() {
-
-                            var checked_Project = $("input:checkbox:checked", "#Projects_Table").map(function() {
-                                return $(this).parent().parent().find('td:eq(2)').text();
-                            }).get();
-
-                            // Removes space in array string
-                            checked_Project = checked_Project.map(function (el) {
-                                  return el.trim();
-                                });
-                                console.log(checked_Project);
-
-                            checked_Project = checked_Project.join("\n");
-
-                            if(!confirm("Confirm that the following projects should be modified: \n\n" + checked_Project)) return false;
-                        });
 
                     </script>
 
