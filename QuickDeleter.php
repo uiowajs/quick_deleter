@@ -414,65 +414,27 @@ for(key in Combined_Array) {
         if (value === "0") {
             console.log(value);
             console.log("Deleting");
-            Delete_Projects = Delete_Projects.push(Object.keys(Combined_Array));
+            Delete_Projects = Delete_Projects.concat(key);
         } else {
             console.log(value);
             console.log("Restoring");
-            Restore_Projects = Restore_Projects.push(Object.keys(Combined_Array));
+            Restore_Projects = Restore_Projects.concat(key);
         }
     }
 }
 
+var Delete_Projects = Delete_Projects.join("\n");  // Prints each array element on new line
+var Restore_Projects = Restore_Projects.join("\n");  // Prints each array element on new line
+
 
 console.log(Delete_Projects);
-// console.log(Restore_Projects);
+console.log(Restore_Projects);
 
-
-// for (var j = 0; j < Combined_Array.length; i++) {
-//     if (Object.values(Combined_Array) === ["0"]) {
-//         Delete_Projects = Delete_Projects.push(Object.keys(Combined_Array));
-//     }
-//     else {
-//         Restore_Projects = Restore_Projects.push(Object.keys(Combined_Array));
-//     }
-// }
-
-
-
-
-
-
-
-                                        // var Combine_Array = {}, i;
-                                        // for (i = 0, i < Selected_Projects.length; i++) {
-                                        //     Combine_Array[Selected_Projects[i]] = Delete_Flagged[i];
-                                        // }
-                                        //
-                                        // console.log(Combine_Array);
-
-
-
-
-                                    // for (var i = 0; i < Selected_Projects.length; i++) {
-                                    //     for (var j = 0; j < Delete_Flagged.length; j++) {
-                                    //         if (i === j) {
-                                    //             if(Delete_Flagged === 0) {
-                                    //                var Delete_Projects = Selected_Projects[i];
-                                    //             }
-                                    //             else {
-                                    //                 var Restore_Projects = Selected_Projects[i];
-                                    //             }
-                                    //         } else {}
-                                    //     }
-                                    // }
-
-                                    // console.log(Delete_Projects);
-                                    // console.log(Restore_Projects);
 
 
 
  if(!confirm("Confirm that the following projects should be modified: \n\n" +
-                            "DELETE:\n" + Selected_Projects_Final + "\n\n" + "RESTORE:\n" + Selected_Projects_Final)
+                            "DELETE:\n" + Delete_Projects + "\n\n" + "RESTORE:\n" + Restore_Projects)
                             ) return false;
                         });
 
