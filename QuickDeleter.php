@@ -14,6 +14,9 @@ use REDCap;
     class QuickDeleter extends AbstractExternalModule
     {
 
+
+
+
         //  Displays header, home page, and table.  Contains javascript
         public function Display_Page()
         {
@@ -122,7 +125,7 @@ use REDCap;
                     ON a.project_id=b.project_id
                     LEFT JOIN redcap_record_counts AS c
                     ON a.project_id=c.project_id
-                    WHERE username = '" . USERID . "'
+                    WHERE username IS NOT NULL
                     GROUP BY a.project_id
                     ORDER BY a.project_id ASC  
                     "
@@ -193,7 +196,11 @@ use REDCap;
                     ORDER BY a.project_id ASC
                         "
                 );
+
             ?>
+
+
+
             <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST">
             <?php
 
@@ -239,6 +246,9 @@ use REDCap;
                 // Builds HTML rows and displays sql results for My Projects and All Projects.
                 while ($row = db_fetch_assoc($Result))  // $sqlGetAllProjects
                 {
+
+
+
                     $this->Build_HTML_Table($row, $protocol);
                     }  // End while loop for My/All projects
                 }
@@ -325,6 +335,9 @@ use REDCap;
                             // Create arrays
                             var Delete_Projects = [];
                             var Restore_Projects = [];
+                            var Delete = "";
+                            var Restore = "";
+                            var Line_Breaks = "";
 
                             // Get value (delete flag) of object key, checks if 0 or 1, puts project title in array
                             for(key in Combined_Array) {
@@ -334,10 +347,24 @@ use REDCap;
                                         // console.log(value);
                                         // console.log("Deleting");
                                         Delete_Projects = Delete_Projects.concat(key);
+                                        if (Delete_Projects.length === 0) {
+                                            Delete = "";
+                                            Line_Breaks = "";
+                                        }
+                                        else {
+                                            Delete = "DELETE:\n";
+                                            Line_Breaks = "\n\n";
+                                        }
                                     } else {
                                         // console.log(value);
                                         // console.log("Restoring");
                                         Restore_Projects = Restore_Projects.concat(key);
+                                        if(Restore_Projects.length === 0) {
+                                            Restore = "";
+                                        }
+                                        else {
+                                            Restore = "RESTORE:\n"
+                                        }
                                     }
                                 }
                             }
@@ -348,7 +375,7 @@ use REDCap;
 
                             // Confirmation dialog popup on submit
                             if(!confirm("Confirm that the following projects should be modified: \n\n" +
-                                "DELETE:\n" + Delete_Projects + "\n\n" + "RESTORE:\n" + Restore_Projects)
+                                Delete + Delete_Projects + Line_Breaks + Restore + Restore_Projects)
                             ) return false;
                         });
 
@@ -473,9 +500,9 @@ use REDCap;
                             <th style="text-align:center"><b>Project Name</b></th>
                             <th style="text-align:center"><b>Purpose</b></th>
                             <th style="text-align:center"><b>Status</b></th>
-                            <th style="text-align:center"><b>Record Count</b></th>
+                            <th style="text-align:center"><b>Records</b></th>
                             <th style="text-align:center"><b>Users</b></th>
-                            <th style="text-align:center"><b>Date Created</b></th>
+                            <th style="text-align:center"><b>Created</b></th>
 <!--                            <th style="text-align:center"><b>Last Event Date</b></th>-->
                             <th style="text-align:center"><b>Days Since Event</b></th>
                             <th style="text-align:center"><b>Delete Flagged</b></th>
@@ -544,6 +571,36 @@ use REDCap;
 
             <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
 
+
+            $User_List = explode(",", $row['Users']);
+            $User_Array = array();
+//            print_r($User_List);
+
+            foreach ($User_List as $index=>$userID) {
+
+                $Formatted_Username = $userID;
+
+                    array_push($User_Array, $Formatted_Username);
+
+            }
+
+                $User_Cell = implode("<br>", $User_Array);
+
+            echo $User_Cell;
+
+
+            $URL_String = sprintf($protocol . "%s%sControlCenter/view_users.php?username=%s",  // Browse User Page
+                SERVER_NAME,
+                APP_PATH_WEBROOT,
+                $row['Users']);
+
+           $userLink = "<a href='$URL_String'> $User_Cell </a>";
+
+
+
+
+
+
                 if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
                 {
                     $Row_Color = "style=\"background-color: rgba(0, 200, 0, 0.1);\"";
@@ -572,7 +629,7 @@ use REDCap;
                     <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>"> <?php echo $row['record_count']; ?></a>
                 </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "UserRights/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Users']; ?> </a>
+                   <?php echo $userLink ?>
                 </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>>
                     <?php echo $row['New Creation Time']; ?>
