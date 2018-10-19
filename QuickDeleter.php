@@ -125,7 +125,7 @@ use REDCap;
                     ON a.project_id=b.project_id
                     LEFT JOIN redcap_record_counts AS c
                     ON a.project_id=c.project_id
-                    WHERE username IS NOT NULL
+                    WHERE 'Users' IS NOT NULL 
                     GROUP BY a.project_id
                     ORDER BY a.project_id ASC  
                     "
@@ -332,7 +332,7 @@ use REDCap;
                               Combined_Array[Selected_Projects[i]] = Delete_Flagged[i];
                             }
 
-                            // Create arrays
+                            // Create arrays and variables
                             var Delete_Projects = [];
                             var Restore_Projects = [];
                             var Delete = "";
@@ -566,39 +566,46 @@ use REDCap;
             return $Custom_Value;
         }  // End Parse_Custom()
 
+
+
+        public function Format_Usernames($row) {
+
+            $userIDlist = explode(", ", $row['Users']);
+            $formattedUsers = array();
+
+            foreach ($userIDlist as $index=>$userID)
+            {
+                $formattedUsername = $userID;
+
+                $formattedUsername = $this->Username_Links($formattedUsername);
+
+                array_push($formattedUsers, $formattedUsername . ($index < count($userIDlist) - 1 ? '<span class=\'hide-in-table\'>, </span>' : '')
+                );
+            }
+
+            $userCell = implode( "<br>", $formattedUsers);
+
+            return $userCell;
+        }
+
+        public function Username_Links($userID) {
+                    $urlString =
+            sprintf("https://%s%sControlCenter/view_users.php?username=%s",  // Browse User Page
+                SERVER_NAME,
+                APP_PATH_WEBROOT,
+                $userID);
+
+        $userLink = sprintf("<a href=\"%s\"
+                          target=\"_blank\">%s</a>",
+            $urlString, $userID);
+
+        return $userLink;
+        }
+
         public function Build_HTML_Table($row, $protocol) {
             ?>
 
             <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
-
-
-            $User_List = explode(",", $row['Users']);
-            $User_Array = array();
-//            print_r($User_List);
-
-            foreach ($User_List as $index=>$userID) {
-
-                $Formatted_Username = $userID;
-
-                    array_push($User_Array, $Formatted_Username);
-
-            }
-
-                $User_Cell = implode("<br>", $User_Array);
-
-            echo $User_Cell;
-
-
-            $URL_String = sprintf($protocol . "%s%sControlCenter/view_users.php?username=%s",  // Browse User Page
-                SERVER_NAME,
-                APP_PATH_WEBROOT,
-                $row['Users']);
-
-           $userLink = "<a href='$URL_String'> $User_Cell </a>";
-
-
-
-
 
 
                 if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
@@ -629,7 +636,11 @@ use REDCap;
                     <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>"> <?php echo $row['record_count']; ?></a>
                 </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>>
-                   <?php echo $userLink ?>
+                   <?php
+
+                    echo $this->Format_Usernames($row);
+
+                    ?>
                 </td>
                 <td align='center' class="color" <?php echo $Row_Color ?>>
                     <?php echo $row['New Creation Time']; ?>
