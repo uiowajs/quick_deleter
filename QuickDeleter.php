@@ -125,8 +125,8 @@ use REDCap;
                     ON a.project_id=b.project_id
                     LEFT JOIN redcap_record_counts AS c
                     ON a.project_id=c.project_id
-                    WHERE 'Users' IS NOT NULL 
                     GROUP BY a.project_id
+                    HAVING (GROUP_CONCAT((b.username) SEPARATOR ', ') LIKE '%".USERID."%')
                     ORDER BY a.project_id ASC  
                     "
                         ,
@@ -566,8 +566,7 @@ use REDCap;
             return $Custom_Value;
         }  // End Parse_Custom()
 
-
-
+        // Turn username list into multiple values
         public function Format_Usernames($row) {
 
             $userIDlist = explode(", ", $row['Users']);
@@ -583,11 +582,12 @@ use REDCap;
                 );
             }
 
-            $userCell = implode( "<br>", $formattedUsers);
+            $userCell = implode("<br>", $formattedUsers);
 
             return $userCell;
         }
 
+        // Creates username link that goes to user page in control center
         public function Username_Links($userID) {
                     $urlString =
             sprintf("https://%s%sControlCenter/view_users.php?username=%s",  // Browse User Page
@@ -602,11 +602,11 @@ use REDCap;
         return $userLink;
         }
 
+        // Builds project table
         public function Build_HTML_Table($row, $protocol) {
             ?>
 
             <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
-
 
                 if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
                 {
