@@ -11,18 +11,16 @@
             usNumberFormat: true,
             sortReset: false,
             sortRestart: false,
-            widgets: ['filter', 'pager', 'scroller'],
+            widgets: ['filter', 'pager', 'stickyHeaders'],
 
             widgetOptions: {
 
                 stickyHeaders_offset: 50,
                 filter_reset : '.reset_button'
 
-
             }
 
         });
-
 
         // Puts comma separated values of checkboxes in PID_Box.
         $("form[name=Form]").on("change", "input[type=checkbox]", function () {
@@ -148,22 +146,16 @@
             }
         });
 
-
-
-        // $('.PID_Checkbox').change(function () {
-        //     $('#submit').prop("disabled", !this.checked);
-        // }).change();
-
-
-
+        // Removes checked row color on form reset
+        $('#reset').click(function() {
+            $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
+        });
 
         // Avoids having to resubmit the form on page refresh
         if (window.history.replaceState) {
             window.history.replaceState(null, null, window.location.href);
         }
 
-
     });
-
 
 }(window.jQuery, window, document));

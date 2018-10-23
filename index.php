@@ -15,6 +15,7 @@ else
 {
     $QuickDeleter->Display_Page();  // Display_Projects_Table
 }
+
 ?>
 
 

@@ -21,14 +21,6 @@ use REDCap;
             ?>
             <script>
 
-                    // Removes checked row color on form reset
-                    function Reset() {
-                        $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
-
-                    }
-
-
-
 
 
             </script>
@@ -317,7 +309,7 @@ use REDCap;
                 <table id='Submit_Table'>
                     <tr>
                         <td>
-                            <input class="reset_button" type="reset" name="reset" id="reset" onclick="Reset()">
+                            <input class="reset_button" type="reset" name="reset" id="reset" >
                         </td>
                         <td>
                             <button class="submit_button" id='submit' name='submit'>Submit</button>
