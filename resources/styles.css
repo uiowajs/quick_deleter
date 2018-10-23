@@ -24,8 +24,6 @@
 
 
 
-
-
 body {
     background-color: #3d3d3d;
 
@@ -42,6 +40,7 @@ table#Submit_Table {
     color:black;
     /*max-width:80%;*/
    }
+
 
 input[type=checkbox]
 {

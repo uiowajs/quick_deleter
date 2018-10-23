@@ -14,13 +14,27 @@ use REDCap;
     class QuickDeleter extends AbstractExternalModule
     {
 
-
-
-
-        //  Displays header, home page, and table.  Contains javascript
+        //  Displays header, home page, and table
         public function Display_Page()
         {
 
+            ?>
+            <script>
+
+                    // Removes checked row color on form reset
+                    function Reset() {
+                        $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
+
+                    }
+
+
+
+
+
+            </script>
+
+
+            <?php
             if(SUPER_USER == 1) {
 
                 // Display page header
@@ -194,12 +208,10 @@ use REDCap;
                     WHERE a.project_id IN (" . $qMarks . ")  
                     GROUP BY a.project_id
                     ORDER BY a.project_id ASC
-                        "
+                    "
                 );
 
             ?>
-
-
 
             <form name="Form" id="Form" action="<?= $this->getUrl("index.php") ?>" method="POST">
             <?php
@@ -247,151 +259,12 @@ use REDCap;
                 while ($row = db_fetch_assoc($Result))  // $sqlGetAllProjects
                 {
 
-
-
                     $this->Build_HTML_Table($row, $protocol);
                     }  // End while loop for My/All projects
                 }
 
                     // Logs when a super user accesses quick deleter
                     //REDCap::logEvent("Super user, " . USERID . ", accessed the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
-
-                    ?>
-
-                    <script type="text/javascript">
-
-                        // Puts comma separated values of checkboxes in PID_Box.
-                        $("form[name=Form]").on("change", "input[type=checkbox]", function () {
-                            var values = $.map($("input[type=checkbox]:checked"), function (pid) {
-                                return pid.value;
-                            });
-                            $("form[name=Form]").find("input[id=PID_Box]").val(values);
-                        });
-
-                        // Highlights all rows when check all box checked
-                        $(document).ready(function () {
-                            $("#check_all").on('change', function () {
-                                var PID_Checkboxes = $(".PID_Checkbox");
-                                // console.log($(this));
-                                PID_Checkboxes.each(function () {
-
-                                    // console.log($(this).checked);
-                                    if ($(this).is(':checked'))
-
-                                    // console.log($(this).attr('id'));
-                                        if ($(this).prop('id') === '0')
-                                        // console.log($(this).attr('id'));
-                                            $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-
-                                        else
-                                        // console.log($(this).attr('id'));
-                                            $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                                    else
-                                    // console.log("Hi");
-                                        $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                                });
-                            })
-                        });
-
-                        //  Highlight row when box checked
-                        $(".PID_Checkbox").on('change', function () {
-                            if ($(this).is(':checked'))
-                            // console.log($(this).attr('id'));
-                                if ($(this).prop('id') === '0')
-                                // console.log($(this).attr('id'));
-                                    $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                                else
-                                // console.log($(this).attr('id'));
-                                    $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                            else
-                            // console.log("Hi");
-                                $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
-                        });
-
-                        // Displays projects set for delete and restore on submit confirmation
-                        $('#submit').click(function() {
-
-                            // Finds if project was already set for delete or not
-                            var Delete_Flagged = $("input:checkbox:checked", "#Projects_Table").map(function() {
-                                return $(this).prop('id');
-                            }).get();
-
-                            // Gets title for selected projects
-                            var Selected_Projects = $("input:checkbox:checked", "#Projects_Table").map(function() {
-                                return $(this).parent().parent().find('td:eq(2)').text();
-                            }).get();
-
-                            // Removes spaces before and after title in array element
-                            Selected_Projects = Selected_Projects.map(function (el) {
-                                return el.trim();
-                            });
-
-                            //  Creates object with project title as key and delete flag as value
-                            var Combined_Array = {};
-                            for (var i = 0; i < Selected_Projects.length; i++) {
-                              Combined_Array[Selected_Projects[i]] = Delete_Flagged[i];
-                            }
-
-                            // Create arrays and variables
-                            var Delete_Projects = [];
-                            var Restore_Projects = [];
-                            var Delete = "";
-                            var Restore = "";
-                            var Line_Breaks = "";
-
-                            // Get value (delete flag) of object key, checks if 0 or 1, puts project title in array
-                            for(key in Combined_Array) {
-                                if(Combined_Array.hasOwnProperty(key)) {
-                                    var value = Combined_Array[key];
-                                    if (value === "0") {
-                                        // console.log(value);
-                                        // console.log("Deleting");
-                                        Delete_Projects = Delete_Projects.concat(key);
-                                        if (Delete_Projects.length === 0) {
-                                            Delete = "";
-                                            Line_Breaks = "";
-                                        }
-                                        else {
-                                            Delete = "DELETE:\n";
-                                            Line_Breaks = "\n\n";
-                                        }
-                                    } else {
-                                        // console.log(value);
-                                        // console.log("Restoring");
-                                        Restore_Projects = Restore_Projects.concat(key);
-                                        if(Restore_Projects.length === 0) {
-                                            Restore = "";
-                                        }
-                                        else {
-                                            Restore = "RESTORE:\n"
-                                        }
-                                    }
-                                }
-                            }
-
-                            // Displays each project title on new line
-                            Delete_Projects = Delete_Projects.join("\n");  // Prints each array element on new line
-                            Restore_Projects = Restore_Projects.join("\n");  // Prints each array element on new line
-
-                            // Confirmation dialog popup on submit
-                            if(!confirm("Confirm that the following projects should be modified: \n\n" +
-                                Delete + Delete_Projects + Line_Breaks + Restore + Restore_Projects)
-                            ) return false;
-                        });
-
-                        // Removes checked row color on form reset
-                        function Clear_Row_Styling() {
-                            $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
-                        }
-
-                        // Avoids having to resubmit the form on page refresh
-                        if (window.history.replaceState) {
-                            window.history.replaceState(null, null, window.location.href);
-                        }
-
-                    </script>
-
-            <?php
 
                 }  // End if(SUPER_USER == 1)
                 else {
@@ -444,13 +317,13 @@ use REDCap;
                 <table id='Submit_Table'>
                     <tr>
                         <td>
-                            <input class="reset_button" type="reset" name="reset" id="reset" onclick="Clear_Row_Styling()">
+                            <input class="reset_button" type="reset" name="reset" id="reset" onclick="Reset()">
                         </td>
                         <td>
                             <button class="submit_button" id='submit' name='submit'>Submit</button>
                         </td>
                         <td>
-                            <input id='PID_Box' type='text' name='PID' hidden readonly>
+                            <input id='PID_Box' type='text' name='PID' onchange='Disable_Submit_Button()' hidden readonly>
                         </td>
                     </tr>
                 </table>
@@ -611,9 +484,11 @@ use REDCap;
                 if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
                 {
                     $Row_Color = "style=\"background-color: rgba(0, 200, 0, 0.1);\"";
+                    $Action = "Deleting";
 //                 $Flagged = 0;
                 } else {
                     $Row_Color = "style=\"background-color: rgba(200, 0, 0, 0.1);\"";
+                    $Action = "Restoring";
 //                 $Flagged = 1;
                 }
                 ?>
@@ -657,7 +532,6 @@ use REDCap;
                 <td align='center' class="color" <?php echo $Row_Color ?>>
                     <?php echo $row['New Final Delete Date']; ?>
                 </td>
-
                 <?php ;
                 ?>
             </tr>
