@@ -8,6 +8,8 @@ use DateTimeRC;
 use Project;
 use REDCap;
 
+
+
 //  Session for returning submitted json/csv after deleting/restoring project.
     session_start();
 
@@ -18,15 +20,6 @@ use REDCap;
         public function Display_Page()
         {
 
-            ?>
-            <script>
-
-
-
-            </script>
-
-
-            <?php
             if(SUPER_USER == 1) {
 
                 // Display page header
@@ -36,7 +29,7 @@ use REDCap;
                     <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
 
                     <h1 style="text-align: center; padding-top:40px; padding-bottom:5px; color:white;" class="Main_Header">
-                        <a href="<?php echo "http://" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index"; ?>">Quick Deleter </a>
+                        <a href="<?php echo "//" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index"; ?>">Quick Deleter </a>
                     </h1>
 
                     <table id="Pages_Table">
@@ -52,7 +45,7 @@ use REDCap;
                                 <button class="Button_Link" type="submit" id="Custom_Page" name="Custom_Page">Custom</button>
                             </td>
                             <td>
-                                <input id="Custom_Box" class="Button_Box" type='text' name='Custom_Box' value="">
+                                <input id="Custom_Box" class="Button_Box" type='text' name='Custom_Box' value="" placeholder="Enter json or csv">
                             </td>
                             </form>
                         </tr>
@@ -94,7 +87,6 @@ use REDCap;
                 <script src="<?= $this->getUrl("/QuickDeleter.js") ?>"></script>
                 <?php
 
-                $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
                 $Parsed_Custom = $this->Parse_Custom();
                 $Parsed_Array = explode(",", $Parsed_Custom);
                 $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
@@ -252,8 +244,8 @@ use REDCap;
                 {
 
                     $this->Build_HTML_Table($row, $protocol);
-                    }  // End while loop for My/All projects
-                }
+                }  // End while loop for My/All projects
+            }
 
                     // Logs when a super user accesses quick deleter
                     //REDCap::logEvent("Super user, " . USERID . ", accessed the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
@@ -311,11 +303,34 @@ use REDCap;
                         <td>
                             <input class="reset_button" type="reset" name="reset" id="reset" >
                         </td>
+
+                        <?php
+
+                        if($this->getSystemSetting("restore-checkboxes") && $this->getSystemSetting("delete-checkboxes")) {
+                            ?>
                         <td>
                             <button class="submit_button" id='submit' name='submit'>Submit</button>
                         </td>
+                        <?php
+                        } elseif($this->getSystemSetting("restore-checkboxes") && !self::getSystemSetting("delete-checkboxes")) {
+                            ?>
                         <td>
-                            <input id='PID_Box' type='text' name='PID' onchange='Disable_Submit_Button()' hidden readonly>
+                            <button class="submit_button" id='submit' name='submit'>Restore</button>
+                        </td>
+                        <?php
+                        }
+                        elseif(!self::getSystemSetting("restore-checkboxes") && $this->getSystemSetting("delete-checkboxes")) {
+                            ?>
+                        <td>
+                            <button class="submit_button" id='submit' name='submit'>Delete</button>
+                        </td>
+                        <?php
+                        }
+
+                        ?>
+
+                        <td>
+                            <input id='PID_Box' type='text' name='PID' hidden readonly>
                         </td>
                     </tr>
                 </table>
@@ -354,13 +369,27 @@ use REDCap;
                      <thead>
                         <tr>
                             <th data-sorter="false" data-filter="false"></th> <?php
-                    } elseif ($tab == 2) {
-                        ?>
-                    <thead>
-                        <tr>
+                    } elseif ($tab == 2 ) {
+
+
+                         if(self::getSystemSetting('restore-checkboxes') || self::getSystemSetting('delete-checkboxes')) {
+                             ?>
+                            <thead>
+                            <tr>
                             <th data-sorter="false" style="text-align:center" data-filter="false"><input name="check_all" id="check_all" type="checkbox"></th> <?php
-                    }
-                    ?>
+
+                         }
+                         else {
+                             ?>
+                                                     <thead>
+                            <tr>
+                            <th data-sorter="false" data-filter="false"></th>
+                             <?php
+                         }
+                         }
+
+                        ?>
+
                             <th style="text-align:center"><b>PID</b></th>
                             <th style="text-align:center"><b>Project Name</b></th>
                             <th style="text-align:center"><b>Purpose</b></th>
@@ -368,10 +397,24 @@ use REDCap;
                             <th style="text-align:center"><b>Records</b></th>
                             <th style="text-align:center"><b>Users</b></th>
                             <th style="text-align:center"><b>Created</b></th>
-<!--                            <th style="text-align:center"><b>Last Event Date</b></th>-->
-                            <th style="text-align:center"><b>Days Since Event</b></th>
-                            <th style="text-align:center"><b>Delete Flagged</b></th>
+                            <th style="text-align:center"><b>Last Event</b></th>
+<!--                            <th style="text-align:center"><b>Days Since Event</b></th>-->
+                            <th style="text-align:center"><b>Deleted</b></th>
                             <th style="text-align:center"><b>Final Delete</b></th>
+
+                            <?php
+
+                            if(self::getSystemSetting('hide-action-column') || !self::getSystemSetting('restore-checkboxes') || !self::getSystemSetting('delete-checkboxes')) {
+
+                            }
+                            else {
+
+                                ?>
+                                <th data-sorter="false" data-filter="false" style="text-align:center"><b>Action</b></th>
+                                <?php
+                            }
+                             ?>
+
                             <!--                                <th style="text-align:center"><b>Days Until Delete</b></th>-->
                         </tr>
                     </thead>
@@ -440,7 +483,6 @@ use REDCap;
             foreach ($userIDlist as $index=>$userID)
             {
                 $formattedUsername = $userID;
-
                 $formattedUsername = $this->Username_Links($formattedUsername);
 
                 array_push($formattedUsers, $formattedUsername . ($index < count($userIDlist) - 1 ? '<span class=\'hide-in-table\'>, </span>' : '')
@@ -454,8 +496,10 @@ use REDCap;
 
         // Creates username link that goes to user page in control center
         public function Username_Links($userID) {
-                    $urlString =
-            sprintf("https://%s%sControlCenter/view_users.php?username=%s",  // Browse User Page
+
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
+
+            $urlString = sprintf($protocol . "%s%sControlCenter/view_users.php?username=%s",  // Browse User Page
                 SERVER_NAME,
                 APP_PATH_WEBROOT,
                 $userID);
@@ -468,67 +512,173 @@ use REDCap;
         }
 
         // Builds project table
-        public function Build_HTML_Table($row, $protocol) {
+        public function Build_HTML_Table($row) {
             ?>
 
-            <tr id="<?php echo $row['New Date Deleted']; ?>"> <?php ;
+            <tr id="<?php echo $row['New Date Deleted']; ?>">
+
+
+            <?php ;
+
+            if ($row['New Date Deleted'] == "") {
+                if($this->getSystemSetting("row-colors")) {
+                    $Row_Class = "Active_Row_Colored";
+                } else {
+                    $Row_Class = "Active_Row_Uncolored";
+                }
+            } else {
+                if($this->getSystemSetting("row-colors")) {
+                    $Row_Class = "Deleted_Row_Colored";
+                } else {
+                    $Row_Class = "Deleted_Row_Uncolored";
+                }
+            }
 
                 if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
                 {
-                    $Row_Color = "style=\"background-color: rgba(0, 200, 0, 0.1);\"";
-                    $Action = "Deleting";
-//                 $Flagged = 0;
-                } else {
-                    $Row_Color = "style=\"background-color: rgba(200, 0, 0, 0.1);\"";
-                    $Action = "Restoring";
-//                 $Flagged = 1;
-                }
+
+                    if($this->getSystemSetting("delete-checkboxes")) {
                 ?>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
+
+                        <td align='center' class="<?php echo $Row_Class; ?>">
+                            <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row['project_id']; ?>>
+                        </td>
+
+                <?php
+
+                    }
+                    else {
+                ?>
+                <td align='center' class="<?php echo $Row_Class; ?>">
+                <form name="Delete_Row_Form" id="Delete_Row_Form" action="" method="POST" >
+                    <button id="Delete_PID_Button_<?php echo $row['project_id']; ?>" type='submit' name="Delete_PID_Button" value=<?php echo $row['project_id']; ?>>Delete</button>
+                    </form>
+                </td>
+
+                <?php
+
+                    }
+
+                } else {
+
+                    if($this->getSystemSetting("restore-checkboxes")) {
+                        ?>
+                <td align='center' class="<?php echo $Row_Class; ?>">
                     <input class="PID_Checkbox" id="<?php echo $row['Flagged']; ?>" type='checkbox' name="Select_Project" value=<?php echo $row['project_id']; ?>>
                 </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "ControlCenter/edit_project.php?project=" . $row['project_id']; ?>"><?php echo $row['project_id']; ?></a>
+                <?php
+                    }
+                    else {
+                ?>
+                <td align='center' class="<?php echo $Row_Class; ?>">
+                <form name="Restore_Row_Form" id="Restore_Row_Form" action="" method="POST" >
+                    <button id="Restore_PID_Button_<?php echo $row['project_id']; ?>" type='submit' name="Restore_PID_Button" value=<?php echo $row['project_id']; ?>>Restore</button>
+                    </form>
                 </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['app_title']; ?> </a>
+
+                <?php
+                    }
+
+                }
+                ?>
+
+                <td align='center' class="<?php echo $Row_Class; ?>">
+                    <a href="<?php echo "//" . SERVER_NAME . APP_PATH_WEBROOT . "ControlCenter/edit_project.php?project=" . $row['project_id']; ?>" target="_blank"> <?php echo $row['project_id']; ?></a>
                 </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
+                <td align='center' class="<?php echo $Row_Class; ?>">
+                    <a href="<?php echo "//" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/index.php?pid=" . $row['project_id']; ?>" target="_blank" > <?php echo $row['app_title']; ?> </a>
+                </td>
+                <td align='center' class="<?php echo $Row_Class; ?>">
                     <?php echo $row['Purpose']; ?>
                 </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/other_functionality.php?pid=" . $row['project_id']; ?>" ><?php echo $row['Statuses']; ?></a>
+                <td align='center' class="<?php echo $Row_Class; ?>">
+                    <a href="<?php echo "//" . SERVER_NAME . APP_PATH_WEBROOT . "ProjectSetup/other_functionality.php?pid=" . $row['project_id']; ?>" target="_blank" ><?php echo $row['Statuses']; ?></a>
                 </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>"> <?php echo $row['record_count']; ?></a>
+                <td align='center' class="<?php echo $Row_Class; ?>">
+                    <a href="<?php echo "//" . SERVER_NAME . APP_PATH_WEBROOT . "DataExport/index.php?pid=" . $row['project_id'] . "&report_id=ALL"; ?>" target="_blank" > <?php echo $row['record_count']; ?></a>
                 </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
+                <td align='center' class="<?php echo $Row_Class; ?>">
                    <?php
 
                     echo $this->Format_Usernames($row);
 
                     ?>
                 </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
+                <td align='center' class="<?php echo $Row_Class; ?>">
                     <?php echo $row['New Creation Time']; ?>
                 </td>
-             <!--   <td align='center' class="color" <?php //echo $Row_Color ?>>
-                    <a href="<//?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php// echo $row['New Last Event']; ?></a>
-                </td>  -->
-                <td align='center' class="color" <?php echo $Row_Color ?>>
-                    <a href="<?php echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['Days Since Last Event']; ?></a>
+               <td align='center' class="<?php echo $Row_Class; ?>">
+                    <a href="<?php echo "//" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['New Last Event']; ?></a>
                 </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
+<!--                <td align='center' class="color" --><?php //echo $Row_Color ?><!-->
+<!--                    <a href="--><?php //echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?><!--" target="_blank" > --><?php //echo $row['Days Since Last Event']; ?><!--</a>-->
+<!--                </td>-->
+                <td align='center' class="<?php echo $Row_Class; ?>">
                     <?php echo $row['New Date Deleted']; ?>
                 </td>
-                <td align='center' class="color" <?php echo $Row_Color ?>>
+                <td align='center' class="<?php echo $Row_Class; ?>">
                     <?php echo $row['New Final Delete Date']; ?>
+                </td>
+                <?php
+
+                if(self::getSystemSetting('hide-action-column') || !self::getSystemSetting('restore-checkboxes') || !self::getSystemSetting('delete-checkboxes')) {
+
+
+
+                }
+                else {
+                ?>
+
+                <td align='center' id="Row_Action" class="<?php echo $Row_Class; ?>">
+                  <?php
+                    }
+                    ?>
                 </td>
                 <?php ;
                 ?>
+
             </tr>
+
             <?php
+
+            if(isset($_POST['Restore_PID_Button'])) {
+                $this->Restore_Individual($_POST['Restore_PID_Button']);
+            }
+
+           if(isset($_POST['Delete_PID_Button'])) {
+                $this->Delete_Individual($_POST['Delete_PID_Button']);
+            }
+
+
+        }  // End Build_HTML_Table();
+
+        public function Restore_Individual($PID) {
+
+                db_query(
+                "
+                UPDATE redcap_projects
+                SET date_deleted = NULL
+                WHERE project_id = '".$PID."'
+                ");
+
+            header("Location: {$_SERVER['HTTP_REFERER']}");
+
+
         }
+
+                public function Delete_Individual($PID) {
+
+          db_query(
+                "
+                UPDATE redcap_projects
+                SET date_deleted = '" . NOW . "'
+                WHERE project_id = '".$PID."'
+                ");
+
+          header("Location: {$_SERVER['HTTP_REFERER']}");
+
+                }
+
 
         // This function is called on form submit.  Gets pre values, executes update query, gets post values, adds project update to REDCap Activity Log.
         public function Submit()
@@ -572,10 +722,10 @@ use REDCap;
                         if ($Post_Value['project_id'] == $Pre_Value['project_id']) {
                             if ($Post_Value != $Pre_Value) {
                                 if ($Post_Value['date_deleted'] == NULL) {
-                                    REDCap::logEvent("Project restored via Quick Deleter by " . USERID . "", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
+                                    REDCap::logEvent("Project restored via Quick Deleter", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
                                 }  // End of if (date_delete == NULL)
                                 else {
-                                    REDCap::logEvent("Project deleted via Quick Deleter by " . USERID . "", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
+                                    REDCap::logEvent("Project deleted via Quick Deleter", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
                                 }  // End of else (date_deleted != NULL)
                             }  // End of if ($Post_Value == $Pre_Value)
                             else {
@@ -602,22 +752,37 @@ use REDCap;
         public function Get_PID()
         {
             $PID_Box = $_POST['PID'];
+
             return $PID_Box;
         }  // End of Get_PID()
 
         // Gets value of date_deleted.  Used for both pre and post values
         public function Get_Values()
         {
+
+            global $conn;
+            if (!isset($conn)) {
+                db_connect(false);
+            }
+
+            $PID_Array = explode(",", $this->Get_PID());
+            $qMarks = str_repeat('?,', count($PID_Array) - 1) . '?';
+            $Get_Integers = explode(",", $this->Get_PID());
+            $Integers = join(array_pad(array(), count($Get_Integers), "i"));
+
             $sql_Get_Values = "
             SELECT project_id, date_deleted
             FROM redcap_projects
-            WHERE project_id IN (" . $this->Get_PID() . ")
+            WHERE project_id IN (" . $qMarks . ")
             ";
 
-            $sql = db_query($sql_Get_Values);
+            $stmt = $conn->prepare($sql_Get_Values);
+            $stmt->bind_param($Integers, ...$PID_Array);
+            $stmt->execute();
+            $Get_Result = $stmt->get_result();
 
             $Results = array();
-            while ($Values = db_fetch_assoc($sql)) {
+            while ($Values = $Get_Result->fetch_assoc()) {
                 $Results[] = $Values;
             }
             return $Results;

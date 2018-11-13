@@ -41,6 +41,12 @@ table#Submit_Table {
     /*max-width:80%;*/
    }
 
+.tablesorter-headerRow .tablesorter-header-inner {
+    font-family:"Open Sans", Helvetica;
+    font-size: 14px;
+    /*color:red;*/
+}
+
 
 input[type=checkbox]
 {
@@ -55,7 +61,7 @@ input[type=checkbox]
 }
 
 .Report_Tabs {
- 
+
     color:white;
 }
 
@@ -83,7 +89,7 @@ table#Links_Table, #Links_Table tr, #Links_Table td {
 
 #pagecontainer
 {
-    max-width: 80%;
+    max-width: 85%;
     background-color: #3d3d3d;
 
 }
@@ -93,13 +99,12 @@ table#Links_Table, #Links_Table tr, #Links_Table td {
     font-size:12px;
 }
 
-.tablesorter a:link, .tablesorter a:visited, .tablesorter a:hover, .tablesorter a:active {
-    text-decoration: none;
-    color:Black;
-    font-family: "Open Sans", Helvetica;
-    font-size: 14px;
+/*.tablesorter a:link, .tablesorter a:visited, .tablesorter a:hover, .tablesorter a:active {*/
+    /*text-decoration: none;*/
+    /*font-family: "Open Sans", Helvetica;*/
+    /*font-size: 14px;*/
 
-}
+/*}*/
 
 .reset_button {
     margin-right: 5px;
@@ -143,7 +148,7 @@ h2 {
 }
 
 .tablesorter-blue thead td {
-    /*background-color:#565656;*/
+    /*background-color:#a2a2a2
 
 }
 
@@ -152,8 +157,9 @@ h2 {
     /*background-color:#565656;*/
 
 }
+
 .tablesorter-filter-row td {
-    /*background-color:#565656;*/
+    background-color:#a2a2a2 !important;
 
 }
 
@@ -161,6 +167,7 @@ h2 {
     color:black;
     font-weight: bold;
     font-size: 14px;
+    background-color:#a2a2a2;
 
 }
 
@@ -189,7 +196,55 @@ h2 {
     color:black;
 }
 
-.color a:link:hover{
+
+.Deleted_Row_Colored {
+    background-color: rgba(200, 0, 0, 0.1) !important;
+
+}
+
+.Deleted_Row_Colored a {
+    color: black !important;
+
+}
+
+
+.Active_Row_Colored {
+    background-color: rgba(0, 200, 0, 0.1) !important;
+
+}
+
+.Active_Row_Colored a {
+    color: black !important;
+
+}
+
+.Active_Row_Uncolored, .Active_Row_Uncolored a {
+    color:Black;
+    text-decoration: none;
+    font-family: "Open Sans", Helvetica;
+    font-size: 14px;
+}
+
+.Active_Row_Uncolored, .Deleted_Row_Uncolored  {
+    background-color: rgba(210, 210, 210, 0.3) !important;
+
+}
+
+.Active_Row_Uncolored a:hover, .Deleted_Row_Uncolored a:hover {
     text-decoration: underline;
+
+}
+
+.Deleted_Row_Uncolored, .Deleted_Row_Uncolored a, .tablesorter-blue .Deleted_Row_Uncolored {
+    color: #a20000;
+}
+
+.Select_Restore_Row, .tablesorter-blue .Select_Restore_Row {
+    background-color:rgba(0, 255, 0, 1);
+  }
+
+.tablesorter-blue .Select_Restore_Row td, .Select_Restore_Row a {
+    color:black;
+    font-weight:bold;
 }
 

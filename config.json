@@ -21,7 +21,7 @@
     "control-center": [
       {
         "name": "Quick Deleter",
-        "icon": "user_add2",
+        "icon": "table",
         "url": "index.php"
       }
     ]
@@ -29,10 +29,30 @@
 
   "system-settings": [
     {
-      "key": "from-email-address",
-      "name": "Email address to send user access notification from",
-      "type": "text",
-      "required": true
+      "key": "hide-action-column",
+      "name": "Hide action column",
+      "type": "checkbox",
+      "required": false
+    },
+
+    {
+      "key": "restore-checkboxes",
+      "name": "Replace 'Restore' buttons with checkboxes",
+      "type": "checkbox",
+      "required": false
+    },
+
+    {
+      "key": "delete-checkboxes",
+      "name": "Replace 'Delete' buttons with checkboxes",
+      "type": "checkbox",
+      "required": false
+    },
+    {
+      "key": "row-colors",
+      "name": "Color rows on page load.  Green for active, red for deleted",
+      "type": "checkbox",
+      "required": false
     }
   ]
 }

@@ -3,13 +3,15 @@
 (function($, window, document) {
     $(document).ready(function() {
 
+
+
         // Tablesorter
         $("#Projects_Table").tablesorter({
 
             theme: 'blue',
             widthFixed: true,
             usNumberFormat: true,
-            sortReset: false,
+            sortReset: true,
             sortRestart: false,
             widgets: ['filter', 'pager', 'stickyHeaders'],
 
@@ -19,6 +21,8 @@
                 filter_reset : '.reset_button'
 
             }
+
+
 
         });
 
@@ -47,10 +51,10 @@
 
                         else
                         // console.log($(this).attr('id'));
-                            $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                            $(this).closest('tr').addClass("Select_Restore_Row");
                     else
                     // console.log("Hi");
-                        $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                        $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'}).removeClass("Select_Restore_Row");
                 });
             })
         });
@@ -61,25 +65,25 @@
             // console.log($(this).attr('id'));
                 if ($(this).prop('id') === '0')
                 // console.log($(this).attr('id'));
-                    $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                    $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.8)").css({fontWeight: this.checked ? 'bold' : 'normal'}).css("color", "black");
                 else
                 // console.log($(this).attr('id'));
-                    $(this).closest('tr').css("backgroundColor", "rgba(0, 255, 0, 1)").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                    $(this).closest('tr').addClass("Select_Restore_Row");
             else
             // console.log("Hi");
-                $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'});
+                $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'}).removeClass("Select_Restore_Row");
         });
 
         // Displays projects set for delete and restore on submit confirmation
         $('#submit').click(function() {
 
             // Finds if project was already set for delete or not
-            var Delete_Flagged = $("input:checkbox:checked", "#Projects_Table").map(function () {
+            var Delete_Flagged = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
                 return $(this).prop('id');
             }).get();
 
             // Gets title for selected projects
-            var Selected_Projects = $("input:checkbox:checked", "#Projects_Table").map(function () {
+            var Selected_Projects = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
                 return $(this).parent().parent().find('td:eq(2)').text();
             }).get();
 
@@ -132,24 +136,58 @@
             }
 
             // Displays each project title on new line
-            Delete_Projects = Delete_Projects.join("\n");  // Prints each array element on new line
-            Restore_Projects = Restore_Projects.join("\n");  // Prints each array element on new line
+            Delete_Projects = Delete_Projects.join("\n");
+            Restore_Projects = Restore_Projects.join("\n");
+            // console.log(Restore_Projects);
 
-            // Confirmation dialog popup on submit
+            // Confirmation dialog popup on submit.
+            // If no projects are being modified, reject submit
             if(Delete_Projects.length === 0 && Restore_Projects.length === 0) {
                 return false;
             }
             else {
+                // Display project titles in confirmation box.  If cancel, reject submit
                 if (!confirm("Confirm that the following projects should be modified: \n\n" +
                     Delete + Delete_Projects + Line_Breaks + Restore + Restore_Projects)
                 ) return false;
             }
         });
 
-        // Removes checked row color on form reset
-        $('#reset').click(function() {
-            $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
+        //  Adds DELETE or RESTORE to Action column on box checked
+        $('.PID_Checkbox').on('click', function() {
+            if ($(this).is(':checked'))
+                if ($(this).prop('id') === '0')
+                    $(this).closest("tr").find("td#Row_Action").text("DELETE");
+                else
+                    $(this).closest("tr").find("td#Row_Action").text("RESTORE");
+            else
+                $(this).closest("tr").find("td#Row_Action").text("");
+
         });
+
+
+        $("#check_all").on('change', function () {
+            var PID_Checkboxes = $(".PID_Checkbox");
+            // console.log($(this));
+            PID_Checkboxes.each(function () {
+                if ($(this).is(':checked'))
+                    if ($(this).prop('id') === '0')
+                        $(this).closest("tr").find("td#Row_Action").text("DELETE");
+                    else
+                        $(this).closest("tr").find("td#Row_Action").text("RESTORE");
+                else
+                    $(this).closest("tr").find("td#Row_Action").text("");
+            });
+        });
+
+        // Removes checked row color, column filter, and action on form reset
+        $('#reset').on('click', function() {
+            $('tr').css("backgroundColor", "").css({fontWeight: 'normal'});
+            $('tr').closest('tr').removeClass("Select_Restore_Row");
+            $("td#Row_Action").text("");
+            $('#Projects_Table').trigger('sortReset');
+        });
+
 
         // Avoids having to resubmit the form on page refresh
         if (window.history.replaceState) {
