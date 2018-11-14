@@ -793,29 +793,82 @@ use REDCap;
 
         public function Restore_Individual($PID) {
 
+            if(SUPER_USER == 1) {
 
+                $Pre_Value = $this->Get_Value_Buttons($PID);
 
+                global $conn;
+                if (!isset($conn)) {
+                    db_connect(false);
+                }
 
-                db_query(
+                $sql =
                 "
                 UPDATE redcap_projects
                 SET date_deleted = NULL
-                WHERE project_id = '".$PID."'
-                ");
+                WHERE project_id = ?
+                ";
+
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $PID);
+                $stmt->execute();
+
+
+                $Post_Value = $this->Get_Value_Buttons($PID);
+
+                if($Pre_Value != $Post_Value) {
+//                    if ($Post_Value['date_deleted'] == NULL) {
+                        REDCap::logEvent("Project restored via Quick Deleter", NULL, NULL, NULL, NULL, $PID);
+//                    }  // End of if (date_delete == NULL)
+
+                }
+
+
+
 
             header("Location: {$_SERVER['HTTP_REFERER']}");
 
 
+                }
         }
+
 
                 public function Delete_Individual($PID) {
 
-          db_query(
+                $Pre_Value = $this->Get_Value_Buttons($PID);
+
+                global $conn;
+                if (!isset($conn)) {
+                    db_connect(false);
+                }
+
+
+
+
+          $sql =
                 "
                 UPDATE redcap_projects
                 SET date_deleted = '" . NOW . "'
-                WHERE project_id = '".$PID."'
-                ");
+                WHERE project_id = ?
+                ";
+
+
+            $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $PID);
+                $stmt->execute();
+
+
+                $Post_Value = $this->Get_Value_Buttons($PID);
+
+                if($Pre_Value != $Post_Value) {
+//                    if ($Post_Value['date_deleted'] == NULL) {
+                        REDCap::logEvent("Project deleted via Quick Deleter", NULL, NULL, NULL, NULL, $PID);
+//                    }  // End of if (date_delete == NULL)
+
+                }
+
+
+
 
           header("Location: {$_SERVER['HTTP_REFERER']}");
 
@@ -823,7 +876,7 @@ use REDCap;
 
 
         // This function is called on form submit.  Gets pre values, executes update query, gets post values, adds project update to REDCap Activity Log.
-        public function Submit()
+        public function Submit_Checkboxes()
         {
             if(SUPER_USER == 1) {
 
@@ -888,7 +941,9 @@ use REDCap;
                     echo "This function is for super users only";
                     echo "<br>";
             }  // End super user check
-        }  // End of Submit()
+        }  // End of Submit_Checkboxes()
+
+
 
         // Gets PIDs for rows that were checked
         public function Get_PID()
@@ -929,6 +984,36 @@ use REDCap;
             }
             return $Results;
         }  // End Get_Values()
-    }  // End QuickDeleter class
+
+        public function Get_Value_Buttons($PID) {
+
+            global $conn;
+            if (!isset($conn)) {
+                db_connect(false);
+            }
+
+            $sql_Get_Values = "
+            SELECT project_id, date_deleted
+            FROM redcap_projects
+            WHERE project_id = ?
+            ";
+
+            $stmt = $conn->prepare($sql_Get_Values);
+            $stmt->bind_param("i", $PID);
+            $stmt->execute();
+            $Get_Result = $stmt->get_result();
+
+            $Results = array();
+            while ($Values = $Get_Result->fetch_assoc()) {
+                $Results[] = $Values;
+            }
+
+            return $Results;
+
+        }
+
+
+
+}  // End class
 
 

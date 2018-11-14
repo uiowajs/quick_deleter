@@ -9,7 +9,7 @@ $QuickDeleter = new \UIOWA\QuickDeleter\QuickDeleter();
 
 if(isset($_POST['Hidden_Submit']))
 {
-    $QuickDeleter->Submit();
+    $QuickDeleter->Submit_Checkboxes();
 }
 else
 {
