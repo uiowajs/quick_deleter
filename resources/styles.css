@@ -147,16 +147,28 @@ h2 {
     font-size: 18px;
 }
 
+h3 {
+    font-size: 14px;
+}
+
 .tablesorter-blue thead td {
     /*background-color:#a2a2a2
 
 }
 
 
+
+
+
 .tablesorter-filter-row {
     /*background-color:#565656;*/
 
 }
+
+
+/*.tablesorter-blue td {*/
+    /*border: #a9a9a9 !important;*/
+/*}*/
 
 .tablesorter-filter-row td {
     background-color:#a2a2a2 !important;
@@ -203,7 +215,10 @@ h2 {
 }
 
 .Deleted_Row_Colored a {
-    color: black !important;
+    color:Black;
+    text-decoration: none;
+    font-family: "Open Sans", Helvetica;
+    font-size: 14px;
 
 }
 
@@ -214,7 +229,10 @@ h2 {
 }
 
 .Active_Row_Colored a {
-    color: black !important;
+    color:Black;
+    text-decoration: none;
+    font-family: "Open Sans", Helvetica;
+    font-size: 14px;
 
 }
 
@@ -226,7 +244,7 @@ h2 {
 }
 
 .Active_Row_Uncolored, .Deleted_Row_Uncolored  {
-    background-color: rgba(210, 210, 210, 0.3) !important;
+    background-color: #8080804d !important;
 
 }
 
@@ -246,5 +264,43 @@ h2 {
 .tablesorter-blue .Select_Restore_Row td, .Select_Restore_Row a {
     color:black;
     font-weight:bold;
+}
+
+.Delete_PID_Button {
+    background-color:#ff7272ab;
+    font-weight:bold;
+    border-color:#ff0000ab;
+}
+
+.Restore_PID_Button {
+    background-color:#9bff9b;
+    font-weight:bold;
+    border-color:#00ff00
+}
+
+#Submit_Table .submit_delete_button {
+    background:#ff7272ab;
+    border-color:#ff0000ab
+}
+
+#Submit_Table .submit_restore_button {
+    background:#9bff9b;
+    border-color:#00ff00;
+}
+
+.Restore_PID_Checkbox {
+    background:#9bff9b;
+    font-weight:bold;
+    border-color:#00ff00
+}
+
+.Delete_PID_Checkbox {
+    background:#ff7272ab !important;
+    font-weight:bold;
+    border-color:#ff0000ab;
+}
+
+.Hide_Header {
+    visibility: hidden;
 }
 

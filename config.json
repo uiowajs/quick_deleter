@@ -30,7 +30,7 @@
   "system-settings": [
     {
       "key": "hide-action-column",
-      "name": "Hide action column",
+      "name": "Hide action column when using checkboxes",
       "type": "checkbox",
       "required": false
     },
@@ -50,9 +50,22 @@
     },
     {
       "key": "row-colors",
-      "name": "Color rows on page load.  Green for active, red for deleted",
+      "name": "Row color.  Green for active, red for deleted",
+      "type": "checkbox",
+      "required": false
+    },
+    {
+      "key": "button-colors",
+      "name": "Project button color.  Green for restore, red for delete",
+      "type": "checkbox",
+      "required": false
+    },
+    {
+      "key": "submit-button-colors",
+      "name": "Submit button color when using project buttons.  Green for restore, red for delete",
       "type": "checkbox",
       "required": false
     }
+
   ]
 }

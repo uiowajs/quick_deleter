@@ -61,6 +61,16 @@ use REDCap;
                     ?>
                     <div>
                         <h2 style="text-align: center; padding-top:50px; color:white;">Quickly delete and restore projects</h2>
+
+                        <h3 style="text-align: center; padding-top:50px; color:lightgrey;">
+
+                        My projects:  Projects that the current user has permissions for</br>
+</br>
+                        Custom:  Enter comma separated project IDs or a json object from the Admin Dashboard.</br>
+
+
+</h3>
+
                     </div>
                     <?php
                 }
@@ -231,7 +241,7 @@ use REDCap;
                 // Builds HTML rows and displays sql results for submitted json and csv.
                 while ($row = $Get_Result->fetch_assoc()) {
 
-                    $this->Build_HTML_Table($row, $protocol);
+                    $this->Build_HTML_Table($row);
 
                 }  // End while loop
             }
@@ -243,7 +253,7 @@ use REDCap;
                 while ($row = db_fetch_assoc($Result))  // $sqlGetAllProjects
                 {
 
-                    $this->Build_HTML_Table($row, $protocol);
+                    $this->Build_HTML_Table($row);
                 }  // End while loop for My/All projects
             }
 
@@ -306,26 +316,54 @@ use REDCap;
 
                         <?php
 
+
+                        if($this->getSystemSetting("submit-button-colors")) {
+                            $Submit_Restore_Button_Color = "submit_restore_button";
+                        }
+                        else {
+                            $Submit_Restore_Button_Color = "";
+                        }
+
+                        if($this->getSystemSetting("submit-button-colors")) {
+                            $Submit_Delete_Button_Color = "submit_delete_button";
+                        }
+                        else {
+                            $Submit_Delete_Button_Color = "";
+                        }
+
+                        ?>
+                        <td>
+                            <button type="submit" id='Hidden_Submit' name='Hidden_Submit' hidden >Send</button>
+                        </td>
+
+                        <?php
+
+
+
                         if($this->getSystemSetting("restore-checkboxes") && $this->getSystemSetting("delete-checkboxes")) {
                             ?>
                         <td>
-                            <button class="submit_button" id='submit' name='submit'>Submit</button>
+                            <button data-toggle="modal" data-target="#Confirmation_Modal" type="button" id='send_button' name='send_button' >Submit</button>
                         </td>
                         <?php
                         } elseif($this->getSystemSetting("restore-checkboxes") && !self::getSystemSetting("delete-checkboxes")) {
                             ?>
                         <td>
-                            <button class="submit_button" id='submit' name='submit'>Restore</button>
+                            <button data-toggle="modal" data-target="#Confirmation_Modal" type="button" class="<?php echo $Submit_Restore_Button_Color ?> " id='send_button' name='send_button' data-toggle="modal" data-target="#Confirmation_Modal">Restore</button>
                         </td>
                         <?php
                         }
                         elseif(!self::getSystemSetting("restore-checkboxes") && $this->getSystemSetting("delete-checkboxes")) {
                             ?>
                         <td>
-                            <button class="submit_button" id='submit' name='submit'>Delete</button>
+                            <button data-toggle="modal" data-target="#Confirmation_Modal" type="button" class="<?php echo $Submit_Delete_Button_Color ?>" id='send_button' name='send_button' data-toggle="modal" data-target="#Confirmation_Modal">Delete</button>
                         </td>
+
+
                         <?php
                         }
+
+
 
                         ?>
 
@@ -335,6 +373,41 @@ use REDCap;
                     </tr>
                 </table>
             </div>
+
+
+
+            <!-- Confirmation Modal -->
+            <div id="Confirmation_Modal" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4 class="modal-title">Attention</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  </div>
+                  <div class="modal-body">
+                    <b>Confirm that the following projects should be modified:</b>
+                    <br/>
+                    <br/>
+                    <div id="Delete_Projects_Div">
+                    </div>
+                    <br/>
+                    <div id="Restore_Projects_Div">
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button id="Accept_Send" name="Accept_Send" type="button" class="btn btn-default" data-dismiss="modal">Accept</button>
+                    <button id="Cancel_Button" name="Cancel_Button" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+
+
+
 
             <!-- Pager -->
             <div id="pager" class="pager" align="center">
@@ -418,7 +491,19 @@ use REDCap;
                             <!--                                <th style="text-align:center"><b>Days Until Delete</b></th>-->
                         </tr>
                     </thead>
-                    <?php
+
+
+
+
+
+
+
+
+
+<?php
+
+
+
         }  // End Display_Table_Header()
 
         // Checks if custom type is json or csv
@@ -499,7 +584,7 @@ use REDCap;
 
             $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
 
-            $urlString = sprintf($protocol . "%s%sControlCenter/view_users.php?username=%s",  // Browse User Page
+            $urlString = sprintf("//" . "%s%sControlCenter/view_users.php?username=%s",  // Browse User Page
                 SERVER_NAME,
                 APP_PATH_WEBROOT,
                 $userID);
@@ -526,18 +611,42 @@ use REDCap;
                 } else {
                     $Row_Class = "Active_Row_Uncolored";
                 }
+                if($this->getSystemSetting("button-colors")) {
+               $Button_Color = "Delete_PID_Button";
+                } else {
+                    $Button_Color = "";
+                }
+//                if($this->getSystemSetting("checkbox-colors")) {
+//                $Checkbox_Color = "Delete_PID_Checkbox";
+//                } else {
+//                    $Checkbox_Color = "PID_Checkbox";
+//                }
             } else {
                 if($this->getSystemSetting("row-colors")) {
                     $Row_Class = "Deleted_Row_Colored";
                 } else {
                     $Row_Class = "Deleted_Row_Uncolored";
                 }
+                if($this->getSystemSetting("button-colors")) {
+                $Button_Color = "Restore_PID_Button";
+                } else {
+                $Button_Color = "";
+                }
+//                if($this->getSystemSetting("checkbox-colors")) {
+//                $Checkbox_Color = "Restore_PID_Checkbox";
+//                } else {
+//                    $Checkbox_Color = "PID_Checkbox";
+//                }
             }
+
+
+
 
                 if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
                 {
 
                     if($this->getSystemSetting("delete-checkboxes")) {
+
                 ?>
 
                         <td align='center' class="<?php echo $Row_Class; ?>">
@@ -551,7 +660,7 @@ use REDCap;
                 ?>
                 <td align='center' class="<?php echo $Row_Class; ?>">
                 <form name="Delete_Row_Form" id="Delete_Row_Form" action="" method="POST" >
-                    <button id="Delete_PID_Button_<?php echo $row['project_id']; ?>" type='submit' name="Delete_PID_Button" value=<?php echo $row['project_id']; ?>>Delete</button>
+                    <button class="<?php echo $Button_Color ?>" id="Delete_PID_Button_<?php echo $row['project_id'] ?>" type='submit' name="Delete_PID_Button" value=<?php echo $row['project_id']; ?>>Delete</button>
                     </form>
                 </td>
 
@@ -572,7 +681,7 @@ use REDCap;
                 ?>
                 <td align='center' class="<?php echo $Row_Class; ?>">
                 <form name="Restore_Row_Form" id="Restore_Row_Form" action="" method="POST" >
-                    <button id="Restore_PID_Button_<?php echo $row['project_id']; ?>" type='submit' name="Restore_PID_Button" value=<?php echo $row['project_id']; ?>>Restore</button>
+                    <button class="<?php echo $Button_Color ?>" id="Restore_PID_Button_<?php echo $row['project_id'] ?>" type='submit' name="Restore_PID_Button" value=<?php echo $row['project_id']; ?>>Restore</button>
                     </form>
                 </td>
 
@@ -653,6 +762,9 @@ use REDCap;
         }  // End Build_HTML_Table();
 
         public function Restore_Individual($PID) {
+
+
+
 
                 db_query(
                 "

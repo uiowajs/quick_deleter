@@ -74,8 +74,8 @@
                 $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'}).removeClass("Select_Restore_Row");
         });
 
-        // Displays projects set for delete and restore on submit confirmation
-        $('#submit').click(function() {
+        //Displays projects set for delete and restore on submit confirmation
+        $('#send_button').click(function() {
 
             // Finds if project was already set for delete or not
             var Delete_Flagged = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
@@ -136,22 +136,105 @@
             }
 
             // Displays each project title on new line
-            Delete_Projects = Delete_Projects.join("\n");
-            Restore_Projects = Restore_Projects.join("\n");
+            // Delete_Projects = Delete_Projects;
+            // Restore_Projects = Restore_Projects;
             // console.log(Restore_Projects);
+
+            if(Delete_Projects.length === 0) {
+                $("#Delete_Projects_Div").addClass("Hide_Header");
+            }
+            else {
+                $("#Delete_Projects_Div").removeClass("Hide_Header");
+            }
+            if(Restore_Projects.length === 0) {
+                $("#Restore_Projects_Div").addClass("Hide_Header");
+            }
+            else {
+                $("#Restore_Projects_Div").removeClass("Hide_Header");
+            }
+
+            // console.log(Delete_Projects.length);
+
+            // $('#Delete_Projects_Div').html( '<b id="Delete_Projects_Header">"DELETE:"</b>');
+            $('#Delete_Projects_Div').html('<b style="color:red" id="Delete_Projects_Header">DELETE:</br></b>' + '<span id="Delete_Projects_Span">' + Delete_Projects.join('</br>')+'</span>');
+            $('#Restore_Projects_Div').html('<b style="color:green" id="Restore_Projects_Header">RESTORE:</br></b>' +  '<span id="Restore_Projects_Span">' + Restore_Projects.join('</br>')+'</span>');
+
+            // $("#Delete_Projects_Span").text(Delete_Projects);
+            //
+            // $("#Restore_Projects_Span").text(Restore_Projects);
 
             // Confirmation dialog popup on submit.
             // If no projects are being modified, reject submit
-            if(Delete_Projects.length === 0 && Restore_Projects.length === 0) {
-                return false;
+            // if(Delete_Projects.length === 0 && Restore_Projects.length === 0) {
+            //     return false;
+            // }
+            // else {
+            //     // Display project titles in confirmation box.  If cancel, reject submit
+            //     if (!confirm("Confirm that the following projects should be modified: \n\n" +
+            //         Delete + Delete_Projects + Line_Breaks + Restore + Restore_Projects)
+            //     ) return false;
+            // }
+        });
+
+
+        // Submits form to delete/restore projects when "Accept" is clicked on the confirmation modal
+        $('#Accept_Send').click(function(){
+
+
+
+
+
+            $("#Hidden_Submit").click();
+
+        });
+
+
+
+
+
+        // Confirmation popup for delete/restore via button
+        $('#Projects_Table button').click(function() {
+
+            if ($(this).text() === "Delete") {
+                $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.8)").css({fontWeight: 'bold'}).css("color", "black");
+            } else {
+                // console.log($(this).attr('id'));
+                $(this).closest('tr').addClass("Select_Restore_Row");
+            }
+
+            var Get_ID = $(this).prop("id");
+
+            var Project_Title = $("#" + Get_ID).map(function () {
+                return $(this).closest('tr').find('td:eq(2)').text().trim();
+            }).get();
+
+            var Delete_Flagged = $("#" + Get_ID).map(function () {
+                return $(this).closest('tr').find('td:eq(9)').text().trim();
+            }).get();
+
+            if (Delete_Flagged[0] === "") {
+                var Action = "DELETED"
             }
             else {
-                // Display project titles in confirmation box.  If cancel, reject submit
-                if (!confirm("Confirm that the following projects should be modified: \n\n" +
-                    Delete + Delete_Projects + Line_Breaks + Restore + Restore_Projects)
-                ) return false;
+                var Action = "RESTORED"
             }
+
+            var secondsDelay = 0; //2 seconds
+            setTimeout(function() {
+                if (confirm("Confirm that the following project should be " + Action + "\n\n" + Project_Title)) {
+                    console.log("Hello")
+                }
+                else {
+                    $("#reset").click();
+                }
+            }, secondsDelay);
+
+               return false;
         });
+
+
+
+
 
         //  Adds DELETE or RESTORE to Action column on box checked
         $('.PID_Checkbox').on('click', function() {
