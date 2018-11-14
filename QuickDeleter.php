@@ -416,9 +416,7 @@ use REDCap;
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                   </div>
                   <div class="modal-body">
-                    <b>Confirm that the following project should be modified:</b>
-                    <br/>
-                    <br/>
+
                     <div id="Modify_Individual_Project_Div">
 
                     </div>

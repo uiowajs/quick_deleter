@@ -194,7 +194,23 @@
                 var Action = "RESTORED"
             }
 
-            $('#Modify_Individual_Project_Div').html('<span id="Modify_Individual_Project_Span">' + Project_Title.join('</br>')+'</span>');
+            if(Action === "DELETED") {
+                var Action_Color = "style=\"color:red\"";
+            }
+            else {
+                var Action_Color = "style=\"color:green\"";
+            }
+
+            if(Action === "DELETED") {
+                var Action_Color = Action.fontcolor("red");
+            }
+            else {
+                var Action_Color = Action.fontcolor("green");
+            }
+
+
+
+            $('#Modify_Individual_Project_Div').html('<b>Confirm that the following project should be ' + Action_Color + ':' + '<br/><br/></b>' + '<span id="Modify_Individual_Project_Span">' + Project_Title.join('</br>')+'</span>');
 
             $('#Accept_Send_Button').click(function(){
 
@@ -203,6 +219,14 @@
                 }).get();
 
                 var Submit_Button = "Restore_PID_Submit_" + Project_ID;
+
+                $("#" + Submit_Button).click();
+
+                var Project_ID = $("#" + Get_ID).map(function () {
+                    return $(this).closest('tr').find('td:eq(1)').text().trim();
+                }).get();
+
+                var Submit_Button = "Delete_PID_Submit_" + Project_ID;
 
                 $("#" + Submit_Button).click();
 
