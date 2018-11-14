@@ -101,9 +101,9 @@
             // Create arrays and variables
             var Delete_Projects = [];
             var Restore_Projects = [];
-            var Delete = "";
-            var Restore = "";
-            var Line_Breaks = "";
+            // var Delete = "";
+            // var Restore = "";
+            // var Line_Breaks = "";
 
             // Get value (delete flag) of object key, checks if 0 or 1, puts project title in array
             for (key in Combined_Array) {
@@ -113,32 +113,31 @@
                         // console.log(value);
                         // console.log("Deleting");
                         Delete_Projects = Delete_Projects.concat(key);
-                        if (Delete_Projects.length === 0) {
-                            Delete = "";
-                            Line_Breaks = "";
-                        }
-                        else {
-                            Delete = "DELETE:\n";
-                            Line_Breaks = "\n\n";
-                        }
+                        // if (Delete_Projects.length === 0) {
+                        //     // $("#Delete_Projects_Div").addClass("Hide_Header");
+                        //     // Delete = "";
+                        //     // Line_Breaks = "";
+                        // }
+                        // else {
+                        //     // $("#Delete_Projects_Div").removeClass("Hide_Header");
+                        //     // Delete = "DELETE:\n";
+                        //     // Line_Breaks = "\n\n";
+                        // }
                     } else {
                         // console.log(value);
                         // console.log("Restoring");
                         Restore_Projects = Restore_Projects.concat(key);
-                        if (Restore_Projects.length === 0) {
-                            Restore = "";
-                        }
-                        else {
-                            Restore = "RESTORE:\n"
-                        }
+                        // if (Restore_Projects.length === 0) {
+                        //     // $("#Restore_Projects_Div").addClass("Hide_Header");
+                        //     // Restore = "";
+                        // }
+                        // else {
+                        //     // $("#Restore_Projects_Div").removeClass("Hide_Header");
+                        //     // Restore = "RESTORE:\n"
+                        // }
                     }
                 }
             }
-
-            // Displays each project title on new line
-            // Delete_Projects = Delete_Projects;
-            // Restore_Projects = Restore_Projects;
-            // console.log(Restore_Projects);
 
             if(Delete_Projects.length === 0) {
                 $("#Delete_Projects_Div").addClass("Hide_Header");
@@ -153,42 +152,18 @@
                 $("#Restore_Projects_Div").removeClass("Hide_Header");
             }
 
-            // console.log(Delete_Projects.length);
-
             // $('#Delete_Projects_Div').html( '<b id="Delete_Projects_Header">"DELETE:"</b>');
             $('#Delete_Projects_Div').html('<b style="color:red" id="Delete_Projects_Header">DELETE:</br></b>' + '<span id="Delete_Projects_Span">' + Delete_Projects.join('</br>')+'</span>');
             $('#Restore_Projects_Div').html('<b style="color:green" id="Restore_Projects_Header">RESTORE:</br></b>' +  '<span id="Restore_Projects_Span">' + Restore_Projects.join('</br>')+'</span>');
 
-            // $("#Delete_Projects_Span").text(Delete_Projects);
-            //
-            // $("#Restore_Projects_Span").text(Restore_Projects);
+            // Submits form to delete/restore projects when "Accept" is clicked on the confirmation modal
+            $('#Accept_Send_Checkboxes').click(function(){
 
-            // Confirmation dialog popup on submit.
-            // If no projects are being modified, reject submit
-            // if(Delete_Projects.length === 0 && Restore_Projects.length === 0) {
-            //     return false;
-            // }
-            // else {
-            //     // Display project titles in confirmation box.  If cancel, reject submit
-            //     if (!confirm("Confirm that the following projects should be modified: \n\n" +
-            //         Delete + Delete_Projects + Line_Breaks + Restore + Restore_Projects)
-            //     ) return false;
-            // }
+
+                $("#Hidden_Submit").click();
+
+            });
         });
-
-
-        // Submits form to delete/restore projects when "Accept" is clicked on the confirmation modal
-        $('#Accept_Send').click(function(){
-
-
-
-
-
-            $("#Hidden_Submit").click();
-
-        });
-
-
 
 
 
@@ -219,17 +194,25 @@
                 var Action = "RESTORED"
             }
 
-            var secondsDelay = 0; //2 seconds
-            setTimeout(function() {
-                if (confirm("Confirm that the following project should be " + Action + "\n\n" + Project_Title)) {
-                    console.log("Hello")
-                }
-                else {
-                    $("#reset").click();
-                }
-            }, secondsDelay);
+            $('#Modify_Individual_Project_Div').html('<span id="Modify_Individual_Project_Span">' + Project_Title.join('</br>')+'</span>');
 
-               return false;
+            $('#Accept_Send_Button').click(function(){
+
+                var Project_ID = $("#" + Get_ID).map(function () {
+                    return $(this).closest('tr').find('td:eq(1)').text().trim();
+                }).get();
+
+                var Submit_Button = "Restore_PID_Submit_" + Project_ID;
+
+                $("#" + Submit_Button).click();
+
+            });
+
+            $('#Cancel_Button_Individual').click(function(){
+                $('#reset').click();
+            });
+
+
         });
 
 

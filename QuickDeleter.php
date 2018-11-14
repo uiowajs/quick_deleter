@@ -397,8 +397,36 @@ use REDCap;
                     </div>
                   </div>
                   <div class="modal-footer">
-                    <button id="Accept_Send" name="Accept_Send" type="button" class="btn btn-default" data-dismiss="modal">Accept</button>
-                    <button id="Cancel_Button" name="Cancel_Button" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button id="Accept_Send_Checkboxes" name="Accept_Send_Checkboxes" type="button" class="btn btn-default" data-dismiss="modal">Accept</button>
+                    <button id="Cancel_Button_Checkboxes" name="Cancel_Button_Checkboxes" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+                        <!-- Confirmation Modal -->
+            <div id="Confirmation_Modal_Button" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h4 class="modal-title">Attention</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  </div>
+                  <div class="modal-body">
+                    <b>Confirm that the following project should be modified:</b>
+                    <br/>
+                    <br/>
+                    <div id="Modify_Individual_Project_Div">
+
+                    </div>
+
+                  </div>
+                  <div class="modal-footer">
+                    <button id="Accept_Send_Button" name="Accept_Send_Button" type="button" class="btn btn-default" data-dismiss="modal">Accept</button>
+                    <button id="Cancel_Button_Individual" name="Cancel_Button" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                   </div>
                 </div>
 
@@ -660,9 +688,12 @@ use REDCap;
                 ?>
                 <td align='center' class="<?php echo $Row_Class; ?>">
                 <form name="Delete_Row_Form" id="Delete_Row_Form" action="" method="POST" >
-                    <button class="<?php echo $Button_Color ?>" id="Delete_PID_Button_<?php echo $row['project_id'] ?>" type='submit' name="Delete_PID_Button" value=<?php echo $row['project_id']; ?>>Delete</button>
+                    <button data-toggle="modal" data-target="#Confirmation_Modal_Button" class="<?php echo $Button_Color ?>" id="Delete_PID_Button_<?php echo $row['project_id'] ?>" type='button' name="Delete_PID_Button" value=<?php echo $row['project_id']; ?>>Delete</button>
+                    <button hidden type="submit" class="<?php echo $Button_Color ?>" id="Delete_PID_Submit_<?php echo $row['project_id'] ?>" type='button' name="Delete_PID_Button" value=<?php echo $row['project_id']; ?>>Delete</button>
                     </form>
                 </td>
+
+
 
                 <?php
 
@@ -681,7 +712,8 @@ use REDCap;
                 ?>
                 <td align='center' class="<?php echo $Row_Class; ?>">
                 <form name="Restore_Row_Form" id="Restore_Row_Form" action="" method="POST" >
-                    <button class="<?php echo $Button_Color ?>" id="Restore_PID_Button_<?php echo $row['project_id'] ?>" type='submit' name="Restore_PID_Button" value=<?php echo $row['project_id']; ?>>Restore</button>
+                    <button data-toggle="modal" data-target="#Confirmation_Modal_Button" class="<?php echo $Button_Color ?>" id="Restore_PID_Button_<?php echo $row['project_id'] ?>" type='button' name="Restore_PID_Button" value=<?php echo $row['project_id']; ?>>Restore</button>
+                    <button hidden type="submit" class="<?php echo $Button_Color ?>" id="Restore_PID_Submit_<?php echo $row['project_id'] ?>" type='button' name="Restore_PID_Button" value=<?php echo $row['project_id']; ?>>Restore</button>
                     </form>
                 </td>
 
