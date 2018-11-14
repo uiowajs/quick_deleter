@@ -244,7 +244,7 @@ h3 {
 }
 
 .Active_Row_Uncolored, .Deleted_Row_Uncolored  {
-    background-color: #e0e0e0 !important;
+    background-color: rgba(224, 224, 224, 0.62) !important;
 
 }
 
