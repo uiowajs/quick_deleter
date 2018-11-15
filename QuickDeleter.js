@@ -1,4 +1,6 @@
+var UIOWA_QuickDeleter = {};
 
+UIOWA_QuickDeleter.selectedProjectInfo = {};
 
 (function($, window, document) {
     $(document).ready(function() {
@@ -177,70 +179,45 @@
                 $(this).closest('tr').addClass("Select_Restore_Row");
             }
 
-            var Get_ID = $(this).prop("id");
+            // get td elements
+            var rowTds = $(this).closest('tr').children();
 
-            var Project_Title = $("#" + Get_ID).map(function () {
-                return $(this).closest('tr').find('td:eq(2)').text().trim();
-            }).get();
+            // drop first (empty) header
+            rowTds = $(rowTds).not(':first');
 
-            var Delete_Flagged = $("#" + Get_ID).map(function () {
-                return $(this).closest('tr').find('td:eq(9)').text().trim();
-            }).get();
+            // build object with project info
+            for (var i in UIOWA_QuickDeleter.tableHeaders) {
+                var currHeader = UIOWA_QuickDeleter.tableHeaders[i];
 
-            var Record_Count = $("#" + Get_ID).map(function () {
-                return $(this).closest('tr').find('td:eq(5)').text().trim();
-            }).get();
-
-            var Status = $("#" + Get_ID).map(function () {
-                return $(this).closest('tr').find('td:eq(4)').text().trim();
-            }).get();
-
-            if (Delete_Flagged[0] === "") {
-                var Action = "DELETED"
-            }
-            else {
-                var Action = "RESTORED"
+                UIOWA_QuickDeleter.selectedProjectInfo[currHeader] = $(rowTds[i]).text().trim();
             }
 
-            if(Action === "DELETED") {
-                var Action_Color = "style=\"color:red\"";
-            }
-            else {
-                var Action_Color = "style=\"color:green\"";
+            //console.log(UIOWA_QuickDeleter.selectedProjectInfo);
+
+            var action = "RESTORED".fontcolor("green");
+
+            if (UIOWA_QuickDeleter.selectedProjectInfo['Deleted'] === "") {
+                action = "DELETED".fontcolor("red");
             }
 
-            if(Action === "DELETED") {
-                var Action_Color = Action.fontcolor("red");
-            }
-            else {
-                var Action_Color = Action.fontcolor("green");
-            }
-
-
-            $('#Modify_Individual_Project_Div').html('<b>Confirm that the following project should be ' + Action_Color + ':' +
-                '<br/><br/></b>' + '<span id="Modify_Individual_Project_Span">' + Project_Title.join('</br>')+'</span>' +
-            '<br/>Record count: ' + Record_Count +
-            '<br/>Status: ' + Status);
+            $('#Modify_Individual_Project_Div').html('<b>Confirm that the following project should be ' + action + ':' +
+                '<br/><br/></b>' + '<span id="Modify_Individual_Project_Span">' + UIOWA_QuickDeleter.selectedProjectInfo['Project Name']+'</span>' +
+            '<br/>Record count: ' + UIOWA_QuickDeleter.selectedProjectInfo['Records'] +
+            '<br/>Status: ' + UIOWA_QuickDeleter.selectedProjectInfo['Status']);
 
 
             $('#Accept_Send_Button').click(function(){
-
-                var Project_ID = $("#" + Get_ID).map(function () {
-                    return $(this).closest('tr').find('td:eq(1)').text().trim();
-                }).get();
-
-                var Submit_Button = "Restore_PID_Submit_" + Project_ID;
-
-                $("#" + Submit_Button).click();
-
-                var Project_ID = $("#" + Get_ID).map(function () {
-                    return $(this).closest('tr').find('td:eq(1)').text().trim();
-                }).get();
-
-                var Submit_Button = "Delete_PID_Submit_" + Project_ID;
-console.log(Project_ID);
-
-                $("#" + Submit_Button).click();
+                $.ajax({
+                    method: 'POST',
+                    url: UIOWA_QuickDeleter.submitUrl,
+                    data: {
+                        pid: UIOWA_QuickDeleter.selectedProjectInfo['PID'],
+                        action: UIOWA_QuickDeleter.selectedProjectInfo['Deleted'] === '' ? 'delete' : 'restore'
+                    }
+                })
+                    .done(function() {
+                        document.location.reload();
+                    })
 
             });
 
