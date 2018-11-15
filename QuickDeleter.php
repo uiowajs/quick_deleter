@@ -15,6 +15,18 @@ use REDCap;
 
     class QuickDeleter extends AbstractExternalModule
     {
+        public static $tableHeaders = [
+            'PID',
+            'Project Name',
+            'Purpose',
+            'Status',
+            'Records',
+            'Users',
+            'Created',
+            'Last Event',
+            'Deleted',
+            'Final Delete'
+        ];
 
         //  Displays header, home page, and table
         public function Display_Page()
@@ -95,6 +107,10 @@ use REDCap;
                 <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
 
                 <script src="<?= $this->getUrl("/QuickDeleter.js") ?>"></script>
+                <script>
+                    UIOWA_QuickDeleter.tableHeaders = <?= json_encode(self::$tableHeaders) ?>;
+                    UIOWA_QuickDeleter.submitUrl = '<?= $this->getUrl('requestHandler.php') ?>';
+                </script>
                 <?php
 
                 $Parsed_Custom = $this->Parse_Custom();
@@ -489,21 +505,10 @@ use REDCap;
                          }
                          }
 
-                        ?>
+                        foreach (self::$tableHeaders as $header) {
+                            echo "<th style='text-align:center'><b>$header</b></th>";
+                         }
 
-                            <th style="text-align:center"><b>PID</b></th>
-                            <th style="text-align:center"><b>Project Name</b></th>
-                            <th style="text-align:center"><b>Purpose</b></th>
-                            <th style="text-align:center"><b>Status</b></th>
-                            <th style="text-align:center"><b>Records</b></th>
-                            <th style="text-align:center"><b>Users</b></th>
-                            <th style="text-align:center"><b>Created</b></th>
-                            <th style="text-align:center"><b>Last Event</b></th>
-<!--                            <th style="text-align:center"><b>Days Since Event</b></th>-->
-                            <th style="text-align:center"><b>Deleted</b></th>
-                            <th style="text-align:center"><b>Final Delete</b></th>
-
-                            <?php
 
                             if(self::getSystemSetting('hide-action-column') || !self::getSystemSetting('restore-checkboxes') || !self::getSystemSetting('delete-checkboxes')) {
 
@@ -683,10 +688,7 @@ use REDCap;
                     else {
                 ?>
                 <td align='center' class="<?php echo $Row_Class; ?>">
-                <form name="Delete_Row_Form" id="Delete_Row_Form" action="" method="POST" >
-                    <button data-toggle="modal" data-target="#Confirmation_Modal_Button" class="<?php echo $Button_Color ?>" id="Delete_PID_Button_<?php echo $row['project_id'] ?>" type='button' name="Delete_PID_Button" value=<?php echo $row['project_id']; ?>>Delete</button>
-                    <button hidden type="submit" class="<?php echo $Button_Color ?>" id="Delete_PID_Submit_<?php echo $row['project_id'] ?>" type='button' name="Delete_PID_Submit" value=<?php echo $row['project_id']; ?>>Delete</button>
-                    </form>
+                    <button data-toggle="modal" data-target="#Confirmation_Modal_Button" class="<?php echo $Button_Color ?>" type='button' value='delete'>Delete</button>
                 </td>
 
 
@@ -778,18 +780,6 @@ use REDCap;
 
             <?php
 
-            if(isset($_POST['Restore_PID_Submit'])) {
-                $this->Restore_Individual($_POST['Restore_PID_Submit']);
-            }
-
-error_log(json_encode($_POST));
-           if(isset($_POST['Delete_PID_Submit'])) {
-
-
-                $this->Delete_Individual($_POST['Delete_PID_Submit']);
-            }
-
-
         }  // End Build_HTML_Table();
 
         public function Restore_Individual($PID) {
@@ -827,7 +817,7 @@ error_log(json_encode($_POST));
 
 
 
-            header("Location: {$_SERVER['HTTP_REFERER']}");
+//            header("Location: {$_SERVER['HTTP_REFERER']}");
 
 
                 }
@@ -871,10 +861,7 @@ error_log(json_encode($_POST));
 
                 }
 
-
-
-
-          header("Location: {$_SERVER['HTTP_REFERER']}");
+//          header("Location: {$_SERVER['HTTP_REFERER']}");
 
                 }
 
