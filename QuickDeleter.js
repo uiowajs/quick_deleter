@@ -45,7 +45,7 @@
                     if ($(this).is(':checked'))
 
                     // console.log($(this).attr('id'));
-                        if ($(this).prop('id') === '0')
+                        if ($(this).prop('data-date_deleted') === '0')
                         // console.log($(this).attr('id'));
                             $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
 
@@ -77,6 +77,16 @@
         //Displays projects set for delete and restore on submit confirmation
         $('#send_button').click(function() {
 
+            var Checked_Row = {};
+            //
+            // var Project_Title = $("#" + Get_ID).map(function () {
+            //     return $(this).closest('tr').find('td:eq(2)').text().trim();
+            // }).get();
+
+
+
+
+
             // Finds if project was already set for delete or not
             var Delete_Flagged = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
                 return $(this).prop('id');
@@ -86,6 +96,38 @@
             var Selected_Projects = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
                 return $(this).parent().parent().find('td:eq(2)').text();
             }).get();
+
+
+            var Record_Count = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
+                return $(this).parent().parent().find('td:eq(5)').text();
+            }).get();
+
+            var Status = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
+                return $(this).parent().parent().find('td:eq(4)').text();
+            }).get();
+
+            var Purpose = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
+                return $(this).parent().parent().find('td:eq(3)').text();
+            }).get();
+
+            var Created = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
+                return $(this).parent().parent().find('td:eq(7)').text();
+            }).get();
+
+            var Last_Event = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
+                return $(this).parent().parent().find('td:eq(8)').text();
+            }).get();
+
+            var Users = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
+                return $(this).parent().parent().find('td:eq(6)').text();
+            }).get();
+
+
+
+
+
+
+
 
             // Removes spaces before and after title in array element
             Selected_Projects = Selected_Projects.map(function (el) {
@@ -195,6 +237,26 @@
                 return $(this).closest('tr').find('td:eq(4)').text().trim();
             }).get();
 
+            var PID = $("#" + Get_ID).map(function () {
+                return $(this).closest('tr').find('td:eq(1)').text().trim();
+            }).get();
+
+            var Purpose = $("#" + Get_ID).map(function () {
+                return $(this).closest('tr').find('td:eq(3)').text().trim();
+            }).get();
+
+            var Created = $("#" + Get_ID).map(function () {
+                return $(this).closest('tr').find('td:eq(7)').text().trim();
+            }).get();
+
+            var Last_Event = $("#" + Get_ID).map(function () {
+                return $(this).closest('tr').find('td:eq(8)').text().trim();
+            }).get();
+
+            var Users = $("#" + Get_ID).map(function () {
+                return $(this).closest('tr').find('td:eq(6)').text().trim();
+            }).get();
+
             if (Delete_Flagged[0] === "") {
                 var Action = "DELETED"
             }
@@ -217,10 +279,18 @@
             }
 
 
-            $('#Modify_Individual_Project_Div').html('<b>Confirm that the following project should be ' + Action_Color + ':' +
+            $('#Modify_Individual_Project_Div').html(
+                '<b>Confirm that the following project should be ' + Action_Color + ':' +
                 '<br/><br/></b>' + '<span id="Modify_Individual_Project_Span">' + Project_Title.join('</br>')+'</span>' +
-            '<br/>Record count: ' + Record_Count +
-            '<br/>Status: ' + Status);
+                '<br/>PID: ' + PID +
+                '<br/>Record count: ' + Record_Count +
+                '<br/>Status: ' + Status +
+                '<br/>Purpose: ' + Purpose +
+                '<br/>Created: ' + Created +
+                '<br/>Last_Event: ' + Last_Event +
+                '<br/>Users: ' + Users
+
+            );
 
 
             $('#Accept_Send_Button').click(function(){
@@ -241,6 +311,9 @@
 console.log(Project_ID);
 
                 $("#" + Submit_Button).click();
+
+                // if()
+                    $('#reset').click();
 
             });
 

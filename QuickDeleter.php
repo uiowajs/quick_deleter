@@ -521,8 +521,10 @@ use REDCap;
                     </thead>
 
 
+<!--  Don't delete this form.  This form is necessary to be able to delete/restore the first row via buttons.  Without this form, the first row is stripped of its form. -->
+            <form></form>
 
-<?php
+            <?php
 
 
 
