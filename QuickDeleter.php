@@ -458,6 +458,8 @@ use REDCap;
             <div id="id_projects_table" align="center">
                 <table id='Projects_Table' class='tablesorter'>
 
+
+
                      <?php
 
                      $tab = $_REQUEST['tab'];
@@ -517,12 +519,6 @@ use REDCap;
                             <!--                                <th style="text-align:center"><b>Days Until Delete</b></th>-->
                         </tr>
                     </thead>
-
-
-
-
-
-
 
 
 
@@ -626,6 +622,8 @@ use REDCap;
         public function Build_HTML_Table($row) {
             ?>
 
+
+
             <tr id="<?php echo $row['New Date Deleted']; ?>">
 
 
@@ -687,7 +685,7 @@ use REDCap;
                 <td align='center' class="<?php echo $Row_Class; ?>">
                 <form name="Delete_Row_Form" id="Delete_Row_Form" action="" method="POST" >
                     <button data-toggle="modal" data-target="#Confirmation_Modal_Button" class="<?php echo $Button_Color ?>" id="Delete_PID_Button_<?php echo $row['project_id'] ?>" type='button' name="Delete_PID_Button" value=<?php echo $row['project_id']; ?>>Delete</button>
-                    <button hidden type="submit" class="<?php echo $Button_Color ?>" id="Delete_PID_Submit_<?php echo $row['project_id'] ?>" type='button' name="Delete_PID_Button" value=<?php echo $row['project_id']; ?>>Delete</button>
+                    <button hidden type="submit" class="<?php echo $Button_Color ?>" id="Delete_PID_Submit_<?php echo $row['project_id'] ?>" type='button' name="Delete_PID_Submit" value=<?php echo $row['project_id']; ?>>Delete</button>
                     </form>
                 </td>
 
@@ -711,7 +709,7 @@ use REDCap;
                 <td align='center' class="<?php echo $Row_Class; ?>">
                 <form name="Restore_Row_Form" id="Restore_Row_Form" action="" method="POST" >
                     <button data-toggle="modal" data-target="#Confirmation_Modal_Button" class="<?php echo $Button_Color ?>" id="Restore_PID_Button_<?php echo $row['project_id'] ?>" type='button' name="Restore_PID_Button" value=<?php echo $row['project_id']; ?>>Restore</button>
-                    <button hidden type="submit" class="<?php echo $Button_Color ?>" id="Restore_PID_Submit_<?php echo $row['project_id'] ?>" type='button' name="Restore_PID_Button" value=<?php echo $row['project_id']; ?>>Restore</button>
+                    <button hidden type="submit" class="<?php echo $Button_Color ?>" id="Restore_PID_Submit_<?php echo $row['project_id'] ?>" type='button' name="Restore_PID_Submit" value=<?php echo $row['project_id']; ?>>Restore</button>
                     </form>
                 </td>
 
@@ -780,12 +778,15 @@ use REDCap;
 
             <?php
 
-            if(isset($_POST['Restore_PID_Button'])) {
-                $this->Restore_Individual($_POST['Restore_PID_Button']);
+            if(isset($_POST['Restore_PID_Submit'])) {
+                $this->Restore_Individual($_POST['Restore_PID_Submit']);
             }
 
-           if(isset($_POST['Delete_PID_Button'])) {
-                $this->Delete_Individual($_POST['Delete_PID_Button']);
+error_log(json_encode($_POST));
+           if(isset($_POST['Delete_PID_Submit'])) {
+
+
+                $this->Delete_Individual($_POST['Delete_PID_Submit']);
             }
 
 
@@ -834,6 +835,9 @@ use REDCap;
 
 
                 public function Delete_Individual($PID) {
+
+//            trigger_error("Some info",E_USER_ERROR);
+//            error_log("test");
 
                 $Pre_Value = $this->Get_Value_Buttons($PID);
 

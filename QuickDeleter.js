@@ -187,6 +187,14 @@
                 return $(this).closest('tr').find('td:eq(9)').text().trim();
             }).get();
 
+            var Record_Count = $("#" + Get_ID).map(function () {
+                return $(this).closest('tr').find('td:eq(5)').text().trim();
+            }).get();
+
+            var Status = $("#" + Get_ID).map(function () {
+                return $(this).closest('tr').find('td:eq(4)').text().trim();
+            }).get();
+
             if (Delete_Flagged[0] === "") {
                 var Action = "DELETED"
             }
@@ -209,8 +217,11 @@
             }
 
 
+            $('#Modify_Individual_Project_Div').html('<b>Confirm that the following project should be ' + Action_Color + ':' +
+                '<br/><br/></b>' + '<span id="Modify_Individual_Project_Span">' + Project_Title.join('</br>')+'</span>' +
+            '<br/>Record count: ' + Record_Count +
+            '<br/>Status: ' + Status);
 
-            $('#Modify_Individual_Project_Div').html('<b>Confirm that the following project should be ' + Action_Color + ':' + '<br/><br/></b>' + '<span id="Modify_Individual_Project_Span">' + Project_Title.join('</br>')+'</span>');
 
             $('#Accept_Send_Button').click(function(){
 
@@ -227,6 +238,7 @@
                 }).get();
 
                 var Submit_Button = "Delete_PID_Submit_" + Project_ID;
+console.log(Project_ID);
 
                 $("#" + Submit_Button).click();
 

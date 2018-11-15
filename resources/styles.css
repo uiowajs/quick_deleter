@@ -234,6 +234,11 @@ h3 {
     font-family: "Open Sans", Helvetica;
     font-size: 14px;
 
+
+}
+
+.Active_Row_Colored a:hover, .Deleted_Row_Colored a:hover {
+    text-decoration: underline;
 }
 
 .Active_Row_Uncolored, .Active_Row_Uncolored a {
@@ -280,12 +285,14 @@ h3 {
 
 #Submit_Table .submit_delete_button {
     background:#ff7272ab;
-    border-color:#ff0000ab
+    border-color:#ff0000ab;
+    font-weight:bold;
 }
 
 #Submit_Table .submit_restore_button {
     background:#9bff9b;
     border-color:#00ff00;
+    font-weight:bold;
 }
 
 .Restore_PID_Checkbox {
