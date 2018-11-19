@@ -20,6 +20,10 @@
     /*margin: 10px 0 15px;*/
 /*}*/
 
+.or {
+    color:#a8a8a8;
+}
+
 
 
 
@@ -311,6 +315,69 @@ h3 {
     visibility: hidden;
 }
 
-/*.modal-content, .modal-body, .modal-header {*/
-    /*background:lightgrey;*/
+
+
+
+
+div#Delete_Projects_Inner_Div td {
+     background:#f003;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    text-align: center;
+    border: 1px solid black;
+
+ }
+
+div#Delete_Projects_Inner_Div th {
+    background:#ff7979;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    text-align: center;
+    border: 1px solid black;
+}
+
+
+div#Restore_Projects_Inner_Div td {
+    background:#59c3594d;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    text-align: center;
+    border: 1px solid black;
+
+}
+
+div#Restore_Projects_Inner_Div th {
+    background:#008000b3;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    text-align: center;
+    border: 1px solid black;
+}
+
+
+
+/*#Restore_Projects_Div {*/
+    /*background:#4986491a;*/
+    /*border:1px solid gray;*/
+
 /*}*/
+
+div.modal-header, div.modal-footer {
+    background-color:lightgrey;
+}
+
+hr#Spacer {
+    border-top: 2px solid black;
+}
+
+
+
+

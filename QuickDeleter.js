@@ -1,8 +1,20 @@
+var UIOWA_QuickDeleter = {};
+
+UIOWA_QuickDeleter.selectedProjectInfo = {};
+
 
 
 (function($, window, document) {
     $(document).ready(function() {
 
+
+
+        var $checks = $(".PID_Checkbox").on('change', function () {
+            var checked = $checks.is(':checked');
+            $("#send_button").toggle(!checked);
+            $("#send_button").toggle(checked);
+        });
+        $checks.first().change();
 
 
         // Tablesorter
@@ -45,7 +57,7 @@
                     if ($(this).is(':checked'))
 
                     // console.log($(this).attr('id'));
-                        if ($(this).prop('data-date_deleted') === '0')
+                        if ($(this).prop('id') === '0')
                         // console.log($(this).attr('id'));
                             $(this).closest('tr').css("backgroundColor", "rgba(255, 0, 0, 0.7)").css({fontWeight: this.checked ? 'bold' : 'normal'});
 
@@ -56,6 +68,14 @@
                     // console.log("Hi");
                         $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'}).removeClass("Select_Restore_Row");
                 });
+
+                // var $checks = $("#check_all").on('change', function () {
+                    $(this).is(':checked');
+                    // $("#send_button").toggle(!checked);
+                    $("#send_button").toggle("#send_button");
+                // });
+
+
             })
         });
 
@@ -74,139 +94,484 @@
                 $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'}).removeClass("Select_Restore_Row");
         });
 
-        //Displays projects set for delete and restore on submit confirmation
+
+
+
+        // Confirmation modal on submit with checkboxes
         $('#send_button').click(function() {
 
-            var Checked_Row = {};
-            //
-            // var Project_Title = $("#" + Get_ID).map(function () {
-            //     return $(this).closest('tr').find('td:eq(2)').text().trim();
-            // }).get();
-
-
-
-
-
-            // Finds if project was already set for delete or not
-            var Delete_Flagged = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
-                return $(this).prop('id');
-            }).get();
-
-            // Gets title for selected projects
-            var Selected_Projects = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
-                return $(this).parent().parent().find('td:eq(2)').text();
-            }).get();
-
-
-            var Record_Count = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
-                return $(this).parent().parent().find('td:eq(5)').text();
-            }).get();
-
-            var Status = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
-                return $(this).parent().parent().find('td:eq(4)').text();
-            }).get();
-
-            var Purpose = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
-                return $(this).parent().parent().find('td:eq(3)').text();
-            }).get();
-
-            var Created = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
-                return $(this).parent().parent().find('td:eq(7)').text();
-            }).get();
-
-            var Last_Event = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
-                return $(this).parent().parent().find('td:eq(8)').text();
-            }).get();
-
-            var Users = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
-                return $(this).parent().parent().find('td:eq(6)').text();
-            }).get();
-
-
-
-
-
-
-
-
-            // Removes spaces before and after title in array element
-            Selected_Projects = Selected_Projects.map(function (el) {
-                return el.trim();
+            var values = new Array();
+            $.each($(".PID_Checkbox:checked"), function() {
+                var Data = $(this).parents('tr:eq(0)');
+                values.push({
+                    'PID: ': $(Data).find('td:eq(1)').text().trim().replace(/(\r\n|\n|\r)/gm,""),
+                    'Title: ': $(Data).find('td:eq(2)').text().trim().replace(/(\r\n|\n|\r)/gm,""),
+                    'Purpose: ': $(Data).find('td:eq(3)').text().trim().replace(/(\r\n|\n|\r)/gm,""),
+                    'Status: ': $(Data).find('td:eq(4)').text().trim().replace(/(\r\n|\n|\r)/gm,""),
+                    'Records: ': $(Data).find('td:eq(5)').text().trim().replace(/(\r\n|\n|\r)/gm,""),
+                    'Users: ': $(Data).find('td:eq(6)').text().trim().replace(/(\r\n|\n|\r)/gm,""),
+                    'Created: ': $(Data).find('td:eq(7)').text().trim().replace(/(\r\n|\n|\r)/gm,""),
+                    'Last Event: ': $(Data).find('td:eq(8)').text().trim().replace(/(\r\n|\n|\r)/gm,""),
+                    'Deleted ': $(Data).find('td:eq(9)').text().trim().replace(/(\r\n|\n|\r)/gm,""),
+                });
             });
 
-            //  Creates object with project title as key and delete flag as value
-            var Combined_Array = {};
-            for (var i = 0; i < Selected_Projects.length; i++) {
-                Combined_Array[Selected_Projects[i]] = Delete_Flagged[i];
+            // console.log(values);
+
+            var Delete_Projects = new Array();
+            var Restore_Projects = new Array();
+
+            values.forEach(function (object) {
+
+                if(object['Deleted '] === "") {
+
+                    Delete_Projects.push(object)
+                }
+                else {
+
+                    Restore_Projects.push(object)
+                }
+
+            });
+
+            if(Delete_Projects.length !== 0) {
+
+                $('div#Delete_Projects_Outer_Div').removeClass("Hide_Header");
+                $('div#Delete_Projects_Inner_Div').removeClass("Hide_Header");
+                $('div#Delete_Projects_Div').removeClass("Hide_Header");
+                $('hr#Spacer').removeClass("Hide_Header");
             }
 
-            // Create arrays and variables
-            var Delete_Projects = [];
-            var Restore_Projects = [];
-            // var Delete = "";
-            // var Restore = "";
-            // var Line_Breaks = "";
 
-            // Get value (delete flag) of object key, checks if 0 or 1, puts project title in array
-            for (key in Combined_Array) {
-                if (Combined_Array.hasOwnProperty(key)) {
-                    var value = Combined_Array[key];
-                    if (value === "0") {
-                        // console.log(value);
-                        // console.log("Deleting");
-                        Delete_Projects = Delete_Projects.concat(key);
-                        // if (Delete_Projects.length === 0) {
-                        //     // $("#Delete_Projects_Div").addClass("Hide_Header");
-                        //     // Delete = "";
-                        //     // Line_Breaks = "";
-                        // }
-                        // else {
-                        //     // $("#Delete_Projects_Div").removeClass("Hide_Header");
-                        //     // Delete = "DELETE:\n";
-                        //     // Line_Breaks = "\n\n";
-                        // }
-                    } else {
-                        // console.log(value);
-                        // console.log("Restoring");
-                        Restore_Projects = Restore_Projects.concat(key);
-                        // if (Restore_Projects.length === 0) {
-                        //     // $("#Restore_Projects_Div").addClass("Hide_Header");
-                        //     // Restore = "";
-                        // }
-                        // else {
-                        //     // $("#Restore_Projects_Div").removeClass("Hide_Header");
-                        //     // Restore = "RESTORE:\n"
-                        // }
-                    }
-                }
+            if(Restore_Projects.length !== 0) {
+
+                $('div#Restore_Projects_Outer_Div').removeClass("Hide_Header");
+                $('div#Restore_Projects_Inner_Div').removeClass("Hide_Header");
+                $('div#Restore_Projects_Div').removeClass("Hide_Header");
+
+                $('hr#Spacer').removeClass("Hide_Header");
+            }
+
+
+
+            // Delete_Projects.forEach(function (object) {
+            //
+            //     // Display_Project_Properties.forEach(function (property, i) {
+            //
+            //         $('#Delete_Projects_Div').append(
+            //             '<div id="Delete_Projects_Inner_Div">' +
+            //             '<span style="font-weight:bold; color:red; font-size:16px">DELETE:</span>' +
+            //             '<br/><br/>' + '<span style="font-weight:bold" >' + object["Title: "] + '</span>' +
+            //             '<br/><b> PID: </b> ' + object["PID: "] +
+            //             '<br/>' +
+            //             '<br/><b> Record count:</b> ' + object["Records: "] +
+            //             '<br/>' +
+            //             '<br/><b> Status :</b> ' + object["Status: "] +
+            //             '<br/><b> Purpose :</b> ' + object["Purpose: "] +
+            //             '<br/>' +
+            //             '<br/><b> Created :</b> ' + object["Created: "] +
+            //             '<br/><b> Last_Event :</b> ' + object["Last Event: "] +
+            //             '<br/>' +
+            //             '<br/><b> Users :</b> ' + object["Users: "] +
+            //             '<br/>' +
+            //             '<br/>' +
+            //             '</div>'
+            //         );
+            //
+            //
+            //
+            //
+            //     // });
+            // });
+
+            // Restore_Projects.forEach(function (object) {
+            //
+            //
+            //
+            //
+            //     $('#Restore_Projects_Div').append(
+            //         '<div id="Restore_Projects_Inner_Div">' +
+            //             '<span style="font-weight:bold; color:green; font-size:16px">RESTORE:</span>' +
+            //             '<br/><br/>' + '<span style="font-weight:bold" >' + object["Title: "] + '</span>' +
+            //             '<br/><b> PID: </b> ' + object["PID: "] +
+            //             '<br/>' +
+            //             '<br/><b> Record count:</b> ' + object["Records: "] +
+            //             '<br/>' +
+            //             '<br/><b> Status :</b> ' + object["Status: "] +
+            //             '<br/><b> Purpose :</b> ' + object["Purpose: "] +
+            //             '<br/>' +
+            //             '<br/><b> Created :</b> ' + object["Created: "] +
+            //             '<br/><b> Last_Event :</b> ' + object["Last Event: "] +
+            //             '<br/>' +
+            //             '<br/><b> Users :</b> ' + object["Users: "] +
+            //             '<br/>' +
+            //             '<br/>' +
+            //         '</div>'
+            //     );
+            //
+            //
+            //     // });
+            // });
+
+
+            // Required to create the table without auto closing the tag
+            var Delete_Table = '<table id="Delete_Confirm_Table" class="tablesorter">';
+
+
+            $('#Delete_Projects_Inner_Div').append(
+
+                // Required to create the table without auto closing the tag
+                $('#Delete_Projects_Inner_Div').append(Delete_Table) +
+
+                '<tr id="">' +
+
+                '<th>' +
+                '<b> PID</b> ' +
+                '</th>' +
+
+                '<th>' +
+                '<b> Title</b> ' +
+                '</th>' +
+
+                '<th>' +
+                '<b> Records</b> '+
+                '</th>' +
+
+                '<th>' +
+                '<b> Status</b> '+
+                '</th>' +
+
+                '<th>' +
+                '<b> Purpose</b> '  +
+                '</th>' +
+
+                '<th>' +
+                '<b> Created</b> '+
+                '</th>' +
+
+                '<th>' +
+                '<b> Last_Event</b>' +
+                '</th>' +
+
+                '<th>' +
+                '<b> Users</b> ' +
+                '</th>' +
+
+                '</tr>'
+
+            );
+
+
+            // Table instead of rows
+            Delete_Projects.forEach(function (object) {
+
+                $('#Delete_Projects_Inner_Div').append(
+
+
+                    '<tr>' +
+
+
+                    '<td>' +
+                    object["PID: "] +
+                    '</td>' +
+
+                                '<td>' +
+                               object["Title: "]+
+                                '</td>' +
+
+
+                                '<td>' +
+                                    object["Records: "] +
+                                '</td>' +
+
+                                '<td>' +
+                                    object["Status: "] +
+                                '</td>' +
+
+                                '<td>' +
+                                    object["Purpose: "] +
+                                '</td>' +
+
+                                '<td>' +
+                                    object["Created: "] +
+                                '</td>' +
+
+                                '<td>' +
+                                    object["Last Event: "] +
+                                '</td>' +
+
+                                '<td>' +
+                                    object["Users: "] +
+                                '</td>' +
+
+
+                            '</tr>'
+
+                );  // End delete projects inner div append
+
+
+
+
+            });  // End forEach Deleted_Projects
+
+
+            var Restore_Table = '<table id="Restore_Confirm_Table" class="tablesorter">';
+
+            $('#Restore_Projects_Inner_Div').append(
+
+                $('#Restore_Projects_Inner_Div').append(Restore_Table) +
+
+                '<tr>' +
+
+                '<th>' +
+                '<b> PID</b> ' +
+                '</th>' +
+
+                '<th>' +
+                '<b> Title</b> ' +
+                '</th>' +
+
+
+
+                '<th>' +
+                '<b> Records</b> '+
+                '</th>' +
+
+                '<th>' +
+                '<b> Status</b> '+
+                '</th>' +
+
+                '<th>' +
+                '<b> Purpose</b> '  +
+                '</th>' +
+
+                '<th>' +
+                '<b> Created</b> '+
+                '</th>' +
+
+                '<th>' +
+                '<b> Last_Event</b>' +
+                '</th>' +
+
+                '<th>' +
+                '<b> Users</b> ' +
+                '</th>' +
+
+                '</tr>'
+            );
+
+
+            // Table instead of rows
+            Restore_Projects.forEach(function (object) {
+
+                $('#Restore_Projects_Inner_Div').append(
+
+
+                    '<tr>' +
+
+
+
+
+                    '<td>' +
+                    object["PID: "] +
+                    '</td>' +
+
+                    '<td>' +
+                    object["Title: "]+
+                    '</td>' +
+
+                    '<td>' +
+                    object["Records: "] +
+                    '</td>' +
+
+                    '<td>' +
+                    object["Status: "] +
+                    '</td>' +
+
+                    '<td>' +
+                    object["Purpose: "] +
+                    '</td>' +
+
+                    '<td>' +
+                    object["Created: "] +
+                    '</td>' +
+
+                    '<td>' +
+                    object["Last Event: "] +
+                    '</td>' +
+
+                    '<td>' +
+                    object["Users: "] +
+                    '</td>' +
+
+
+                    '</tr>'
+
+                );  // End delete projects inner div append
+
+
+            });  // End forEach Deleted_Projects
+
+
+            // console.log("Delete Projects Array: ");
+            // console.log(Delete_Projects);
+            //
+            // console.log("Restore Projects Array: ");
+            // console.log(Restore_Projects);
+
+
+            if(Delete_Projects.length !== 0 || Restore_Projects.length !== 0) {
+                $('#Confirmation_Modal').modal('show');
             }
 
             if(Delete_Projects.length === 0) {
-                $("#Delete_Projects_Div").addClass("Hide_Header");
+                $('div#Delete_Projects_Outer_Div').addClass("Hide_Header");
+                $('div#Delete_Projects_Inner_Div').addClass("Hide_Header");
+                // $('div#Delete_Projects_Div').html("");
+                $('hr#Spacer').addClass("Hide_Header");
             }
-            else {
-                $("#Delete_Projects_Div").removeClass("Hide_Header");
-            }
+
+
+
             if(Restore_Projects.length === 0) {
-                $("#Restore_Projects_Div").addClass("Hide_Header");
-            }
-            else {
-                $("#Restore_Projects_Div").removeClass("Hide_Header");
+                $('div#Restore_Projects_Outer_Div').addClass("Hide_Header");
+                $('div#Restore_Projects_Inner_Div').addClass("Hide_Header");
+                // $('div#Restore_Projects_Div').html("");
+                $('hr#Spacer').addClass("Hide_Header");
             }
 
-            // $('#Delete_Projects_Div').html( '<b id="Delete_Projects_Header">"DELETE:"</b>');
-            $('#Delete_Projects_Div').html('<b style="color:red" id="Delete_Projects_Header">DELETE:</br></b>' + '<span id="Delete_Projects_Span">' + Delete_Projects.join('</br>')+'</span>');
-            $('#Restore_Projects_Div').html('<b style="color:green" id="Restore_Projects_Header">RESTORE:</br></b>' +  '<span id="Restore_Projects_Span">' + Restore_Projects.join('</br>')+'</span>');
-
-            // Submits form to delete/restore projects when "Accept" is clicked on the confirmation modal
             $('#Accept_Send_Checkboxes').click(function(){
 
 
-                $("#Hidden_Submit").click();
+                        $("#Hidden_Submit").click();
 
-            });
+                    });
+
+
+
+
+        });  // End on send button click
+
+
+
+        // Delete modal contents when confirmation modal closes
+        $('#Confirmation_Modal').on('hide.bs.modal', function () {
+
+
+            $('div#Delete_Projects_Inner_Div').html("");
+
+
+            $('div#Restore_Projects_Inner_Div').html("");
+
+
+
         });
 
+
+
+
+        //Displays projects set for delete and restore on submit confirmation
+        // $('#send_button').click(function() {
+        //
+        //     // Finds if project was already set for delete or not
+        //     var Delete_Flagged = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
+        //         return $(this).prop('id');
+        //     }).get();
+        //
+        //     // Gets title for selected projects
+        //     var Selected_Projects = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
+        //         return $(this).parent().parent().find('td:eq(2)').text().trim();
+        //     }).get();
+        //
+        //
+        //
+        //
+        //     //  Creates object with project title as key and delete flag as value
+        //     var Combined_Array = {};
+        //     for (var i = 0; i < Selected_Projects.length; i++) {
+        //         Combined_Array[Selected_Projects[i]] = Delete_Flagged[i];
+        //     }
+        //
+        //     // Create arrays and variables
+        //     var Delete_Projects = [];
+        //     var Restore_Projects = [];
+        //     // var Delete = "";
+        //     // var Restore = "";
+        //     // var Line_Breaks = "";
+        //
+        //     // Get value (delete flag) of object key, checks if 0 or 1, puts project title in array
+        //     for (key in Combined_Array) {
+        //         if (Combined_Array.hasOwnProperty(key)) {
+        //             var value = Combined_Array[key];
+        //             if (value === "0") {
+        //
+        //                 Delete_Projects = Delete_Projects.concat(key);
+        //
+        //             } else {
+        //
+        //                 Restore_Projects = Restore_Projects.concat(key);
+        //
+        //             }
+        //         }
+        //     }
+        //
+        //     // console.log(Delete_Projects);
+        //
+        //
+        //     UIOWA_QuickDeleter.arrayOfValues = [];
+        //
+        //         $('.PID_Checkbox:checked', '#Projects_Table').each(function() {
+        //
+        //             var rowTds = $(".PID_Checkbox:checked", "#Projects_Table").closest('tr').children().not(':first');
+        //
+        //             // drop first (empty) header
+        //             // rowTds = $(rowTds).not(':first');
+        //
+        //             // build object with project info
+        //             for (var i in UIOWA_QuickDeleter.tableHeaders) {
+        //                 var currHeader = UIOWA_QuickDeleter.tableHeaders[i];
+        //
+        //                 UIOWA_QuickDeleter.selectedProjectInfo[currHeader] = $(rowTds[i]).text().trim();
+        //                 UIOWA_QuickDeleter.arrayOfValues.push(UIOWA_QuickDeleter.selectedProjectInfo[currHeader]);
+        //
+        //             }
+        //
+        //             console.log(UIOWA_QuickDeleter.arrayOfValues);
+        //
+        //
+        //         });
+        //
+        //
+        //
+        //
+        //     console.log(UIOWA_QuickDeleter.selectedProjectInfo);
+        //
+        //
+        //     if(Delete_Projects.length === 0) {
+        //         $("#Delete_Projects_Div").addClass("Hide_Header");
+        //     }
+        //     else {
+        //         $("#Delete_Projects_Div").removeClass("Hide_Header");
+        //     }
+        //     if(Restore_Projects.length === 0) {
+        //         $("#Restore_Projects_Div").addClass("Hide_Header");
+        //     }
+        //     else {
+        //         $("#Restore_Projects_Div").removeClass("Hide_Header");
+        //     }
+        //
+        //     // $('#Delete_Projects_Div').html( '<b id="Delete_Projects_Header">"DELETE:"</b>');
+        //     $('#Delete_Projects_Div').html('<b style="color:red" id="Delete_Projects_Header">DELETE:</br></b>' + '<span id="Delete_Projects_Span">' + Delete_Projects.join('</br>')+'</span>');
+        //     $('#Restore_Projects_Div').html('<b style="color:green" id="Restore_Projects_Header">RESTORE:</br></b>' +  '<span id="Restore_Projects_Span">' + Restore_Projects.join('</br>')+'</span>');
+        //
+        //     // Submits form to delete/restore projects when "Accept" is clicked on the confirmation modal
+        //     $('#Accept_Send_Checkboxes').click(function(){
+        //
+        //
+        //         $("#Hidden_Submit").click();
+        //
+        //     });
+        // });
 
 
         // Confirmation popup for delete/restore via button
@@ -219,100 +584,60 @@
                 $(this).closest('tr').addClass("Select_Restore_Row");
             }
 
-            var Get_ID = $(this).prop("id");
+            // get td elements
+            var rowTds = $(this).closest('tr').children();
 
-            var Project_Title = $("#" + Get_ID).map(function () {
-                return $(this).closest('tr').find('td:eq(2)').text().trim();
-            }).get();
+            // drop first (empty) header
+            rowTds = $(rowTds).not(':first');
 
-            var Delete_Flagged = $("#" + Get_ID).map(function () {
-                return $(this).closest('tr').find('td:eq(9)').text().trim();
-            }).get();
+            // build object with project info
+            for (var i in UIOWA_QuickDeleter.tableHeaders) {
+                var currHeader = UIOWA_QuickDeleter.tableHeaders[i];
 
-            var Record_Count = $("#" + Get_ID).map(function () {
-                return $(this).closest('tr').find('td:eq(5)').text().trim();
-            }).get();
+                UIOWA_QuickDeleter.selectedProjectInfo[currHeader] = $(rowTds[i]).text().trim();
 
-            var Status = $("#" + Get_ID).map(function () {
-                return $(this).closest('tr').find('td:eq(4)').text().trim();
-            }).get();
-
-            var PID = $("#" + Get_ID).map(function () {
-                return $(this).closest('tr').find('td:eq(1)').text().trim();
-            }).get();
-
-            var Purpose = $("#" + Get_ID).map(function () {
-                return $(this).closest('tr').find('td:eq(3)').text().trim();
-            }).get();
-
-            var Created = $("#" + Get_ID).map(function () {
-                return $(this).closest('tr').find('td:eq(7)').text().trim();
-            }).get();
-
-            var Last_Event = $("#" + Get_ID).map(function () {
-                return $(this).closest('tr').find('td:eq(8)').text().trim();
-            }).get();
-
-            var Users = $("#" + Get_ID).map(function () {
-                return $(this).closest('tr').find('td:eq(6)').text().trim();
-            }).get();
-
-            if (Delete_Flagged[0] === "") {
-                var Action = "DELETED"
-            }
-            else {
-                var Action = "RESTORED"
             }
 
-            if(Action === "DELETED") {
-                var Action_Color = "style=\"color:red\"";
-            }
-            else {
-                var Action_Color = "style=\"color:green\"";
-            }
+            console.log(UIOWA_QuickDeleter.selectedProjectInfo);
 
-            if(Action === "DELETED") {
-                var Action_Color = Action.fontcolor("red");
-            }
-            else {
-                var Action_Color = Action.fontcolor("green");
+            var action = "RESTORED".fontcolor("green");
+
+            if (UIOWA_QuickDeleter.selectedProjectInfo['Deleted'] === "") {
+                action = "DELETED".fontcolor("red");
             }
 
 
             $('#Modify_Individual_Project_Div').html(
-                '<b>Confirm that the following project should be ' + Action_Color + ':' +
-                '<br/><br/></b>' + '<span id="Modify_Individual_Project_Span">' + Project_Title.join('</br>')+'</span>' +
-                '<br/>PID: ' + PID +
-                '<br/>Record count: ' + Record_Count +
-                '<br/>Status: ' + Status +
-                '<br/>Purpose: ' + Purpose +
-                '<br/>Created: ' + Created +
-                '<br/>Last_Event: ' + Last_Event +
-                '<br/>Users: ' + Users
-
+                '<b style="font-size:16px">Confirm that the following project should be ' + action + ':' +
+                '<br/><br/></b>' + '<span style="font-weight:bold" id="Modify_Individual_Project_Span">' + UIOWA_QuickDeleter.selectedProjectInfo['Project Name']+'</span>' +
+                '<br/><b>PID:</b> ' + UIOWA_QuickDeleter.selectedProjectInfo['PID'] +
+                '<br/>' +
+                '<br/><b>Record count:</b> ' + UIOWA_QuickDeleter.selectedProjectInfo['Records'] +
+                '<br/>' +
+                '<br/><b>Status:</b> ' + UIOWA_QuickDeleter.selectedProjectInfo['Status'] +
+                '<br/><b>Purpose:</b> ' + UIOWA_QuickDeleter.selectedProjectInfo['Purpose'] +
+                '<br/>' +
+                '<br/><b>Created:</b> ' + UIOWA_QuickDeleter.selectedProjectInfo['Created'] +
+                '<br/><b>Last_Event:</b> ' + UIOWA_QuickDeleter.selectedProjectInfo['Last Event'] +
+                '<br/>' +
+                '<br/><b>Users:</b> ' + UIOWA_QuickDeleter.selectedProjectInfo['Users']
             );
 
 
+
             $('#Accept_Send_Button').click(function(){
+                $.ajax({
+                    method: 'POST',
+                    url: UIOWA_QuickDeleter.submitUrl,
+                    data: {
+                        pid: UIOWA_QuickDeleter.selectedProjectInfo['PID'],
+                        action: UIOWA_QuickDeleter.selectedProjectInfo['Deleted'] === '' ? 'delete' : 'restore'
+                    }
+                })
+                    .done(function() {
+                        document.location.reload();
+                    });
 
-                var Project_ID = $("#" + Get_ID).map(function () {
-                    return $(this).closest('tr').find('td:eq(1)').text().trim();
-                }).get();
-
-                var Submit_Button = "Restore_PID_Submit_" + Project_ID;
-
-                $("#" + Submit_Button).click();
-
-                var Project_ID = $("#" + Get_ID).map(function () {
-                    return $(this).closest('tr').find('td:eq(1)').text().trim();
-                }).get();
-
-                var Submit_Button = "Delete_PID_Submit_" + Project_ID;
-console.log(Project_ID);
-
-                $("#" + Submit_Button).click();
-
-                // if()
                     $('#reset').click();
 
             });
@@ -323,9 +648,6 @@ console.log(Project_ID);
 
 
         });
-
-
-
 
 
         //  Adds DELETE or RESTORE to Action column on box checked
@@ -361,6 +683,12 @@ console.log(Project_ID);
             $('tr').closest('tr').removeClass("Select_Restore_Row");
             $("td#Row_Action").text("");
             $('#Projects_Table').trigger('sortReset');
+
+                $("#send_button").hide();
+
+
+
+
         });
 
 

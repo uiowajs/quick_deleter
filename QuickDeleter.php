@@ -15,6 +15,18 @@ use REDCap;
 
     class QuickDeleter extends AbstractExternalModule
     {
+        public static $tableHeaders = [
+            'PID',
+            'Project Name',
+            'Purpose',
+            'Status',
+            'Records',
+            'Users',
+            'Created',
+            'Last Event',
+            'Deleted',
+            'Final Delete'
+        ];
 
         //  Displays header, home page, and table
         public function Display_Page()
@@ -40,13 +52,17 @@ use REDCap;
                             <td>
                                 <a href="<?= $this->getUrl("index.php?tab=1") ?> ">All Projects</a>
                             </td>
-                            <form name="Custom_Form" id="Custom_Form" method="POST" action="<?= $this->getUrl("index.php?tab=2") ?>">
                             <td>
-                                <button class="Button_Link" type="submit" id="Custom_Page" name="Custom_Page">Custom</button>
+                                <p class="or"> OR </p>
                             </td>
+                            <form name="Custom_Form" id="Custom_Form" method="POST" action="<?= $this->getUrl("index.php?tab=2") ?>">
                             <td>
                                 <input id="Custom_Box" class="Button_Box" type='text' name='Custom_Box' value="" placeholder="Enter json or csv">
                             </td>
+                            <td>
+                                <button class="Button_Link" type="submit" id="Custom_Page" name="Custom_Page">Custom</button>
+                            </td>
+
                             </form>
                         </tr>
                     </table>
@@ -95,6 +111,10 @@ use REDCap;
                 <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
 
                 <script src="<?= $this->getUrl("/QuickDeleter.js") ?>"></script>
+                <script>
+                    UIOWA_QuickDeleter.tableHeaders = <?= json_encode(self::$tableHeaders) ?>;
+                    UIOWA_QuickDeleter.submitUrl = '<?= $this->getUrl('requestHandler.php') ?>';
+                </script>
                 <?php
 
                 $Parsed_Custom = $this->Parse_Custom();
@@ -343,20 +363,20 @@ use REDCap;
                         if($this->getSystemSetting("restore-checkboxes") && $this->getSystemSetting("delete-checkboxes")) {
                             ?>
                         <td>
-                            <button data-toggle="modal" data-target="#Confirmation_Modal" type="button" id='send_button' name='send_button' >Submit</button>
+                            <button type="button" id='send_button' name='send_button' >Submit</button>
                         </td>
                         <?php
                         } elseif($this->getSystemSetting("restore-checkboxes") && !self::getSystemSetting("delete-checkboxes")) {
                             ?>
                         <td>
-                            <button data-toggle="modal" data-target="#Confirmation_Modal" type="button" class="<?php echo $Submit_Restore_Button_Color ?> " id='send_button' name='send_button' data-toggle="modal" data-target="#Confirmation_Modal">Restore</button>
+                            <button type="button" class="<?php echo $Submit_Restore_Button_Color ?> " id='send_button' name='send_button' >Restore</button>
                         </td>
                         <?php
                         }
                         elseif(!self::getSystemSetting("restore-checkboxes") && $this->getSystemSetting("delete-checkboxes")) {
                             ?>
                         <td>
-                            <button data-toggle="modal" data-target="#Confirmation_Modal" type="button" class="<?php echo $Submit_Delete_Button_Color ?>" id='send_button' name='send_button' data-toggle="modal" data-target="#Confirmation_Modal">Delete</button>
+                            <button type="button" class="<?php echo $Submit_Delete_Button_Color ?>" id='send_button' name='send_button' >Delete</button>
                         </td>
 
 
@@ -377,24 +397,88 @@ use REDCap;
 
 
             <!-- Confirmation Modal -->
-            <div id="Confirmation_Modal" class="modal fade" role="dialog">
-              <div class="modal-dialog">
+<!--            <div id="Confirmation_Modal" class="modal fade" role="dialog">-->
+<!--              <div class="modal-dialog">-->
+
+               <!-- Modal content-->
+<!--                <div class="modal-content">-->
+<!--                  <div class="modal-header">-->
+<!--                    <h4 style="font-weight:bold" class="modal-title">Attention</h4>-->
+<!--                    <button type="button" class="close" data-dismiss="modal">&times;</button>-->
+<!--                  </div>-->
+<!--                  <div class="modal-body">-->
+<!--                    <b style="font-size:16px">Confirm that the following projects should be modified:</b>-->
+<!--                    <br/>-->
+<!--                    <br/>-->
+<!--                    <div id="Delete_Projects_Div">-->
+<!--                    </div>-->
+<!--                    <hr>-->
+<!--                    <div id="Restore_Projects_Div">-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                  <div class="modal-footer">-->
+<!--                    <button id="Accept_Send_Checkboxes" name="Accept_Send_Checkboxes" type="button" class="btn btn-default" data-dismiss="modal">Accept</button>-->
+<!--                    <button id="Cancel_Button_Checkboxes" name="Cancel_Button_Checkboxes" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>-->
+<!--                  </div>-->
+<!--                </div>-->
+
+<!--              </div>-->
+<!--            </div>-->
+
+
+           <div id="Confirmation_Modal" class="modal fade" role="dialog">
+              <div class="modal-dialog modal-lg">
 
                 <!-- Modal content-->
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h4 class="modal-title">Attention</h4>
+                    <h4 style="font-weight:bold" class="modal-title">Attention</h4>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                   </div>
                   <div class="modal-body">
-                    <b>Confirm that the following projects should be modified:</b>
+                    <b style="font-size:16px">Confirm that the following projects should be modified:</b>
                     <br/>
                     <br/>
-                    <div id="Delete_Projects_Div">
-                    </div>
-                    <br/>
-                    <div id="Restore_Projects_Div">
-                    </div>
+
+                        <div id="Delete_Projects_Div">
+
+                          <div id="Delete_Projects_Outer_Div">
+                            <br/>
+                            <b style="color:red;">DELETE:</b>
+<br/>
+
+                             </div>
+
+
+                            <div id="Delete_Projects_Inner_Div">
+
+
+
+                                </div>
+
+
+                        </div>
+                        </table>
+                        <br/>
+                        <hr id="Spacer">
+                        <div id="Restore_Projects_Div">
+
+                            <div id="Restore_Projects_Outer_Div">
+                            <br/>
+                            <b style="color:green;">RESTORE:</b>
+<br/>
+
+                             </div>
+
+                              <div id="Restore_Projects_Inner_Div">
+
+
+
+                                </div>
+
+                        </div>
+                        </table>
+
                   </div>
                   <div class="modal-footer">
                     <button id="Accept_Send_Checkboxes" name="Accept_Send_Checkboxes" type="button" class="btn btn-default" data-dismiss="modal">Accept</button>
@@ -405,6 +489,9 @@ use REDCap;
               </div>
             </div>
 
+
+
+
                         <!-- Confirmation Modal -->
             <div id="Confirmation_Modal_Button" class="modal fade" role="dialog">
               <div class="modal-dialog">
@@ -412,7 +499,7 @@ use REDCap;
                 <!-- Modal content-->
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h4 class="modal-title">Attention</h4>
+                    <h4 style="font-weight:bold" class="modal-title">Attention</h4>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                   </div>
                   <div class="modal-body">
@@ -489,21 +576,10 @@ use REDCap;
                          }
                          }
 
-                        ?>
+                        foreach (self::$tableHeaders as $header) {
+                            echo "<th style='text-align:center'><b>$header</b></th>";
+                         }
 
-                            <th style="text-align:center"><b>PID</b></th>
-                            <th style="text-align:center"><b>Project Name</b></th>
-                            <th style="text-align:center"><b>Purpose</b></th>
-                            <th style="text-align:center"><b>Status</b></th>
-                            <th style="text-align:center"><b>Records</b></th>
-                            <th style="text-align:center"><b>Users</b></th>
-                            <th style="text-align:center"><b>Created</b></th>
-                            <th style="text-align:center"><b>Last Event</b></th>
-<!--                            <th style="text-align:center"><b>Days Since Event</b></th>-->
-                            <th style="text-align:center"><b>Deleted</b></th>
-                            <th style="text-align:center"><b>Final Delete</b></th>
-
-                            <?php
 
                             if(self::getSystemSetting('hide-action-column') || !self::getSystemSetting('restore-checkboxes') || !self::getSystemSetting('delete-checkboxes')) {
 
@@ -520,13 +596,7 @@ use REDCap;
                         </tr>
                     </thead>
 
-
-<!--  Don't delete this form.  This form is necessary to be able to delete/restore the first row via buttons.  Without this form, the first row is stripped of its form. -->
-            <form></form>
-
             <?php
-
-
 
         }  // End Display_Table_Header()
 
@@ -685,10 +755,7 @@ use REDCap;
                     else {
                 ?>
                 <td align='center' class="<?php echo $Row_Class; ?>">
-                <form name="Delete_Row_Form" id="Delete_Row_Form" action="" method="POST" >
-                    <button data-toggle="modal" data-target="#Confirmation_Modal_Button" class="<?php echo $Button_Color ?>" id="Delete_PID_Button_<?php echo $row['project_id'] ?>" type='button' name="Delete_PID_Button" value=<?php echo $row['project_id']; ?>>Delete</button>
-                    <button hidden type="submit" class="<?php echo $Button_Color ?>" id="Delete_PID_Submit_<?php echo $row['project_id'] ?>" type='button' name="Delete_PID_Submit" value=<?php echo $row['project_id']; ?>>Delete</button>
-                    </form>
+                    <button data-toggle="modal" data-target="#Confirmation_Modal_Button" class="<?php echo $Button_Color ?>" type='button' value='delete'>Delete</button>
                 </td>
 
 
@@ -709,10 +776,9 @@ use REDCap;
                     else {
                 ?>
                 <td align='center' class="<?php echo $Row_Class; ?>">
-                <form name="Restore_Row_Form" id="Restore_Row_Form" action="" method="POST" >
+
                     <button data-toggle="modal" data-target="#Confirmation_Modal_Button" class="<?php echo $Button_Color ?>" id="Restore_PID_Button_<?php echo $row['project_id'] ?>" type='button' name="Restore_PID_Button" value=<?php echo $row['project_id']; ?>>Restore</button>
-                    <button hidden type="submit" class="<?php echo $Button_Color ?>" id="Restore_PID_Submit_<?php echo $row['project_id'] ?>" type='button' name="Restore_PID_Submit" value=<?php echo $row['project_id']; ?>>Restore</button>
-                    </form>
+
                 </td>
 
                 <?php
@@ -749,7 +815,7 @@ use REDCap;
                <td align='center' class="<?php echo $Row_Class; ?>">
                     <a href="<?php echo "//" . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?>"> <?php echo $row['New Last Event']; ?></a>
                 </td>
-<!--                <td align='center' class="color" --><?php //echo $Row_Color ?><!-->
+<!--                <td align='center' class="color" --><?php ////echo $Row_Color ?>
 <!--                    <a href="--><?php //echo $protocol . SERVER_NAME . APP_PATH_WEBROOT . "Logging/index.php?pid=" . $row['project_id']; ?><!--" target="_blank" > --><?php //echo $row['Days Since Last Event']; ?><!--</a>-->
 <!--                </td>-->
                 <td align='center' class="<?php echo $Row_Class; ?>">
@@ -779,18 +845,6 @@ use REDCap;
             </tr>
 
             <?php
-
-            if(isset($_POST['Restore_PID_Submit'])) {
-                $this->Restore_Individual($_POST['Restore_PID_Submit']);
-            }
-
-error_log(json_encode($_POST));
-           if(isset($_POST['Delete_PID_Submit'])) {
-
-
-                $this->Delete_Individual($_POST['Delete_PID_Submit']);
-            }
-
 
         }  // End Build_HTML_Table();
 
@@ -829,7 +883,7 @@ error_log(json_encode($_POST));
 
 
 
-            header("Location: {$_SERVER['HTTP_REFERER']}");
+//            header("Location: {$_SERVER['HTTP_REFERER']}");
 
 
                 }
@@ -873,10 +927,7 @@ error_log(json_encode($_POST));
 
                 }
 
-
-
-
-          header("Location: {$_SERVER['HTTP_REFERER']}");
+//          header("Location: {$_SERVER['HTTP_REFERER']}");
 
                 }
 
