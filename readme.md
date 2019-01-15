@@ -1,11 +1,12 @@
 Quick Deleter
 
-The Quick Deleter external module allows REDCap super users to quickly delete and/or restore projects in bulk.  The table includes all the information you need to feel confident in deleting a project.
+The Quick Deleter external module allows REDCap super users to quickly delete and/or restore projects.  The table includes all the information you need to feel confident in deleting a project.
 
-3 report types
+4 report types
 1)  My projects:  Displays all the projects for the current user
 2)  All projects:  Displays all projects
-3)  Custom:  Paste in a json from the Admin Dashboard or comma separated project IDs.  The csv can have spaces or not.
+3)  Custom json:  Paste in a json from the Admin Dashboard 
+4)  Custom csv:  Comma separated project IDs.  The csv can have spaces or not.
 
 -  The table features column sorting, filtering, and adjusting the amount of rows displayed. 
 

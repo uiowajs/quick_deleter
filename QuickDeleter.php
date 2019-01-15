@@ -11,7 +11,7 @@ use REDCap;
 
 
 //  Session for returning submitted json/csv after deleting/restoring project.
-    session_start();
+//    session_start();
 
     class QuickDeleter extends AbstractExternalModule
     {
@@ -28,96 +28,24 @@ use REDCap;
             'Final Delete'
         ];
 
-        //  Displays header, home page, and table
-        public function Display_Page()
-        {
 
-            if(SUPER_USER == 1) {
+        public function Get_Table() {
 
-                // Display page header
-                ?>
-                <div align="center" id="div_Header">
+               $tab = $_REQUEST['tab'];
 
-                    <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
-
-                    <h1 style="text-align: center; padding-top:40px; padding-bottom:5px; color:white;" class="Main_Header">
-                        <a href="<?php echo "//" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index"; ?>">Quick Deleter </a>
-                    </h1>
-
-                    <table id="Pages_Table">
-                        <tr>
-                            <td>
-                                <a href="<?= $this->getUrl("index.php?tab=0") ?>">My Projects</a>
-                            </td>
-                            <td>
-                                <a href="<?= $this->getUrl("index.php?tab=1") ?> ">All Projects</a>
-                            </td>
-                            <td>
-                                <p class="or"> OR </p>
-                            </td>
-                            <form name="Custom_Form" id="Custom_Form" method="POST" action="<?= $this->getUrl("index.php?tab=2") ?>">
-                            <td>
-                                <input id="Custom_Box" class="Button_Box" type='text' name='Custom_Box' value="" placeholder="Enter json or csv">
-                            </td>
-                            <td>
-                                <button class="Button_Link" type="submit" id="Custom_Page" name="Custom_Page">Custom</button>
-                            </td>
-
-                            </form>
-                        </tr>
-                    </table>
-                </div>
-                <?php
-
-                // Display home page
-                $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
+              $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
                 $Current_URL = $protocol . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
                 $Home_Page = $this->getUrl("index.php");
-                if ($Current_URL == $Home_Page) {
-                    ?>
-                    <div>
-                        <h2 style="text-align: center; padding-top:50px; color:white;">Quickly delete and restore projects</h2>
-
-                        <h3 style="text-align: center; padding-top:50px; color:lightgrey;">
-
-                        My projects:  Projects that the current user has permissions for</br>
-</br>
-                        Custom:  Enter comma separated project IDs or a json object from the Admin Dashboard.</br>
 
 
-</h3>
 
-                    </div>
-                    <?php
-                }
 
                 global $conn;
                 if (!isset($conn)) {
                     db_connect(false);
                 }
 
-                $tab = $_REQUEST['tab'];  //  Tabs for SQL array
-
-                // Enables tablesorter
-                ?>
-                <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.min.js") ?>"></script>
-                <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.widgets.min.js") ?>"></script>
-                <script src="<?= $this->getUrl("/resources/tablesorter/widgets/widget-pager.min.js") ?>"></script>
-                <script src="<?= $this->getUrl("/resources/tablesorter/parsers/parser-input-select.min.js") ?>"></script>
-                <script src="<?= $this->getUrl("/resources/tablesorter/widgets/widget-output.min.js") ?>"></script>
-
-                <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/theme.blue.min.css") ?>" rel="stylesheet">
-                <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/jquery.tablesorter.pager.min.css") ?>" rel="stylesheet">
-                <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
-
-                <script src="<?= $this->getUrl("/QuickDeleter.js") ?>"></script>
-                <script>
-                    UIOWA_QuickDeleter.tableHeaders = <?= json_encode(self::$tableHeaders) ?>;
-                    UIOWA_QuickDeleter.submitUrl = '<?= $this->getUrl('requestHandler.php') ?>';
-                </script>
-                <?php
-
-                $Parsed_Custom = $this->Parse_Custom();
+                          $Parsed_Custom = $this->Parse_Custom();
                 $Parsed_Array = explode(",", $Parsed_Custom);
                 $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
                 $Get_Integers = explode(",", $Parsed_Custom);
@@ -222,6 +150,7 @@ use REDCap;
                     WHERE a.project_id IN (" . $qMarks . ")  
                     GROUP BY a.project_id
                     ORDER BY a.project_id ASC
+                    LIMIT 100;
                     "
                 );
 
@@ -231,7 +160,7 @@ use REDCap;
             <?php
 
             // Displays submit form if the page is My or All projects and not home page.
-            if(($tab == 0 || $tab == 1) && $Current_URL != $this->getUrl("index.php")) {
+            if(($tab == 0 || $tab == 1) && $Current_URL != $Home_Page) {
 
                 $this->Display_Table_Header();
 
@@ -277,6 +206,181 @@ use REDCap;
                 }  // End while loop for My/All projects
             }
 
+        }
+
+
+        //  Displays header, home page, and table
+        public function Display_Page()
+        {
+
+            if(SUPER_USER == 1) {
+
+                // Display page header
+                ?>
+                <div align="center" id="div_Header">
+
+                    <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
+
+                    <h1 style="text-align: center; padding-top:40px; padding-bottom:5px; color:white;" class="Main_Header">
+                        <a href="<?php echo "//" . SERVER_NAME . APP_PATH_WEBROOT . "ExternalModules/?prefix=quick_deleter&page=index"; ?>">Quick Deleter </a>
+                    </h1>
+
+                    <table id="Pages_Table">
+                        <tr>
+                            <td>
+                                <a href="<?= $this->getUrl("index.php?tab=0") ?>">My Projects</a>
+                            </td>
+                            <td>
+                                <a href="<?= $this->getUrl("index.php?tab=1") ?> ">All Projects</a>
+                            </td>
+<!--                            <td>-->
+<!--                                <p class="or"> OR </p>-->
+<!--                            </td>-->
+                            <form name="Custom_Form" id="Custom_Form" method="POST" action="<?= $this->getUrl("index.php?tab=2") ?>">
+                            <td>
+                                <input id="Custom_Box" class="Button_Box" type='text' name='Custom_Box' value="<?php echo htmlspecialchars($_POST['Custom_Box']); ?>" placeholder="Enter json or csv">
+                            </td>
+                            <td>
+                                <button class="Button_Link" type="submit" id="Custom_Page" name="Custom_Page">Custom</button>
+                            </td>
+
+                            </form>
+                        </tr>
+                    </table>
+                </div>
+                <?php
+
+                 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
+                $Current_URL = $protocol . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
+                $Home_Page = $this->getUrl("index.php");
+                if ($Current_URL == $Home_Page) {
+                    ?>
+                    <div >
+                        <h2 style="text-align: center; padding-top:50px; color:white;">Quickly delete and restore projects</h2>
+
+                        <div style="text-align: center; ">
+
+<br><br><br><br>
+
+
+                            <table width="100%" style="text-align: center; color:white; ">
+
+                                <tr >
+                                    <td width="20%" >
+                                        <p style="font-size:16px; text-align: left; padding-left:30%;  text-decoration: underline; font-weight: bold;">Reports</p>
+                                        <p style="text-align: left; padding-left:30%;">
+
+                                            -  <b>My projects:</b>  Projects for which the current user has permissions
+                                            </br>
+                                            -  <b>All projects:</b> Including archived and inactive
+                                             </br>
+                                            -  <b>Custom json:</b>  Enter a json from the Admin Dashboard
+                                            </br>
+                                            -  <b>Custom csv:</b>  Enter comma separated project IDs.
+                                        </p>
+                                    </td>
+
+                                    <td width="20%">
+                                        <p style="font-size:16px; text-align: left; padding-left:30%;  text-decoration: underline; font-weight: bold;">Table links</p>
+                                         <p style="text-align: left; padding-left:30%;">
+                                            -  <b>PID:</b>  Project settings
+                                            </br>
+                                            -  <b>Project name:</b>  Project setup
+                                            </br>
+                                            -  <b>Status:</b>  Other functionality
+                                             </br>
+                                            -  <b>Record count:</b>  All data report
+                                            </br>
+                                            -  <b>Users:</b>  User info
+                                            </br>
+                                            -  <b>Last event:</b>  Project logging
+                                        </p>
+                                    </td>
+
+                                </tr>
+
+                                  </table>
+
+                                  <br><br><br><br> <br><br><br><br>
+
+                            <table width="100%" style="text-align: center; color:white;  " >
+
+
+                                <tr>
+                                    <td width="20%">
+                                        <p style="font-size:16px; text-align: left; padding-left:30%;  text-decoration: underline; font-weight: bold;">Configuration options</p>
+                                        <p style="text-align: left; padding-left:30%; ">
+                                        -  Hide action column
+                                        </br>
+                                        -  Replace project buttons with checkboxes
+                                        </br>
+                                        -  Enable row colors.  Red for deleted, green for active projects.
+                                        </br>
+                                        -  Enable delete and restore project button colors.  Red for delete, green for restore.
+                                        </br>
+                                        -  Enable checkbox submit button color.  Red for delete only, green for restore only, gray for delete and restore.
+                                        </p>
+                                    </td>
+
+                                    <td width="20%">
+                                        <p style="font-size:16px; text-align: left; padding-left:30%;  text-decoration: underline; font-weight: bold;">Other information</p>
+                                        <p style="text-align: left; padding-left:30%; ">
+                                           -  The table features column sorting, filtering, and variable row number.
+                                            </br>
+                                        - Projects deleted via Quick Deleter aren't deleted immediately, they are merely flagged.  The project is permanently deleted 30 days after being flagged.
+                                        </br>
+                                        -  To show only projects that are active, type "" in the "deleted" column filter.  To show only projects that are flagged for delete, type <> in the "deleted" column filter.
+                                         </br>
+                                        -  Project deletes and restores are logged both at the project and system level.
+                                        </br>
+                                        -  Custom reports only show 100 rows.
+                                        </p>
+                                    </td>
+                                </tr>
+
+                            </table>
+
+
+
+
+
+
+
+</div>
+                    </div>
+                    <?php
+                }
+
+                $this->Get_Table();
+
+
+                global $conn;
+                if (!isset($conn)) {
+                    db_connect(false);
+                }
+
+
+                // Enables tablesorter
+                ?>
+                <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.min.js") ?>"></script>
+                <script src="<?= $this->getUrl("/resources/tablesorter/jquery.tablesorter.widgets.min.js") ?>"></script>
+                <script src="<?= $this->getUrl("/resources/tablesorter/widgets/widget-pager.min.js") ?>"></script>
+                <script src="<?= $this->getUrl("/resources/tablesorter/parsers/parser-input-select.min.js") ?>"></script>
+                <script src="<?= $this->getUrl("/resources/tablesorter/widgets/widget-output.min.js") ?>"></script>
+
+                <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/theme.blue.min.css") ?>" rel="stylesheet">
+                <link href="<?= $this->getUrl("/resources/tablesorter/tablesorter/jquery.tablesorter.pager.min.css") ?>" rel="stylesheet">
+                <link href="<?= $this->getUrl("/resources/styles.css") ?>" rel="stylesheet" type="text/css"/>
+
+                <script src="<?= $this->getUrl("/QuickDeleter.js") ?>"></script>
+                <script>
+                    UIOWA_QuickDeleter.tableHeaders = <?= json_encode(self::$tableHeaders) ?>;
+                    UIOWA_QuickDeleter.submitUrl = '<?= $this->getUrl('requestHandler.php') ?>';
+                </script>
+                <?php
+
+
+
                     // Logs when a super user accesses quick deleter
                     //REDCap::logEvent("Super user, " . USERID . ", accessed the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
 
@@ -296,6 +400,7 @@ use REDCap;
         public function Display_Table_Header() {
 
             $tab = $_REQUEST['tab'];
+
             $Custom_Type = $this->Get_Custom_Type();
             echo "<br>";
             ?>
@@ -436,7 +541,10 @@ use REDCap;
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                   </div>
                   <div class="modal-body">
-                    <b style="font-size:16px">Confirm that the following projects should be modified:</b>
+                    <div id="modal-body-top">
+
+</div>
+<!--                    <b style="font-size:16px">Confirm that the following projects should be modified:</b>-->
                     <br/>
                     <br/>
 
@@ -446,17 +554,11 @@ use REDCap;
                             <br/>
                             <b style="color:red;">DELETE:</b>
 <br/>
-
                              </div>
-
 
                             <div id="Delete_Projects_Inner_Div">
 
-
-
                                 </div>
-
-
                         </div>
                         </table>
                         <br/>
@@ -467,13 +569,8 @@ use REDCap;
                             <br/>
                             <b style="color:green;">RESTORE:</b>
 <br/>
-
                              </div>
-
                               <div id="Restore_Projects_Inner_Div">
-
-
-
                                 </div>
 
                         </div>
@@ -481,7 +578,7 @@ use REDCap;
 
                   </div>
                   <div class="modal-footer">
-                    <button id="Accept_Send_Checkboxes" name="Accept_Send_Checkboxes" type="button" class="btn btn-default" data-dismiss="modal">Accept</button>
+                    <button id="Accept_Send_Checkboxes" name="Accept_Send_Checkboxes" type="button" class="btn btn-default" data-dismiss="modal">Confirm</button>
                     <button id="Cancel_Button_Checkboxes" name="Cancel_Button_Checkboxes" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                   </div>
                 </div>
@@ -604,20 +701,26 @@ use REDCap;
         public function Get_Custom_Type() {
 
             $Custom_Box = $_POST['Custom_Box'];
+error_log("1st: " . $Custom_Box);
 
             if(isset($Custom_Box)) {
                 if(substr($Custom_Box, 0, 1) == "[") {
                     $Custom_Type = "json";
-                    $_SESSION['Custom_Type'] = $Custom_Type;
+//                    $_SESSION['Custom_Type'] = $Custom_Type;
+
+error_log("2nd: " . $Custom_Box);
                 }
                 elseif(is_numeric(substr($Custom_Box, 0 ,1)) == true) {
                     $Custom_Type = "csv";
-                    $_SESSION['Custom_Type'] = $Custom_Type;
+//                    $_SESSION['Custom_Type'] = $Custom_Type;
                 }
             }
-            elseif(isset($_SESSION['Custom_Type'])) {
-                $Custom_Type = $_SESSION['Custom_Type'];
-            }
+
+
+
+//            elseif(isset($_SESSION['Custom_Type'])) {
+//                $Custom_Type = $_SESSION['Custom_Type'];
+//            }
 
             return $Custom_Type;
         }  // End Get_Custom_Type()
@@ -636,18 +739,29 @@ use REDCap;
 
                     $Custom_PID = array();
                     foreach ($json_decode AS $values) {
-                        $Custom_PID[] = $values->PID;
+                        if(filter_var($values->PID, FILTER_VALIDATE_INT)) {
+                            $Custom_PID[] = $values->PID;
+                        }
                     }
 
                     $Custom_Value = implode(",", $Custom_PID);
-                    $_SESSION['Custom_Value'] = $Custom_Value;
+//                    $_SESSION['Custom_Value'] = $Custom_Value;
                 }
                 elseif($Get_Custom_Type == "csv") {
-                    $Custom_Value = $Custom_Box;
-                    $_SESSION['Custom_Value'] = $Custom_Box;
+
+                    $Explode_CSV = explode(",", $Custom_Box);
+
+                    foreach($Explode_CSV AS $values) {
+                        if(filter_var($values, FILTER_VALIDATE_INT)) {
+                            $Custom_PID[] = $values;
+                        }
+                    }
+
+                    $Custom_Value = implode(",", $Custom_PID);
+//                    $_SESSION['Custom_Value'] = $Custom_Box;
                 }
-            } elseif(isset($_SESSION['Custom_Value'])) {
-                $Custom_Value = $_SESSION['Custom_Value'];
+//            } elseif(isset($_SESSION['Custom_Value'])) {
+//                $Custom_Value = $_SESSION['Custom_Value'];
             }
 
             return $Custom_Value;
@@ -987,7 +1101,15 @@ use REDCap;
                     }  // End of foreach Post Values
                 }  // End of foreach Pre Values
 
-                    header("Location: {$_SERVER['HTTP_REFERER']}");
+//                    header("Location: {$_SERVER['HTTP_REFERER']}");
+
+//                if($tab=2) {
+
+//                    $Previous_Custom_Values = $_POST['Custom_Box'];
+//                    $this->Display_Page();
+//                    $this->Get_Table();
+//                }
+
                 }  // End if(SUPER_USER == 1)
                 else {
                     REDCap::logEvent("Non super user, " . USERID . ", tried to delete/restore projects via the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
@@ -1005,7 +1127,7 @@ use REDCap;
         // Gets PIDs for rows that were checked
         public function Get_PID()
         {
-            $PID_Box = $_POST['PID'];
+            $PID_Box = $_POST['pid_box'];
 
             return $PID_Box;
         }  // End of Get_PID()
