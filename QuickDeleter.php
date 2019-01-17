@@ -493,7 +493,7 @@ use REDCap;
                         ?>
 
                         <td>
-                            <input id='PID_Box' type='text' name='PID' hidden readonly>
+                            <input id='PID_Box' type='text' name='PID'  readonly>
                         </td>
                     </tr>
                 </table>
@@ -1095,7 +1095,7 @@ error_log("2nd: " . $Custom_Box);
                                 }  // End of else (date_deleted != NULL)
                             }  // End of if ($Post_Value == $Pre_Value)
                             else {
-                                REDCap::logEvent("Quick Deleter encountered an error for projects " . $Post_Value['project_id'], NULL, NULL, NULL, NULL, $Post_Value['project_id']);
+                                REDCap::logEvent("Quick Deleter encountered an error for project " . $Post_Value['project_id'] . " Project not updated.", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
                             } // End of else (project_id != project_id)
                         }  // End of if (project_id == project_id)
                     }  // End of foreach Post Values

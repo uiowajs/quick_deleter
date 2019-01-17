@@ -107,9 +107,6 @@ UIOWA_QuickDeleter.selectedProjectInfo = {};
         // Confirmation modal on submit with checkboxes
         $('#send_button').click(function() {
 
-
-
-
             var QD_values = new Array();
             $.each($(".PID_Checkbox:checked"), function() {
                 var QD_Data = $(this).parents('tr:eq(0)');
@@ -454,46 +451,58 @@ UIOWA_QuickDeleter.selectedProjectInfo = {};
                 $('hr#Spacer').addClass("Hide_Header");
             }
 
-            $('#Accept_Send_Checkboxes').click(function(){
+            
 
-
-                $.ajax({
-                    method: 'POST',
-                    url: UIOWA_QuickDeleter.submitUrl,
-                    data: {
-                        pid_box: $("#PID_Box").val()
-                        // custom_box:  Custom_Value,
-
-                    }
-
-                })
-                    .done(function() {
-
-
-                        if(window.location.href.indexOf("tab=2") > -1)
-
-                            $("#Custom_Page").click();
-
-                        else
-
-                        document.location.reload();
-
-                    });
-
-
-
-                // var Submit_Form = document.getElementById("Form").submit();
-                // if(Tab === 3) {
-                //     document.getElementById("Custom_Box").submit();
-                // }
-                // console.log(Submit_Form);
-                    });
-
-
+            // $('#Cancel_Button_Checkboxes').click(function(){
+            //
+            //
+            //     $('#reset').click();
+            // });
 
 
 
         });  // End on send button click
+
+
+
+
+        $('#Accept_Send_Checkboxes').click(function(){
+
+
+            $.ajax({
+                method: 'POST',
+                url: UIOWA_QuickDeleter.submitUrl,
+                data: {
+                    pid_box: $("#PID_Box").val()
+                    // custom_box:  Custom_Value,
+
+                }
+
+            })
+                .done(function() {
+
+
+                    if(window.location.href.indexOf("tab=2") > -1)
+
+                        $("#Custom_Page").click();
+
+                    else
+
+                        document.location.reload();
+
+                });
+
+
+
+            // var Submit_Form = document.getElementById("Form").submit();
+            // if(Tab === 3) {
+            //     document.getElementById("Custom_Box").submit();
+            // }
+            // console.log(Submit_Form);
+        });
+
+
+
 
 
 
