@@ -9,7 +9,6 @@ use Project;
 use REDCap;
 
 
-
 //  Session for returning submitted json/csv after deleting/restoring project.
 //    session_start();
 
@@ -25,7 +24,7 @@ use REDCap;
             'Created',
             'Last Event',
             'Deleted',
-            'Final Delete'
+            'Restorable Until'
         ];
 
 
@@ -37,15 +36,12 @@ use REDCap;
                 $Current_URL = $protocol . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
                 $Home_Page = $this->getUrl("index.php");
 
-
-
-
                 global $conn;
                 if (!isset($conn)) {
                     db_connect(false);
                 }
 
-                          $Parsed_Custom = $this->Parse_Custom();
+                $Parsed_Custom = $this->Parse_Custom();
                 $Parsed_Array = explode(",", $Parsed_Custom);
                 $qMarks = str_repeat('?,', count($Parsed_Array) - 1) . '?';
                 $Get_Integers = explode(",", $Parsed_Custom);
@@ -162,7 +158,7 @@ use REDCap;
             // Displays submit form if the page is My or All projects and not home page.
             if(($tab == 0 || $tab == 1) && $Current_URL != $Home_Page) {
 
-                $this->Display_Table_Header();
+                $this->Display_Page_Header();
 
             }
 
@@ -178,7 +174,7 @@ use REDCap;
 
                 if ($num_rows != "") {
 
-                    $this->Display_Table_Header();
+                    $this->Display_Page_Header();
 
                 }  // End if ($Parsed_json != "")
                 else {
@@ -208,7 +204,6 @@ use REDCap;
 
         }
 
-
         //  Displays header, home page, and table
         public function Display_Page()
         {
@@ -233,15 +228,13 @@ use REDCap;
                             <td>
                                 <a href="<?= $this->getUrl("index.php?tab=1") ?> ">All Projects</a>
                             </td>
-<!--                            <td>-->
-<!--                                <p class="or"> OR </p>-->
-<!--                            </td>-->
+
                             <form name="Custom_Form" id="Custom_Form" method="POST" action="<?= $this->getUrl("index.php?tab=2") ?>">
                             <td>
                                 <input id="Custom_Box" class="Button_Box" type='text' name='Custom_Box' value="<?php echo htmlspecialchars($_POST['Custom_Box']); ?>" placeholder="Enter json or csv">
                             </td>
                             <td>
-                                <button class="Button_Link" type="submit" id="Custom_Page" name="Custom_Page">Custom</button>
+                                <button class="Button_Link" type="submit" id="Custom_Page" name="Custom_Page">Search Custom</button>
                             </td>
 
                             </form>
@@ -260,7 +253,7 @@ use REDCap;
 
                         <div style="text-align: center; ">
 
-<br><br><br><br>
+                        <br><br><br><br>
 
 
                             <table width="100%" style="text-align: center; color:white; ">
@@ -339,13 +332,6 @@ use REDCap;
                                 </tr>
 
                             </table>
-
-
-
-
-
-
-
 </div>
                     </div>
                     <?php
@@ -392,12 +378,12 @@ use REDCap;
                     echo "<br>";
                     echo "<br>";
                     REDCap::logEvent("Non super user, " . USERID . ", tried to access the Quick Deleter external module", NULL, NULL, NULL, NULL, NULL);
-                    echo "This function is for super users only";
+                    echo "Something went wrong.";
                     echo "<br>";
                 }
             }  // End Display_Page()
 
-        public function Display_Table_Header() {
+        public function Display_Page_Header() {
 
             $tab = $_REQUEST['tab'];
 
@@ -458,7 +444,7 @@ use REDCap;
 
                         ?>
                         <td>
-                            <button type="submit" id='Hidden_Submit' name='Hidden_Submit' hidden >Send</button>
+<!--    Not sure if needed anymore         <button type="submit" id='Hidden_Submit' name='Hidden_Submit' hidden >Send</button>-->
                         </td>
 
                         <?php
@@ -488,49 +474,16 @@ use REDCap;
                         <?php
                         }
 
-
-
                         ?>
 
                         <td>
-                            <input id='PID_Box' type='text' name='PID'  readonly>
+                            <input id='PID_Box' type='text' name='PID' hidden readonly>
                         </td>
                     </tr>
                 </table>
             </div>
 
-
-
-            <!-- Confirmation Modal -->
-<!--            <div id="Confirmation_Modal" class="modal fade" role="dialog">-->
-<!--              <div class="modal-dialog">-->
-
-               <!-- Modal content-->
-<!--                <div class="modal-content">-->
-<!--                  <div class="modal-header">-->
-<!--                    <h4 style="font-weight:bold" class="modal-title">Attention</h4>-->
-<!--                    <button type="button" class="close" data-dismiss="modal">&times;</button>-->
-<!--                  </div>-->
-<!--                  <div class="modal-body">-->
-<!--                    <b style="font-size:16px">Confirm that the following projects should be modified:</b>-->
-<!--                    <br/>-->
-<!--                    <br/>-->
-<!--                    <div id="Delete_Projects_Div">-->
-<!--                    </div>-->
-<!--                    <hr>-->
-<!--                    <div id="Restore_Projects_Div">-->
-<!--                    </div>-->
-<!--                  </div>-->
-<!--                  <div class="modal-footer">-->
-<!--                    <button id="Accept_Send_Checkboxes" name="Accept_Send_Checkboxes" type="button" class="btn btn-default" data-dismiss="modal">Accept</button>-->
-<!--                    <button id="Cancel_Button_Checkboxes" name="Cancel_Button_Checkboxes" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>-->
-<!--                  </div>-->
-<!--                </div>-->
-
-<!--              </div>-->
-<!--            </div>-->
-
-
+<!--checkbox confirmation modal-->
            <div id="Confirmation_Modal" class="modal fade" role="dialog">
               <div class="modal-dialog modal-lg">
 
@@ -544,7 +497,7 @@ use REDCap;
                     <div id="modal-body-top">
 
 </div>
-<!--                    <b style="font-size:16px">Confirm that the following projects should be modified:</b>-->
+
                     <br/>
                     <br/>
 
@@ -588,7 +541,7 @@ use REDCap;
 
 
 
-
+<!-- button confirmation modal -->
                         <!-- Confirmation Modal -->
             <div id="Confirmation_Modal_Button" class="modal fade" role="dialog">
               <div class="modal-dialog">
@@ -641,8 +594,6 @@ use REDCap;
             <!-- Create table  -->
             <div id="id_projects_table" align="center">
                 <table id='Projects_Table' class='tablesorter'>
-
-
 
                      <?php
 
@@ -701,23 +652,19 @@ use REDCap;
         public function Get_Custom_Type() {
 
             $Custom_Box = $_POST['Custom_Box'];
-error_log("1st: " . $Custom_Box);
+
 
             if(isset($Custom_Box)) {
                 if(substr($Custom_Box, 0, 1) == "[") {
                     $Custom_Type = "json";
 //                    $_SESSION['Custom_Type'] = $Custom_Type;
 
-error_log("2nd: " . $Custom_Box);
                 }
                 elseif(is_numeric(substr($Custom_Box, 0 ,1)) == true) {
                     $Custom_Type = "csv";
 //                    $_SESSION['Custom_Type'] = $Custom_Type;
                 }
             }
-
-
-
 //            elseif(isset($_SESSION['Custom_Type'])) {
 //                $Custom_Type = $_SESSION['Custom_Type'];
 //            }
@@ -790,7 +737,7 @@ error_log("2nd: " . $Custom_Box);
         // Creates username link that goes to user page in control center
         public function Username_Links($userID) {
 
-            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
+//            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ? "https://" : "http://";
 
             $urlString = sprintf("//" . "%s%sControlCenter/view_users.php?username=%s",  // Browse User Page
                 SERVER_NAME,
@@ -849,9 +796,6 @@ error_log("2nd: " . $Custom_Box);
 //                }
             }
 
-
-
-
                 if ($row['New Date Deleted'] == "") // If date_delete is null, color row green, otherwise red.  // also works:  $row['New Date Deleted'] == ""
                 {
 
@@ -871,8 +815,6 @@ error_log("2nd: " . $Custom_Box);
                 <td align='center' class="<?php echo $Row_Class; ?>">
                     <button data-toggle="modal" data-target="#Confirmation_Modal_Button" class="<?php echo $Button_Color ?>" type='button' value='delete'>Delete</button>
                 </td>
-
-
 
                 <?php
 
@@ -942,8 +884,6 @@ error_log("2nd: " . $Custom_Box);
 
                 if(self::getSystemSetting('hide-action-column') || !self::getSystemSetting('restore-checkboxes') || !self::getSystemSetting('delete-checkboxes')) {
 
-
-
                 }
                 else {
                 ?>
@@ -976,12 +916,14 @@ error_log("2nd: " . $Custom_Box);
                 $sql =
                 "
                 UPDATE redcap_projects
-                SET date_deleted = NULL
+                SET date_deleted = ?
                 WHERE project_id = ?
                 ";
 
+                $null_redcap = NULL;
+
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("i", $PID);
+                $stmt->bind_param("si", $null_redcap, $PID);
                 $stmt->execute();
 
 
@@ -991,23 +933,18 @@ error_log("2nd: " . $Custom_Box);
 //                    if ($Post_Value['date_deleted'] == NULL) {
                         REDCap::logEvent("Project restored via Quick Deleter", NULL, NULL, NULL, NULL, $PID);
 //                    }  // End of if (date_delete == NULL)
-
+                }
+                else {
+                    REDCap::logEvent("Project failed to restore via Quick Deleter", NULL, NULL, NULL, NULL, $PID);
                 }
 
-
-
-
-//            header("Location: {$_SERVER['HTTP_REFERER']}");
 
 
                 }
         }
 
-
                 public function Delete_Individual($PID) {
 
-//            trigger_error("Some info",E_USER_ERROR);
-//            error_log("test");
 
                 $Pre_Value = $this->Get_Value_Buttons($PID);
 
@@ -1017,18 +954,18 @@ error_log("2nd: " . $Custom_Box);
                 }
 
 
-
-
           $sql =
                 "
                 UPDATE redcap_projects
-                SET date_deleted = '" . NOW . "'
+                SET date_deleted = ?
                 WHERE project_id = ?
                 ";
 
+                $now_redcap = 	NOW;
+
 
             $stmt = $conn->prepare($sql);
-                $stmt->bind_param("i", $PID);
+                $stmt->bind_param("si", $now_redcap, $PID);
                 $stmt->execute();
 
 
@@ -1040,8 +977,9 @@ error_log("2nd: " . $Custom_Box);
 //                    }  // End of if (date_delete == NULL)
 
                 }
-
-//          header("Location: {$_SERVER['HTTP_REFERER']}");
+                else {
+                    REDCap::logEvent("Project failed to delete via Quick Deleter", NULL, NULL, NULL, NULL, $PID);
+                }
 
                 }
 
@@ -1070,13 +1008,16 @@ error_log("2nd: " . $Custom_Box);
 
                 $sqlUpdateProject = "
                 UPDATE redcap_projects
-                SET date_deleted = IF(date_deleted IS NULL, '" . NOW . "', NULL)
+                SET date_deleted = IF(date_deleted IS NULL, ?, ?)
                 WHERE project_id IN (" . $qMarks . ")
                 ";
 
+                $now_redcap = NOW;
+                $null_redcap = NULL;
+
                 // https://stackoverflow.com/questions/3703180/a-prepared-statement-where-in-query-and-sorting-with-mysql/45905752#45905752.
                 $stmt = $conn->prepare($sqlUpdateProject);
-                $stmt->bind_param($Integers, ...$PID_Array);
+                $stmt->bind_param("ss".$Integers, $now_redcap, $null_redcap, ...$PID_Array);
                 $stmt->execute();
                 $stmt->close();
 
@@ -1095,20 +1036,11 @@ error_log("2nd: " . $Custom_Box);
                                 }  // End of else (date_deleted != NULL)
                             }  // End of if ($Post_Value == $Pre_Value)
                             else {
-                                REDCap::logEvent("Quick Deleter encountered an error for project " . $Post_Value['project_id'] . " Project not updated.", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
+                                REDCap::logEvent("Quick Deleter failed for project " . $Post_Value['project_id'] . ". Project not updated.", NULL, NULL, NULL, NULL, $Post_Value['project_id']);
                             } // End of else (project_id != project_id)
                         }  // End of if (project_id == project_id)
                     }  // End of foreach Post Values
                 }  // End of foreach Pre Values
-
-//                    header("Location: {$_SERVER['HTTP_REFERER']}");
-
-//                if($tab=2) {
-
-//                    $Previous_Custom_Values = $_POST['Custom_Box'];
-//                    $this->Display_Page();
-//                    $this->Get_Table();
-//                }
 
                 }  // End if(SUPER_USER == 1)
                 else {
@@ -1117,7 +1049,7 @@ error_log("2nd: " . $Custom_Box);
                     echo "<br>";
                     echo "<br>";
                     echo "<br>";
-                    echo "This function is for super users only";
+                    echo "Something went wrong." ;
                     echo "<br>";
             }  // End super user check
         }  // End of Submit_Checkboxes()
@@ -1190,8 +1122,6 @@ error_log("2nd: " . $Custom_Box);
             return $Results;
 
         }
-
-
 
 }  // End class
 

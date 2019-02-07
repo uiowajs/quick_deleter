@@ -9,16 +9,16 @@ UIOWA_QuickDeleter.selectedProjectInfo = {};
 
 
 
-        var $checks = $(".PID_Checkbox").on('change', function()
+        UIOWA_QuickDeleter.checks = $(".PID_Checkbox").on('change', function()
         {
-            var checked = $checks.is(':checked');
+            var checked = UIOWA_QuickDeleter.checks.is(':checked');
 
             $("#send_button").toggle(!checked);
             $("#send_button").toggle(checked);
 
         });
 
-            $checks.first().change();
+        UIOWA_QuickDeleter.checks.first().change();
 
 
         // Tablesorter
@@ -37,8 +37,6 @@ UIOWA_QuickDeleter.selectedProjectInfo = {};
                 filter_reset : '.reset_button'
 
             }
-
-
 
         });
 
@@ -98,12 +96,6 @@ UIOWA_QuickDeleter.selectedProjectInfo = {};
                 $(this).closest('tr').css("backgroundColor", "").css({fontWeight: this.checked ? 'bold' : 'normal'}).removeClass("Select_Restore_Row");
         });
 
-
-
-
-
-
-
         // Confirmation modal on submit with checkboxes
         $('#send_button').click(function() {
 
@@ -127,8 +119,6 @@ UIOWA_QuickDeleter.selectedProjectInfo = {};
 
             var QD_Delete_Projects = new Array();
             var QD_Restore_Projects = new Array();
-
-
 
             QD_values.forEach(function (object) {
 
@@ -163,73 +153,11 @@ UIOWA_QuickDeleter.selectedProjectInfo = {};
 
             var QD_Count_Projects = QD_Delete_Projects.length + QD_Restore_Projects.length;
 
-
-
-            // QD_Delete_Projects.forEach(function (object) {
-            //
-            //     // Display_Project_Properties.forEach(function (property, i) {
-            //
-            //         $('#Delete_Projects_Div').append(
-            //             '<div id="Delete_Projects_Inner_Div">' +
-            //             '<span style="font-weight:bold; color:red; font-size:16px">DELETE:</span>' +
-            //             '<br/><br/>' + '<span style="font-weight:bold" >' + object["Title: "] + '</span>' +
-            //             '<br/><b> PID: </b> ' + object["PID: "] +
-            //             '<br/>' +
-            //             '<br/><b> Record count:</b> ' + object["Records: "] +
-            //             '<br/>' +
-            //             '<br/><b> Status :</b> ' + object["Status: "] +
-            //             '<br/><b> Purpose :</b> ' + object["Purpose: "] +
-            //             '<br/>' +
-            //             '<br/><b> Created :</b> ' + object["Created: "] +
-            //             '<br/><b> Last_Event :</b> ' + object["Last Event: "] +
-            //             '<br/>' +
-            //             '<br/><b> Users :</b> ' + object["Users: "] +
-            //             '<br/>' +
-            //             '<br/>' +
-            //             '</div>'
-            //         );
-            //
-            //
-            //
-            //
-            //     // });
-            // });
-
-            // QD_Restore_Projects.forEach(function (object) {
-            //
-            //
-            //
-            //
-            //     $('#Restore_Projects_Div').append(
-            //         '<div id="Restore_Projects_Inner_Div">' +
-            //             '<span style="font-weight:bold; color:green; font-size:16px">RESTORE:</span>' +
-            //             '<br/><br/>' + '<span style="font-weight:bold" >' + object["Title: "] + '</span>' +
-            //             '<br/><b> PID: </b> ' + object["PID: "] +
-            //             '<br/>' +
-            //             '<br/><b> Record count:</b> ' + object["Records: "] +
-            //             '<br/>' +
-            //             '<br/><b> Status :</b> ' + object["Status: "] +
-            //             '<br/><b> Purpose :</b> ' + object["Purpose: "] +
-            //             '<br/>' +
-            //             '<br/><b> Created :</b> ' + object["Created: "] +
-            //             '<br/><b> Last_Event :</b> ' + object["Last Event: "] +
-            //             '<br/>' +
-            //             '<br/><b> Users :</b> ' + object["Users: "] +
-            //             '<br/>' +
-            //             '<br/>' +
-            //         '</div>'
-            //     );
-            //
-            //
-            //     // });
-            // });
-
-
             // Required to create the table without auto closing the tag
-            var QD_Delete_Table = '<table id="Delete_Confirm_Table" class="tablesorter">';
+            var QD_Delete_Table = '<table id="Delete_Confirm_Table" >';
 
             $('#modal-body-top').html(
-            '<b style="font-size:16px">Confirm that the following ' + QD_Count_Projects + ' project(s) should be modified:</b>'
+            '<b style="font-size:16px">Confirm that the following ' + QD_Count_Projects + ' project(s) will be modified:</b>'
                 );
 
 
@@ -282,9 +210,7 @@ UIOWA_QuickDeleter.selectedProjectInfo = {};
 
                 $('#Delete_Projects_Inner_Div').append(
 
-
                     '<tr>' +
-
 
                     '<td>' +
                     QD_Deleted_Projects["PID: "] +
@@ -330,7 +256,7 @@ UIOWA_QuickDeleter.selectedProjectInfo = {};
             });  // End forEach Deleted_Projects
 
 
-            var QD_Restore_Table = '<table id="Restore_Confirm_Table" class="tablesorter">';
+            var QD_Restore_Table = '<table id="Restore_Confirm_Table" >';
 
             $('#Restore_Projects_Inner_Div').append(
 
@@ -424,13 +350,6 @@ UIOWA_QuickDeleter.selectedProjectInfo = {};
             });  // End forEach Deleted_Projects
 
 
-            // console.log("Delete Projects Array: ");
-            // console.log(QD_Delete_Projects);
-            //
-            // console.log("Restore Projects Array: ");
-            // console.log(QD_Restore_Projects);
-
-
             if(QD_Delete_Projects.length !== 0 || QD_Restore_Projects.length !== 0) {
                 $('#Confirmation_Modal').modal('show');
             }
@@ -451,23 +370,11 @@ UIOWA_QuickDeleter.selectedProjectInfo = {};
                 $('hr#Spacer').addClass("Hide_Header");
             }
 
-            
-
-            // $('#Cancel_Button_Checkboxes').click(function(){
-            //
-            //
-            //     $('#reset').click();
-            // });
-
-
 
         });  // End on send button click
 
 
-
-
         $('#Accept_Send_Checkboxes').click(function(){
-
 
             $.ajax({
                 method: 'POST',
@@ -492,18 +399,7 @@ UIOWA_QuickDeleter.selectedProjectInfo = {};
 
                 });
 
-
-
-            // var Submit_Form = document.getElementById("Form").submit();
-            // if(Tab === 3) {
-            //     document.getElementById("Custom_Box").submit();
-            // }
-            // console.log(Submit_Form);
         });
-
-
-
-
 
 
         // Delete modal contents when confirmation modal closes
@@ -515,115 +411,7 @@ UIOWA_QuickDeleter.selectedProjectInfo = {};
 
             $('div#Restore_Projects_Inner_Div').html("");
 
-
-
         });
-
-
-
-
-        //Displays projects set for delete and restore on submit confirmation
-        // $('#send_button').click(function() {
-        //
-        //     // Finds if project was already set for delete or not
-        //     var Delete_Flagged = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
-        //         return $(this).prop('id');
-        //     }).get();
-        //
-        //     // Gets title for selected projects
-        //     var Selected_Projects = $(".PID_Checkbox:checked", "#Projects_Table").map(function () {
-        //         return $(this).parent().parent().find('td:eq(2)').text().trim();
-        //     }).get();
-        //
-        //
-        //
-        //
-        //     //  Creates object with project title as key and delete flag as value
-        //     var Combined_Array = {};
-        //     for (var i = 0; i < Selected_Projects.length; i++) {
-        //         Combined_Array[Selected_Projects[i]] = Delete_Flagged[i];
-        //     }
-        //
-        //     // Create arrays and variables
-        //     var Delete_Projects = [];
-        //     var Restore_Projects = [];
-        //     // var Delete = "";
-        //     // var Restore = "";
-        //     // var Line_Breaks = "";
-        //
-        //     // Get value (delete flag) of object key, checks if 0 or 1, puts project title in array
-        //     for (key in Combined_Array) {
-        //         if (Combined_Array.hasOwnProperty(key)) {
-        //             var value = Combined_Array[key];
-        //             if (value === "0") {
-        //
-        //                 Delete_Projects = Delete_Projects.concat(key);
-        //
-        //             } else {
-        //
-        //                 Restore_Projects = Restore_Projects.concat(key);
-        //
-        //             }
-        //         }
-        //     }
-        //
-        //     // console.log(Delete_Projects);
-        //
-        //
-        //     UIOWA_QuickDeleter.arrayOfValues = [];
-        //
-        //         $('.PID_Checkbox:checked', '#Projects_Table').each(function() {
-        //
-        //             var rowTds = $(".PID_Checkbox:checked", "#Projects_Table").closest('tr').children().not(':first');
-        //
-        //             // drop first (empty) header
-        //             // rowTds = $(rowTds).not(':first');
-        //
-        //             // build object with project info
-        //             for (var i in UIOWA_QuickDeleter.tableHeaders) {
-        //                 var currHeader = UIOWA_QuickDeleter.tableHeaders[i];
-        //
-        //                 UIOWA_QuickDeleter.selectedProjectInfo[currHeader] = $(rowTds[i]).text().trim();
-        //                 UIOWA_QuickDeleter.arrayOfValues.push(UIOWA_QuickDeleter.selectedProjectInfo[currHeader]);
-        //
-        //             }
-        //
-        //             console.log(UIOWA_QuickDeleter.arrayOfValues);
-        //
-        //
-        //         });
-        //
-        //
-        //
-        //
-        //     console.log(UIOWA_QuickDeleter.selectedProjectInfo);
-        //
-        //
-        //     if(Delete_Projects.length === 0) {
-        //         $("#Delete_Projects_Div").addClass("Hide_Header");
-        //     }
-        //     else {
-        //         $("#Delete_Projects_Div").removeClass("Hide_Header");
-        //     }
-        //     if(Restore_Projects.length === 0) {
-        //         $("#Restore_Projects_Div").addClass("Hide_Header");
-        //     }
-        //     else {
-        //         $("#Restore_Projects_Div").removeClass("Hide_Header");
-        //     }
-        //
-        //     // $('#Delete_Projects_Div').html( '<b id="Delete_Projects_Header">"DELETE:"</b>');
-        //     $('#Delete_Projects_Div').html('<b style="color:red" id="Delete_Projects_Header">DELETE:</br></b>' + '<span id="Delete_Projects_Span">' + Delete_Projects.join('</br>')+'</span>');
-        //     $('#Restore_Projects_Div').html('<b style="color:green" id="Restore_Projects_Header">RESTORE:</br></b>' +  '<span id="Restore_Projects_Span">' + Restore_Projects.join('</br>')+'</span>');
-        //
-        //     // Submits form to delete/restore projects when "Accept" is clicked on the confirmation modal
-        //     $('#Accept_Send_Checkboxes').click(function(){
-        //
-        //
-        //         $("#Hidden_Submit").click();
-        //
-        //     });
-        // });
 
 
         // Confirmation popup for delete/restore via button
@@ -660,7 +448,7 @@ UIOWA_QuickDeleter.selectedProjectInfo = {};
 
 
             $('#Modify_Individual_Project_Div').html(
-                '<b style="font-size:16px">Confirm that the following project should be ' + action + ':' +
+                '<b style="font-size:16px">Confirm that the following project will be ' + action + ':' +
                 '<br/><br/></b>' + '<span style="font-weight:bold" id="Modify_Individual_Project_Span">' + UIOWA_QuickDeleter.selectedProjectInfo['Project Name']+'</span>' +
                 '<br/><b>PID:</b> ' + UIOWA_QuickDeleter.selectedProjectInfo['PID'] +
                 '<br/>' +
@@ -678,35 +466,33 @@ UIOWA_QuickDeleter.selectedProjectInfo = {};
 
 
 
+        });
 
-            $('#Accept_Send_Button').click(function(){
-                $.ajax({
-                    method: 'POST',
-                    url: UIOWA_QuickDeleter.submitUrl,
-                    data: {
-                        pid: UIOWA_QuickDeleter.selectedProjectInfo['PID'],
-                        action: UIOWA_QuickDeleter.selectedProjectInfo['Deleted'] === '' ? 'delete' : 'restore'
-                    }
-                })
-                    .done(function() {
-                        if(window.location.href.indexOf("tab=2") > -1)
+        $('#Accept_Send_Button').click(function(){
+            $.ajax({
+                method: 'POST',
+                url: UIOWA_QuickDeleter.submitUrl,
+                data: {
+                    pid: UIOWA_QuickDeleter.selectedProjectInfo['PID'],
+                    action: UIOWA_QuickDeleter.selectedProjectInfo['Deleted'] === '' ? 'delete' : 'restore'
+                }
+            })
+                .done(function() {
+                    if(window.location.href.indexOf("tab=2") > -1)
 
-                            $("#Custom_Page").click();
+                        $("#Custom_Page").click();
 
-                        else
+                    else
 
-                            document.location.reload();
-                    });
+                        document.location.reload();
+                });
 
-                    $('#reset').click();
+            $('#reset').click();
 
-            });
+        });
 
-            $('#Cancel_Button_Individual').click(function(){
-                $('#reset').click();
-            });
-
-
+        $('#Cancel_Button_Individual').click(function(){
+            $('#reset').click();
         });
 
 

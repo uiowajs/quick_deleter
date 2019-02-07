@@ -10,15 +10,9 @@ The Quick Deleter external module allows REDCap super users to quickly delete an
 
 -  The table features column sorting, filtering, and adjusting the amount of rows displayed. 
 
--  Green rows are active projects, red rows are projects flagged for delete.
-
 -  To show only projects that are active, type "" in the "delete flagged" column filter.  To show only projects that are flagged for delete, type <> in the "delete flagged" column filter.  
 
--  Checking the box in a green row will highlight the row red, indicating that you are going to delete the project.  Checking the box in a red row will highlight the row green, indicating that you are going to restore the project.  Both delete and restore can be done in the same submit.
-
--  When a project is "deleted" via Quick Deleter, it isn't delete immediately, it will merely be flagged for delete.  The project will be permanently deleted 30 days after its flagged for delete date.  
-
--  The custom json and csv page feature a check all checkbox.  This will highlight all rows in the query, not just the visible ones.  Be careful when using this feature, you may accidentally delete/restore projects you didn't intend to.  This feature is intentionally missing from the my projects and all project pages.
+-  Like deleting a project in REDCap, deleting via Quick Deleter won't permanently delete the project immediately.  The project will be restoreable for 30 days, then be permanently deleted.
 
 -  Project deletes and restores are logged both at the project and system level.
 
@@ -27,5 +21,13 @@ The Quick Deleter external module allows REDCap super users to quickly delete an
     -  Project name:  Project setup
     -  Status:  Other functionality
     -  Record count:  All data report
-    -  Users:  User rights
+    -  Users:  User page in control center
     -  Days since last event:  Logging 
+    
+-  Configuration options:
+    - Hide action column 
+    - Replace project buttons with checkboxes 
+    - Enable row colors. Red for deleted, green for active projects. 
+    - Enable delete and restore project button colors. Red for delete, green for restore. 
+    - Enable checkbox submit button color. Red for delete only, green for restore only, gray for delete and restore.
+    
