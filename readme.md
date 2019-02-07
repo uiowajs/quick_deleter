@@ -8,6 +8,8 @@ The Quick Deleter external module allows REDCap super users to quickly delete an
 3)  Custom json:  Paste in a json from the Admin Dashboard 
 4)  Custom csv:  Comma separated project IDs.  The csv can have spaces or not.
 
+*  The custom report is limited to 100 projects.
+
 -  The table features column sorting, filtering, and adjusting the amount of rows displayed. 
 
 -  To show only projects that are active, type "" in the "delete flagged" column filter.  To show only projects that are flagged for delete, type <> in the "delete flagged" column filter.  
@@ -15,6 +17,8 @@ The Quick Deleter external module allows REDCap super users to quickly delete an
 -  Like deleting a project in REDCap, deleting via Quick Deleter won't permanently delete the project immediately.  The project will be restoreable for 30 days, then be permanently deleted.
 
 -  Project deletes and restores are logged both at the project and system level.
+
+-  
 
 -  Many values in the table are links that will take you to various pages in the REDCap project:
     -  PID:  Project settings
